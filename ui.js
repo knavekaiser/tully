@@ -167,12 +167,3 @@ setTimeout(() => {
   welcomeScreen.remove();
   portrait.classList.remove("forward");
 }, 2000);
-
-const { GREETING } = process.env;
-
-exports.handler = async (event, context) => {
-  return {
-    statusCode: 200,
-    body: GREETING,
-  };
-};
