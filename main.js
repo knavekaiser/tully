@@ -47,7 +47,7 @@ function chageNameTag() {
 btnSidebar.addEventListener("click", () => {
   section === "employee" ? toggleSidebar() : showEmpList();
   btnSidebar.children[0].classList.contains("unsaved") &&
-    updateCloud(JSON.stringify(netlifyIdentity.currentUser()));
+    updateCloud(netlifyIdentity.currentUser());
 });
 function showEmpList() {
   window.history.pushState("index", "the title", `/`);
@@ -715,20 +715,22 @@ function download(url, type) {
 
 let url = "/.netlify/functions/fetchData";
 
-function updateCloud(currentUser) {
+function updateCloud(userStatus) {
   fetch(url, {
     method: "PUT",
     headers: {
-      warning: currentUser,
+      warning: JSON.stringify(userStatus),
     },
     body: JSON.stringify(employees),
   }).then((res) => {
     res.status === 200 && btnSidebar.children[0].classList.remove("unsaved");
   });
 }
-function getFromCloud(currentUser) {
+function getFromCloud(userStatus) {
   const fetchData = async () =>
-    await (await fetch(url, { headers: { warning: currentUser } })).json();
+    await (
+      await fetch(url, { headers: { warning: JSON.stringify(userStatus) } })
+    ).json();
   fetchData().then((data) => {
     console.log(currentUser, data);
     localStorage.setItem("employees", JSON.stringify(data.record));
