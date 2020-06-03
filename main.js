@@ -724,14 +724,17 @@ function updateCloud() {
 }
 
 function getFromCloud() {
+  fetch("https://jsonplaceholder.typicode.com/users")
+    .then((res) => res.json())
+    .then((data) => console.log(data));
   fetch(url)
     .then((res) => {
-      console.log(res);
       res.json();
+      console.log(res.json());
     })
     .then((data) => {
-      localStorage.setItem("employees", JSON.stringify(data));
       console.log(data);
+      localStorage.setItem("employees", JSON.stringify(data));
       employees = JSON.parse(localStorage.getItem("employees"));
       updateEmpList();
       updateDashboard();
