@@ -46,7 +46,14 @@ function chageNameTag() {
 }
 btnSidebar.addEventListener("click", () => {
   section === "employee" ? toggleSidebar() : showEmpList();
-  btnSidebar.children[0].classList.contains("unsaved") && updateCloud();
+  btnSidebar.children[0].classList.contains("unsaved") &&
+    updateCloud(
+      `${
+        netlifyIdentity.currentUser() !== null
+          ? netlifyIdentity.currentUser().email
+          : null
+      }`
+    );
 });
 function showEmpList() {
   window.history.pushState("index", "the title", `/`);
@@ -714,18 +721,21 @@ function download(url, type) {
 
 let url = "/.netlify/functions/fetchData";
 
-function updateCloud() {
+function updateCloud(currentUser) {
   fetch(url, {
     method: "PUT",
+    headers: {
+      warning: currentUser,
+    },
     body: JSON.stringify(employees),
   }).then((res) => {
     res.status === 200 && btnSidebar.children[0].classList.remove("unsaved");
   });
 }
-function getFromCloud() {
-  const fetchData = async () => await (await fetch(url)).json();
+function getFromCloud(currentUser) {
+  const fetchData = async () =>
+    await (await fetch(url, { headers: currentUser })).json();
   fetchData().then((data) => {
-    console.log(data);
     localStorage.setItem("employees", JSON.stringify(data.record));
     employees = JSON.parse(localStorage.getItem("employees"));
     updateEmpList();

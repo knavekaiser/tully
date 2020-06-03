@@ -114,30 +114,6 @@ const loginForm = document.querySelector("#loginForm"),
   username = loginForm.querySelector('input[name="username"]'),
   password = loginForm.querySelector('input[name="password"]');
 
-loginForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  if (username.value === "admin" && password.value === "samplePass") {
-    username.classList.add("currect");
-    password.classList.add("currect");
-    getFromCloud();
-    welcomeScreen.classList.add("done");
-    setTimeout(() => {
-      welcomeScreen.remove();
-      portrait.classList.remove("forward");
-    }, 2000);
-  } else {
-    username.value = "";
-    password.value = "";
-    username.focus();
-    username.classList.add("wrongInput");
-    password.classList.add("wrongInput");
-    setTimeout(() => {
-      username.classList.remove("wrongInput");
-      password.classList.remove("wrongInput");
-    }, 350);
-  }
-});
-
 window.onpopstate = function (e) {
   e.preventDefault();
   section !== "employee" && showEmpList();
@@ -155,7 +131,13 @@ window.addEventListener("beforeunload", function (e) {
 const user = netlifyIdentity.currentUser();
 netlifyIdentity.on("login", (user) => {
   netlifyIdentity.close();
-  getFromCloud();
+  getFromCloud(
+    `${
+      netlifyIdentity.currentUser() !== null
+        ? netlifyIdentity.currentUser().email
+        : null
+    }`
+  );
   welcomeScreen.classList.add("done");
   setTimeout(() => {
     welcomeScreen.remove();
