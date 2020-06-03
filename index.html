@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script><script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" media="(max-width:480px)" href="mobile.css" />
+    <link rel="shortcut icon" href="./img/fabicon.ico" />
+    <title>Workplace</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="innerContainer">
+        <div class="sidebar">
+          <span></span>
+          <ul>
+            <li class="fiscal_li">
+              <p>৳</p>
+              <p>Fiscal Yr.</p>
+            </li>
+            <ul class="fiscalYear">
+              <li>All time</li>
+              <li>2019-2020</li>
+              <li>2020-2021</li>
+            </ul>
+            <li class="lots_li">
+              <ion-icon name="layers-outline"></ion-icon>
+              <p>Lots</p>
+            </li>
+            <li class="dashboard_li">
+              <ion-icon name="analytics-outline"></ion-icon>
+              <p>Data</p>
+            </li>
+            <li class="backup_li">
+              <ion-icon name="download-outline"></ion-icon>
+              <p>Backup</p>
+            </li>
+            <ul class="backup_options">
+              <li>App Backup</li>
+              <li>Json Data</li>
+            </ul>
+            <li class="upload_li">
+              <input
+                class="upload"
+                type="file"
+                accept=".txt, .json"
+                name="restore"
+                value=""
+              />
+              <ion-icon name="refresh-outline"></ion-icon>
+              <p>Restore</p>
+            </li>
+            <li class="clear">
+              <ion-icon name="trash-outline"></ion-icon>
+              <p>Clear All</p>
+              <span></span>
+            </li>
+          </ul>
+          <div class="about active">
+            <p>
+              <span>WORKPLACE is a simple tullybook app written by</span
+              ><br />Naeem Ahmad
+            </p>
+            <a href="mailTo:naeem.ahmad.9m@gmail.com"
+              ><div class="portrait forward" title="email"></div
+            ></a>
+          </div>
+        </div>
+        <header>
+          <a href="https://tully.netlify.app/">
+            <div>
+              <h1>WORKPLACE</h1><h3 class="nameTag disabled">NAMES<h3>
+            </div>
+            </a>
+          <div class="btn_sidebar" type="button" name="button">
+            <div class="line">
+              <div class="before"></div>
+              <div class="after"></div>
+            </div>
+          </div>
+        </header>
+        <div class="table_container">
+          <div class="table_wrapper">
+            <section id="employee">
+              <div class="thead">
+                <table>
+                  <thead>
+                    <tr>
+                      <td>Name</td>
+                      <td>Product</td>
+                      <td>Paid</td>
+                      <td>Deu</td>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="tbody">
+                <table>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </section>
+            <section id="tasks">
+              <div class="thead">
+                <table>
+                  <thead>
+                    <tr>
+                      <td>Date</td>
+                      <td class="dressName">Dress</td>
+                      <td class="qnt">Pcs.</td>
+                      <td class="grp">Grp.</td>
+                      <td>Total</td>
+                      <td>Paid</td>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="tbody">
+                <table>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="welcomeScreen">
+          <div>
+            <h2>WORKPLACE</h2>
+            <p>an app for your business</p>
+          </div>
+          <form id="loginForm">
+            <!-- <input
+              type="text"
+              name="username"
+              value=""
+              placeholder="username"
+            />
+            <input
+              type="password"
+              name="password"
+              value=""
+              placeholder="password"
+            /> -->
+            <!-- <button type="submit" name="button">Login</button> -->
+            <div data-netlify-identity-menu></div>
+            <!-- <div data-netlify-identity-button>Login with Netlify Identity</div> -->
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="forms">
+      <span></span>
+      <form id="form_employee" class="form hidden" autocomplete="off">
+        <input
+          type="text"
+          name="employee"
+          placeholder="Worker Name"
+          maxlength="20"
+          required
+        />
+        <button id="form_employee_btn" type="submit" name="button">
+          <ion-icon name="add-outline"></ion-icon>
+        </button>
+      </form>
+      <form id="form_task" class="form hidden" autocomplete="off">
+        <input type="date" name="date" required />
+        <div class="itemsToAdd">
+          <div class="itemToAdd">
+            <input
+              type="text"
+              name="dress_name"
+              maxlength="25"
+              placeholder="Item name"
+              required
+            />
+            <input
+              type="number"
+              name="qnt"
+              placeholder="Pcs."
+              min="0"
+              required
+            />
+            <select class="groups" name="group" placeholder="group" required>
+              <option value="" hidden>Group</option>
+              <option value="S">Small</option>
+              <option value="L">Large</option>
+              <option value="F">Fancy</option>
+              <option value="1">One Pc.</option>
+            </select>
+          </div>
+        </div>
+        <input
+          type="number"
+          name="recieved"
+          placeholder="Payment"
+          min="0"
+          required
+        />
+        <button id="from_item_btn" type="submit" name="button">
+          <ion-icon name="add-outline"></ion-icon>
+        </button>
+      </form>
+    </div>
+    <div class="popUp_wrapper">
+      <div class="popUp">
+        <ul>
+          <li class="edit">Edit</li>
+          <li class="delete">Delete</li>
+        </ul>
+      </div>
+    </div>
+    <div class="delete_prompt">
+      <div>
+        <p>Are you sure you want to delete this user?</p>
+        <ul>
+          <li>YES</li>
+          <li>NO</li>
+        </ul>
+      </div>
+    </div>
+    <div class="dashboard">
+      <div class="wrapper">
+        <h3 hidden></h3>
+        <div class="thisWeek">
+          <div class="heading">
+            <p>This Week</p>
+          </div>
+          <div class="production">
+            <div>
+              <h3></h3>
+              <p>pcs.</p>
+            </div>
+          </div>
+          <div class="lot">
+            <div>
+              <h3></h3>
+              <p>In all lots</p>
+            </div>
+          </div>
+          <div class="paid">
+            <div>
+              <h3></h3>
+              <p>paid</p>
+            </div>
+          </div>
+        </div>
+        <div class="thisYear">
+          <div class="heading">
+            <p>This Year</p>
+          </div>
+          <div class="production">
+            <div>
+              <h3></h3>
+              <p>pcs.</p>
+            </div>
+          </div>
+          <div class="value">
+            <div>
+              <h3></h3>
+              <p>Deu</p>
+            </div>
+          </div>
+          <div class="paid">
+            <div>
+              <h3></h3>
+              <p>paid</p>
+            </div>
+          </div>
+        </div>
+        <div class="cls_dashboard">
+          <ion-icon name="close-outline"></ion-icon>
+        </div>
+        <div class="chart">
+          <canvas id="chart" width="700" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+    <script src="main.js"></script>
+    <script src="ui.js"></script>
+  </body>
+</html>
