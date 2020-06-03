@@ -724,17 +724,14 @@ function updateCloud() {
 }
 
 function getFromCloud() {
-  fetch(url)
-    .then((res) => {
-      res.json();
-    })
-    .then((data) => {
-      console.log(data);
-      localStorage.setItem("employees", JSON.stringify(data));
-      employees = JSON.parse(localStorage.getItem("employees"));
-      updateEmpList();
-      updateDashboard();
-    });
+  const fetchData = async () => await (await fetch(url)).json();
+  fetchData().then((data) => {
+    console.log(data);
+    localStorage.setItem("employees", JSON.stringify(data));
+    employees = JSON.parse(localStorage.getItem("employees"));
+    updateEmpList();
+    updateDashboard();
+  });
 }
 
 getFromCloud();
