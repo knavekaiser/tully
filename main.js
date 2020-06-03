@@ -732,7 +732,7 @@ function getFromCloud(userStatus) {
       await fetch(url, { headers: { warning: JSON.stringify(userStatus) } })
     ).json();
   fetchData().then((data) => {
-    console.log(currentUser, data);
+    console.log(userStatus, data);
     localStorage.setItem("employees", JSON.stringify(data.record));
     employees = JSON.parse(localStorage.getItem("employees"));
     updateEmpList();
