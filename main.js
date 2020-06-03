@@ -713,6 +713,7 @@ function download(url, type) {
 }
 
 let url = "/.netlify/functions/fetchData";
+// let url = "http://localhost:9000/fetchData";
 
 function updateCloud() {
   fetch(url, {
