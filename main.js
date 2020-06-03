@@ -726,7 +726,7 @@ function updateCloud() {
 function getFromCloud() {
   fetch(url)
     .then((res) => {
-      console.log(res.body);
+      console.log(res);
       res.json();
     })
     .then((data) => {
