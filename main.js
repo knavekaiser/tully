@@ -712,7 +712,7 @@ function download(url, type) {
   a.click();
 }
 
-let url = "https://api.jsonbin.io/v3/b/5ecff70d79382f568bcea8c6";
+// let url = "https://api.jsonbin.io/v3/b/5ecff70d79382f568bcea8c6";
 
 function updateCloud() {
   fetch(url, {
@@ -728,18 +728,20 @@ function updateCloud() {
   });
 }
 function getFromCloud() {
-  fetch(url + "/1", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Master-Key":
-        "$2b$10$aEycq511HDsvlIxZW5Q44upAnU0Fx4Lgq3wlZkA8gl/zOi9rZKOj2",
-    },
-  })
+  // fetch(url + "/1", {
+  //   method: "GET",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     "X-Master-Key":
+  //       "$2b$10$aEycq511HDsvlIxZW5Q44upAnU0Fx4Lgq3wlZkA8gl/zOi9rZKOj2",
+  //   },
+  // })
+  fetch("/.netlify/functions/fetch")
     .then((res) => res.json())
     .then((data) => {
       localStorage.setItem("employees", JSON.stringify(data.record));
       employees = JSON.parse(localStorage.getItem("employees"));
+      console.log(employee);
       updateEmpList();
       updateDashboard();
     });
@@ -992,8 +994,8 @@ fiscalYears.addEventListener("click", (e) => {
   updateDashboard();
 });
 
-employees = JSON.parse(localStorage.getItem("employees")) || {};
+// employees = JSON.parse(localStorage.getItem("employees")) || {};
 
 // getFromCloud();
-updateEmpList();
-updateDashboard();
+// updateEmpList();
+// updateDashboard();
