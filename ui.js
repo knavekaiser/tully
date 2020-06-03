@@ -155,6 +155,7 @@ window.addEventListener("beforeunload", function (e) {
 const user = netlifyIdentity.currentUser();
 netlifyIdentity.on("login", (user) => {
   netlifyIdentity.close();
+  console.log(user);
   getFromCloud();
   welcomeScreen.classList.add("done");
   setTimeout(() => {
@@ -162,8 +163,3 @@ netlifyIdentity.on("login", (user) => {
     portrait.classList.remove("forward");
   }, 2000);
 });
-welcomeScreen.classList.add("done");
-setTimeout(() => {
-  welcomeScreen.remove();
-  portrait.classList.remove("forward");
-}, 2000);

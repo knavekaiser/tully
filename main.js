@@ -713,7 +713,6 @@ function download(url, type) {
 }
 
 let url = "/.netlify/functions/fetchData";
-// let url = "http://localhost:9000/fetchData";
 
 function updateCloud() {
   fetch(url, {
@@ -723,18 +722,14 @@ function updateCloud() {
     res.status === 200 && btnSidebar.children[0].classList.remove("unsaved");
   });
 }
-
 function getFromCloud() {
   const fetchData = async () => await (await fetch(url)).json();
   fetchData().then((data) => {
     localStorage.setItem("employees", JSON.stringify(data.record));
     employees = JSON.parse(localStorage.getItem("employees"));
     updateEmpList();
-    updateDashboard();
   });
 }
-
-getFromCloud();
 
 dashboard_li.addEventListener("click", (e) => {
   dashboard.classList.add("active");
@@ -932,7 +927,6 @@ function updateDashboard() {
   let totalLots = "";
   pcsInLot.forEach((lot) => {
     totalInLot += lot.qnt;
-    // totalLots += lot.dress + "-";
     totalLots += lot.group + "-";
     totalLots += lot.qnt + ",  ";
   });
@@ -980,11 +974,4 @@ fiscalYears.addEventListener("click", (e) => {
   }
   fiscalYears.classList.remove("active");
   updateEmpList();
-  updateDashboard();
 });
-
-// employees = JSON.parse(localStorage.getItem("employees")) || {};
-
-// getFromCloud();
-// updateEmpList();
-// updateDashboard();
