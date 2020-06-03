@@ -131,13 +131,7 @@ window.addEventListener("beforeunload", function (e) {
 const user = netlifyIdentity.currentUser();
 netlifyIdentity.on("login", (user) => {
   netlifyIdentity.close();
-  getFromCloud(
-    `${
-      netlifyIdentity.currentUser() !== null
-        ? netlifyIdentity.currentUser().email
-        : null
-    }`
-  );
+  getFromCloud(JSON.stringify(netlifyIdentity.currentUser()));
   welcomeScreen.classList.add("done");
   setTimeout(() => {
     welcomeScreen.remove();

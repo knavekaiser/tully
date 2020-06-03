@@ -47,13 +47,7 @@ function chageNameTag() {
 btnSidebar.addEventListener("click", () => {
   section === "employee" ? toggleSidebar() : showEmpList();
   btnSidebar.children[0].classList.contains("unsaved") &&
-    updateCloud(
-      `${
-        netlifyIdentity.currentUser() !== null
-          ? netlifyIdentity.currentUser().email
-          : null
-      }`
-    );
+    updateCloud(JSON.stringify(netlifyIdentity.currentUser()));
 });
 function showEmpList() {
   window.history.pushState("index", "the title", `/`);
