@@ -725,7 +725,10 @@ function updateCloud() {
 
 function getFromCloud() {
   fetch(url)
-    .then((res) => res.json())
+    .then((res) => {
+      console.log(res);
+      res.json();
+    })
     .then((data) => {
       localStorage.setItem("employees", JSON.stringify(data));
       console.log(data);
