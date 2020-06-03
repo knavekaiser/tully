@@ -724,12 +724,9 @@ function updateCloud() {
 }
 
 function getFromCloud() {
-  fetch("https://jsonplaceholder.typicode.com/users")
-    .then((res) => res.json())
-    .then((data) => console.log(data));
   fetch(url)
     .then((res) => {
-      res.json();
+      res.clone().json();
       console.log(res.json());
     })
     .then((data) => {
