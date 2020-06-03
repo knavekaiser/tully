@@ -736,7 +736,7 @@ function getFromCloud(currentUser) {
   const fetchData = async () =>
     await (await fetch(url, { headers: { warning: currentUser } })).json();
   fetchData().then((data) => {
-    console.log(currentUser);
+    console.log(currentUser, data);
     localStorage.setItem("employees", JSON.stringify(data.record));
     employees = JSON.parse(localStorage.getItem("employees"));
     updateEmpList();
