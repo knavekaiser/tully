@@ -728,6 +728,7 @@ function getFromCloud() {
     .then((res) => res.json())
     .then((data) => {
       localStorage.setItem("employees", JSON.stringify(data.record));
+      console.log(data.record);
       employees = JSON.parse(localStorage.getItem("employees"));
       updateEmpList();
       updateDashboard();
