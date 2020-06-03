@@ -727,8 +727,8 @@ function getFromCloud() {
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
-      localStorage.setItem("employees", JSON.stringify(data.record));
-      console.log(data.record);
+      localStorage.setItem("employees", JSON.stringify(data));
+      console.log(data);
       employees = JSON.parse(localStorage.getItem("employees"));
       updateEmpList();
       updateDashboard();
