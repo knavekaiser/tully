@@ -725,6 +725,7 @@ function updateCloud() {
 function getFromCloud() {
   const fetchData = async () => await (await fetch(url)).json();
   fetchData().then((data) => {
+    console.log(data);
     localStorage.setItem("employees", JSON.stringify(data.record));
     employees = JSON.parse(localStorage.getItem("employees"));
     updateEmpList();
