@@ -299,7 +299,8 @@ function updateTaskList() {
 }
 
 function displayAddBtn(element) {
-  netlifyIdentity.currentUser() !== null && element.innerHTML += `
+  netlifyIdentity.currentUser() !== null &&
+    (element.innerHTML += `
   <tr id="btn_tr">
     <td class="btn_row add">
       <button id="td_btn" type="submit" onClick="showForm()" name="button">
@@ -313,7 +314,7 @@ function displayAddBtn(element) {
       }
     </td>
   </tr>
-  `;
+  `);
 }
 function createTasks(date, tasks, item, i) {
   const tr = document.createElement("tr");
