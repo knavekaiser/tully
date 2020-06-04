@@ -299,7 +299,7 @@ function updateTaskList() {
 }
 
 function displayAddBtn(element) {
-  element.innerHTML += `
+  netlifyIdentity.currentUser() !== null && element.innerHTML += `
   <tr id="btn_tr">
     <td class="btn_row add">
       <button id="td_btn" type="submit" onClick="showForm()" name="button">
@@ -648,6 +648,7 @@ clearAll.addEventListener("mousedown", (e) => {
     localStorage.clear();
     employees = {};
     updateEmpList();
+    updateCloud(netlifyIdentity.currentUser());
     clearAll.querySelector("span").classList.remove("active");
   }, 2000);
   clearAll.querySelector("span").classList.add("active");
@@ -681,7 +682,9 @@ fileInput.addEventListener("change", (e) => {
     fr.onload = function () {
       let raw = fr.result;
       if (raw.search("let employees = {") >= 0) {
-        employees = JSON.parse(raw.replace("let employees = ", ""));
+        netlifyIdentity.currentUser() !== null && employees = JSON.parse(
+          raw.replace("let employees = ", "")
+        );
         updateLS();
         toggleSidebar();
         updateEmpList();
