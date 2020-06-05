@@ -683,9 +683,8 @@ fileInput.addEventListener("change", (e) => {
     fr.onload = function () {
       let raw = fr.result;
       if (raw.search("let employees = {") >= 0) {
-        netlifyIdentity.currentUser() !== null && employees = JSON.parse(
-          raw.replace("let employees = ", "")
-        );
+        netlifyIdentity.currentUser() !== null &&
+          (employees = JSON.parse(raw.replace("let employees = ", "")));
         updateLS();
         toggleSidebar();
         updateEmpList();
