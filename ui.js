@@ -153,16 +153,18 @@ form_login.addEventListener("submit", (e) => {
   })
     .then((res) => res.json())
     .then((data) => {
-      console.log(res);
-      employees[user] = data;
-      welcomeScreen.classList.add("done");
-      person = user;
-      showEmpTasks();
-      setTimeout(() => {
-        welcomeScreen.remove();
-        portrait.classList.remove("forward");
-      }, 2000);
-      console.log(data, employees);
+      if (res.statusCode === 200) {
+        console.log(res);
+        employees[user] = data;
+        welcomeScreen.classList.add("done");
+        person = user;
+        showEmpTasks();
+        setTimeout(() => {
+          welcomeScreen.remove();
+          portrait.classList.remove("forward");
+        }, 2000);
+        console.log(data, employees);
+      }
     })
     .catch((err) => console.log("something went wrong", err));
 });
