@@ -138,3 +138,27 @@ netlifyIdentity.on("login", (user) => {
     portrait.classList.remove("forward");
   }, 2000);
 });
+
+form_login.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const url = "/.netlify/functions/fetchViwerData";
+  const employee = {
+    user: form_login.querySelector('input[type="name"]').value,
+    pass: form_login.querySelector('input[type="password"]').value,
+  };
+  fetch(url, {
+    headers: {
+      from: employee.user,
+      warning: employee.pass,
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "*",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => console.log(data));
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  console.log();
+  document.querySelector(".netlify-identity-login").textContent = "Management";
+});

@@ -105,6 +105,22 @@ body {
   border: 1px;
   transition: border;
 }
+#loginForm input {
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  border-bottom: 2px solid white;
+  color: white;
+  padding: 0.1rem;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+}
+#loginForm input:focus {
+  border-bottom: 2px solid orange;
+}
+#loginForm input::placeholder {
+  color: #ddd;
+}
 #loginForm input.wrongInput {
   border: 2px solid red;
   animation: wrong 0.25s infinite;
@@ -128,14 +144,14 @@ body {
   }
 }
 #loginForm button[type="submit"]:hover {
-  padding: calc(0.48em - 2px);
   background: white;
   color: rgb(96, 140, 255);
 }
 #loginForm button[type="submit"] {
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  font-size: 1.2rem;
-  padding: calc(0.48em - 2px);
+  font-size: 1.005rem;
+  padding: 0.5rem;
   background: rgb(96, 140, 255);
   color: white;
   border: 2px solid white;
@@ -753,12 +769,10 @@ form input[name="recieved"] {
   display: none;
 }
 .netlify-identity-menu li {
-  background: white;
+  font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: rgb(67, 144, 200);
   padding: 0.7em;
-  border: 2px solid rgb(67, 144, 200);
   border-radius: 3rem;
 }
 .popUp_wrapper {
