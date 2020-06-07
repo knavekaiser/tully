@@ -148,7 +148,6 @@ form_login.addEventListener("submit", (e) => {
   fetch(url, { headers: { from: user, warning: pass } })
     .then((res) => {
       if (res.status === 200) {
-        console.log(res);
         return res.json();
       } else {
         throw res.status;
@@ -184,6 +183,21 @@ form_login.addEventListener("submit", (e) => {
         console.log(err);
       }
     });
+});
+let passwordShown = false;
+showPass.addEventListener("click", () => {
+  if (!passwordShown) {
+    showPass.setAttribute("name", "eye-outline");
+    form_login
+      .querySelector('input[name="password"]')
+      .setAttribute("type", "text");
+  } else {
+    showPass.setAttribute("name", "eye-off-outline");
+    form_login
+      .querySelector('input[name="password"]')
+      .setAttribute("type", "password");
+  }
+  passwordShown = !passwordShown;
 });
 
 window.addEventListener("DOMContentLoaded", () => {
