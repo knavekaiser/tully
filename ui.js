@@ -175,6 +175,7 @@ form_login.addEventListener("submit", (e) => {
       document.querySelector("h3.nameTag").addEventListener("click", (e) => {
         e.preventDefault();
         tableWrapper.style.left = "0";
+        showEmpList();
         section = "employee";
       });
     })
