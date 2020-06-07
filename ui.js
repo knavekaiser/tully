@@ -155,7 +155,7 @@ form_login.addEventListener("submit", (e) => {
       if (res.ok) {
         res.json();
       } else {
-        throw err;
+        throw res.statusCode;
       }
     })
     .then((data) => {
