@@ -161,15 +161,16 @@ form_login.addEventListener("submit", (e) => {
       form_login
         .querySelector('input[name="password"]')
         .classList.add("currect");
-      welcomeScreen.classList.add("done");
       viewTask(user);
+      document.querySelector(".btn_sidebar").remove();
+      document.querySelector(".popUp_wrapper").remove();
+      document.querySelector("#btn_tr").remove();
+      document.querySelector(".forms").remove();
+      welcomeScreen.classList.add("done");
       setTimeout(() => {
         welcomeScreen.remove();
         portrait.classList.remove("forward");
       }, 2000);
-      document.querySelector(".popUp_wrapper").remove();
-      document.querySelector("#btn_tr").remove();
-      document.querySelector(".forms").remove();
     })
     .catch((err) => {
       if (err === 403) {
