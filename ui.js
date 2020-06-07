@@ -145,11 +145,22 @@ form_login.addEventListener("submit", (e) => {
   const user = form_login.querySelector('input[type="name"]').value,
     pass = form_login.querySelector('input[type="password"]').value;
 
-  fetch(url, { headers: { from: user, warning: pass } })
-    .then((res) => res.json())
+  fetch(url, {
+    headers: {
+      from: user,
+      warning: pass,
+    },
+  })
+    .then((res) => {
+      if (res.status === 200) {
+        return res.json();
+      } else {
+        throw res.status;
+      }
+    })
     .then((data) => {
       employees[user] = data;
-      console.log(data, employees);
+      console.log(employees);
       welcomeScreen.classList.add("done");
       viewTask(user);
       setTimeout(() => {
@@ -157,8 +168,8 @@ form_login.addEventListener("submit", (e) => {
         portrait.classList.remove("forward");
       }, 2000);
       console.log(data, employees);
-    });
-  // .catch((err) => console.log("something went wrong", err));
+    })
+    .catch((err) => console.log("something went wrong", err));
 });
 
 window.addEventListener("DOMContentLoaded", () => {
