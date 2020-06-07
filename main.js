@@ -525,6 +525,15 @@ function showEmpTasks(e) {
     window.history.pushState("index", "the title", `/${person}`);
   }
 }
+function viewTask(user) {
+  person = user;
+  section = "task";
+  tableWrapper.style.left = "-100%";
+  window.history.pushState("index", "the title", `/${person}`);
+  updateTaskList();
+  btnSidebar.classList.add("back");
+  chageNameTag();
+}
 function showPopup(e) {
   section === "employee"
     ? (popUp.children[0].children[0].style.display = "none")
