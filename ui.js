@@ -152,10 +152,11 @@ form_login.addEventListener("submit", (e) => {
     },
   })
     .then((res) => {
-      if (res.json().statusCode === 200) {
+      if (res.statusCode === 200) {
         res.json();
       } else {
-        throw res.json().statusCode;
+        console.log(res);
+        throw 200;
       }
     })
     .then((data) => {
