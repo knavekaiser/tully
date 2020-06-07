@@ -286,12 +286,8 @@ function updateTaskList() {
     tasks = [];
   date.sort((a, b) => (new Date(a) < new Date(b) ? -1 : 1));
   date.forEach((day) => {
-    if (employees[person][day]) {
-      tasks.push(...employees[person][day].tasks);
-    }
+    employees[person][day] && tasks.push(employees[person][day]);
   });
-
-  console.log(date, tasks);
   date.forEach((item, i) => {
     if (new Date(fiscalYear.from) == "Invalid Date") {
       createTasks(date, tasks, item, i);
@@ -998,8 +994,3 @@ fiscalYears.addEventListener("click", (e) => {
   fiscalYears.classList.remove("active");
   updateEmpList();
 });
-
-employees = JSON.parse(localStorage.getItem("employees"));
-person = "shohag";
-
-updateTaskList();
