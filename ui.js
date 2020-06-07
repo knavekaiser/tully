@@ -168,8 +168,8 @@ form_login.addEventListener("submit", (e) => {
         portrait.classList.remove("forward");
       }, 2000);
       console.log(data, employees);
-    })
-    .catch((err) => console.log("something went wrong", err));
+    });
+  // .catch((err) => console.log("something went wrong", err));
 });
 
 window.addEventListener("DOMContentLoaded", () => {
