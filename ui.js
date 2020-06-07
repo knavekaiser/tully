@@ -145,19 +145,8 @@ form_login.addEventListener("submit", (e) => {
   const user = form_login.querySelector('input[type="name"]').value,
     pass = form_login.querySelector('input[type="password"]').value;
 
-  fetch(url, {
-    headers: {
-      from: user,
-      warning: pass,
-    },
-  })
-    .then((res) => {
-      // if (res.status === 200) {
-      // } else {
-      //   throw res.status;
-      // }
-      res.json();
-    })
+  fetch(url, { headers: { from: user, warning: pass } })
+    .then((res) => res.json())
     .then((data) => {
       employees[user] = data;
       console.log(data, employees);
