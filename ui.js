@@ -152,15 +152,11 @@ form_login.addEventListener("submit", (e) => {
     },
   })
     .then((res) => {
-      if (res.status === 200) {
-        res.json();
-      } else {
-        throw res.status;
-      }
+      res.status === 200 ? res.json() : throw res.status;
     })
     .then((data) => {
       employees[user] = data;
-      console.log(employees);
+      console.log(data, employees);
       welcomeScreen.classList.add("done");
       viewTask(user);
       setTimeout(() => {
