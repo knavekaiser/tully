@@ -153,7 +153,10 @@ form_login.addEventListener("submit", (e) => {
     },
   })
     .then((res) => res.json())
-    .then((data) => console.log(data));
+    .then((data) => {
+      employees[employee.user] = data;
+      console.log(data, employees);
+    });
 });
 
 window.addEventListener("DOMContentLoaded", () => {
