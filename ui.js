@@ -139,6 +139,12 @@ netlifyIdentity.on("login", (user) => {
   }, 2000);
 });
 
+logout.addEventListener("click", () => {
+  netlifyIdentity.logout();
+  window.history.pushState("index", "the title", `/`);
+  location.reload();
+});
+
 form_login.addEventListener("submit", (e) => {
   e.preventDefault();
   const url = "/.netlify/functions/fetchViwerData";
