@@ -779,6 +779,11 @@ form input[name="recieved"] {
   padding: 0.7em;
   border-radius: 3rem;
 }
+.modalContent > div:nth-child(3),
+.modalContent .header,
+.hr {
+  display: none;
+}
 .popUp_wrapper {
   position: absolute;
   height: 100%;
