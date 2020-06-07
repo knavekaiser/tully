@@ -167,13 +167,8 @@ form_login.addEventListener("submit", (e) => {
         welcomeScreen.remove();
         portrait.classList.remove("forward");
       }, 2000);
-      console.log(document.querySelector(".btn_sidebar.back"));
       document.querySelector(".btn_sidebar.back").remove();
-      console.log(document.querySelector(".popUp_wrapper"));
       document.querySelector(".popUp_wrapper").remove();
-      console.log(document.querySelector("#btn_tr"));
-      document.querySelector("#btn_tr").remove();
-      console.log(document.querySelector(".forms"));
       document.querySelector(".forms").remove();
     })
     .catch((err) => {
