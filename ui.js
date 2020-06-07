@@ -169,7 +169,7 @@ form_login.addEventListener("submit", (e) => {
         welcomeScreen.remove();
         portrait.classList.remove("forward");
       }, 2000);
-      document.querySelector(".btn_sidebar.back").remove();
+      document.querySelector(".btn_sidebar").remove();
       document.querySelector(".popUp_wrapper").remove();
       document.querySelector(".forms").remove();
     })
