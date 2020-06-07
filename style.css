@@ -116,18 +116,16 @@ body {
   letter-spacing: 0.1em;
 }
 #loginForm input:focus {
-  border-bottom: 2px solid orange;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
 }
 #loginForm input::placeholder {
   color: #ddd;
 }
 #loginForm input.wrongInput {
-  border: 2px solid red;
-  animation: wrong 0.25s infinite;
-  transform-origin: center;
+  border-bottom: 2px solid red;
 }
 #loginForm input.currect {
-  border: 2px solid #00f260;
+  border-bottom: 2px solid #00f260;
 }
 @keyframes wrong {
   0% {
