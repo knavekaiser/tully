@@ -130,7 +130,7 @@ body {
 #loginForm input:-webkit-autofill,
 #loginForm input:-webkit-autofill:hover,
 #loginForm input:-webkit-autofill:focus {
-  -webkit-text-fill-color: white;
+  -webkit-text-fill-color: yellow;
   background-color: rgba(255, 255, 255, 0.26);
   transition: background-color 5000s ease-in-out 0s;
 }

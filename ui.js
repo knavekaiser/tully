@@ -164,7 +164,6 @@ form_login.addEventListener("submit", (e) => {
       login_user.classList.add("currect");
       login_pass.classList.add("currect");
       updateEmpList();
-      // viewTask(login_user.value);
       welcomeScreen.classList.add("done");
       setTimeout(() => {
         welcomeScreen.remove();
@@ -173,6 +172,11 @@ form_login.addEventListener("submit", (e) => {
       document.querySelector(".btn_sidebar").remove();
       document.querySelector(".popUp_wrapper").remove();
       document.querySelector(".forms").remove();
+      document.querySelector("h3.nameTag").addEventListener("click", (e) => {
+        e.preventDefault();
+        tableWrapper.style.left = "0";
+        section = "employee";
+      });
     })
     .catch((err) => {
       if (err === 403) {
