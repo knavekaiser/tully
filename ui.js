@@ -130,6 +130,8 @@ window.addEventListener("beforeunload", function (e) {
 
 const user = netlifyIdentity.currentUser();
 netlifyIdentity.on("login", (user) => {
+  login_user.value = "";
+  login_pass.value = "";
   netlifyIdentity.close();
   getFromCloud(netlifyIdentity.currentUser());
   welcomeScreen.classList.add("done");
@@ -147,6 +149,12 @@ logout.addEventListener("click", () => {
 });
 const login_user = form_login.querySelector('input[name="username"]'),
   login_pass = form_login.querySelector('input[name="password"]');
+login_user.addEventListener("keyup", () =>
+  login_user.classList.remove("wrongInput")
+);
+login_pass.addEventListener("keyup", () =>
+  login_pass.classList.remove("wrongInput")
+);
 form_login.addEventListener("submit", (e) => {
   e.preventDefault();
   const url = "/.netlify/functions/fetchViwerData";

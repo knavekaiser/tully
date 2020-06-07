@@ -13,7 +13,6 @@ ion-icon {
 body {
   height: 100vh;
   word-wrap: break-word;
-  word-break: break-all;
   font-family: "roboto";
   background-image: linear-gradient(140deg, #00f260, #0575e6);
   display: grid;
@@ -73,6 +72,7 @@ body {
   display: grid;
   justify-content: center;
   align-items: center;
+  padding-top: 3rem;
   text-align: center;
   color: white;
   font-weight: 400;
@@ -89,7 +89,6 @@ body {
   font-size: 0.9rem;
   letter-spacing: 0.48em;
   text-indent: 0.5em;
-  z-index: 40;
 }
 .welcomeScreen.done {
   animation: welcomeScreen 1.5s;
@@ -778,6 +777,7 @@ form input[name="recieved"] {
   letter-spacing: 0.1em;
   padding: 0.7em;
   border-radius: 3rem;
+  color: rgba(255, 255, 255, 0.7);
 }
 .modalContent > div:nth-child(3),
 .modalContent .header,
