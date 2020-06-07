@@ -286,6 +286,7 @@ function updateTaskList() {
     Object.keys(employees[person]),
     Object.values(employees[person]),
   ];
+  date.sort((a, b) => (new Date(a) < new Date(b) ? -1 : 1));
   date.forEach((item, i) => {
     if (new Date(fiscalYear.from) == "Invalid Date") {
       createTasks(date, tasks, item, i);
@@ -808,13 +809,7 @@ function updateDashboard() {
   }
   //sorts dates
   Object.keys(data).forEach((days) => dates.push(days));
-  dates.sort((a, b) => {
-    if (new Date(a) < new Date(b)) {
-      return -1;
-    } else {
-      return 1;
-    }
-  });
+  dates.sort((a, b) => (new Date(a) < new Date(b) ? -1 : 1));
 
   // Puts data in diffrent groups
   Object.keys(data).forEach((days, i) => {
