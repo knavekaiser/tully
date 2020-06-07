@@ -141,6 +141,7 @@ netlifyIdentity.on("login", (user) => {
 
 logout.addEventListener("click", () => {
   netlifyIdentity.logout();
+  localStorage.clear();
   window.history.pushState("index", "the title", `/`);
   location.reload();
 });
@@ -159,7 +160,7 @@ form_login.addEventListener("submit", (e) => {
       }
     })
     .then((data) => {
-      employees[login_pass.value] = data;
+      employees[login_user.value] = data;
       login_user.classList.add("currect");
       login_pass.classList.add("currect");
       updateEmpList();
