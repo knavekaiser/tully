@@ -162,7 +162,7 @@ form_login.addEventListener("submit", (e) => {
         .querySelector('input[name="password"]')
         .classList.add("currect");
       viewTask(user);
-      document.querySelector(".btn_sidebar").remove();
+      document.querySelector(".btn_sidebar.back").remove();
       document.querySelector(".popUp_wrapper").remove();
       document.querySelector("#btn_tr").remove();
       document.querySelector(".forms").remove();
@@ -180,6 +180,8 @@ form_login.addEventListener("submit", (e) => {
         form_login
           .querySelector('input[name="password"]')
           .classList.add("wrongInput");
+      } else {
+        console.log(err);
       }
     });
 });
