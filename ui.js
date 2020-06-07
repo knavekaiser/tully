@@ -153,6 +153,7 @@ form_login.addEventListener("submit", (e) => {
   })
     .then((res) => res.json())
     .then((data) => {
+      console.log(res);
       employees[user] = data;
       welcomeScreen.classList.add("done");
       person = user;
