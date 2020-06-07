@@ -160,6 +160,7 @@ form_login.addEventListener("submit", (e) => {
     })
     .then((data) => {
       employees[user] = data;
+      console.log(employees);
       welcomeScreen.classList.add("done");
       viewTask(user);
       setTimeout(() => {
