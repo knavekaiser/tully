@@ -152,7 +152,7 @@ form_login.addEventListener("submit", (e) => {
     },
   })
     .then((res) => {
-      if (res.ok) {
+      if (res.json().statusCode === 200) {
         res.json();
       } else {
         throw res.json().statusCode;
