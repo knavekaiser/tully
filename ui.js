@@ -144,14 +144,13 @@ logout.addEventListener("click", () => {
   window.history.pushState("index", "the title", `/`);
   location.reload();
 });
-
+const login_user = form_login.querySelector('input[name="username"]'),
+  login_pass = form_login.querySelector('input[name="password"]');
 form_login.addEventListener("submit", (e) => {
   e.preventDefault();
   const url = "/.netlify/functions/fetchViwerData";
-  const user = form_login.querySelector('input[name="username"]').value,
-    pass = form_login.querySelector('input[name="password"]').value;
 
-  fetch(url, { headers: { from: user, warning: pass } })
+  fetch(url, { headers: { from: login_user.value, warning: login_pass.value } })
     .then((res) => {
       if (res.status === 200) {
         return res.json();
@@ -160,14 +159,11 @@ form_login.addEventListener("submit", (e) => {
       }
     })
     .then((data) => {
-      employees[user] = data;
-      form_login
-        .querySelector('input[name="username"]')
-        .classList.add("currect");
-      form_login
-        .querySelector('input[name="password"]')
-        .classList.add("currect");
-      viewTask(user);
+      employees[login_pass.value] = data;
+      login_user.classList.add("currect");
+      login_pass.classList.add("currect");
+      updateEmpList();
+      // viewTask(login_user.value);
       welcomeScreen.classList.add("done");
       setTimeout(() => {
         welcomeScreen.remove();
@@ -179,12 +175,8 @@ form_login.addEventListener("submit", (e) => {
     })
     .catch((err) => {
       if (err === 403) {
-        form_login
-          .querySelector('input[name="username"]')
-          .classList.add("wrongInput");
-        form_login
-          .querySelector('input[name="password"]')
-          .classList.add("wrongInput");
+        login_user.classList.add("wrongInput");
+        login_pass.classList.add("wrongInput");
       } else {
         console.log(err);
       }
