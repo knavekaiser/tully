@@ -181,6 +181,5 @@ form_login.addEventListener("submit", (e) => {
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-  console.log();
   document.querySelector(".netlify-identity-login").textContent = "Management";
 });

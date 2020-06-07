@@ -529,7 +529,6 @@ function viewTask(user) {
   person = user;
   section = "task";
   tableWrapper.style.left = "-100%";
-  window.history.pushState("index", "the title", `/${person}`);
   updateTaskList();
   btnSidebar.classList.add("back");
   chageNameTag();
