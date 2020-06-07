@@ -152,11 +152,11 @@ form_login.addEventListener("submit", (e) => {
     },
   })
     .then((res) => {
-      if (res.status === 200) {
-        res.json();
-      } else {
-        throw res.status;
-      }
+      // if (res.status === 200) {
+      // } else {
+      //   throw res.status;
+      // }
+      res.json();
     })
     .then((data) => {
       employees[user] = data;
