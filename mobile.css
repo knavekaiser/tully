@@ -24,13 +24,20 @@ header {
 header a div {
   transform: translateX(-100%) translateY(-25%);
 }
+.welcomeScreen h2 {
+  text-indent: 0.35em;
+  letter-spacing: 0.25em;
+}
+.welcomeScreen p {
+  letter-spacing: 0.28em;
+  text-indent: 0.4em;
+}
 h1,
 a h3 {
   text-align: right;
 }
 form {
   padding: 1rem;
-  margin: auto;
   width: 95%;
   grid-row-gap: 0.8rem;
   grid-column-gap: 0.4rem;
