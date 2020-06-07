@@ -148,6 +148,7 @@ form_login.addEventListener("submit", (e) => {
   fetch(url, { headers: { from: user, warning: pass } })
     .then((res) => {
       if (res.status === 200) {
+        console.log(res);
         return res.json();
       } else {
         throw res.status;
