@@ -150,8 +150,6 @@ form_login.addEventListener("submit", (e) => {
     headers: {
       from: employee.user,
       warning: employee.pass,
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "*",
     },
   })
     .then((res) => res.json())
