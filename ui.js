@@ -142,19 +142,25 @@ netlifyIdentity.on("login", (user) => {
 form_login.addEventListener("submit", (e) => {
   e.preventDefault();
   const url = "/.netlify/functions/fetchViwerData";
-  const employee = {
-    user: form_login.querySelector('input[type="name"]').value,
-    pass: form_login.querySelector('input[type="password"]').value,
-  };
+  const user = form_login.querySelector('input[type="name"]').value,
+    pass = form_login.querySelector('input[type="password"]').value;
+
   fetch(url, {
     headers: {
-      from: employee.user,
-      warning: employee.pass,
+      from: user,
+      warning: pass,
     },
   })
     .then((res) => res.json())
     .then((data) => {
-      employees[employee.user] = data;
+      employees[user] = data;
+      welcomeScreen.classList.add("done");
+      person = user;
+      showEmpTasks();
+      setTimeout(() => {
+        welcomeScreen.remove();
+        portrait.classList.remove("forward");
+      }, 2000);
       console.log(data, employees);
     });
 });
