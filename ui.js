@@ -162,7 +162,7 @@ form_login.addEventListener("submit", (e) => {
       employees[user] = data;
       welcomeScreen.classList.add("done");
       person = user;
-      showEmpTasks();
+      updateEmpList();
       setTimeout(() => {
         welcomeScreen.remove();
         portrait.classList.remove("forward");
