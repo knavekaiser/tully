@@ -162,11 +162,11 @@ form_login.addEventListener("submit", (e) => {
         .querySelector('input[name="password"]')
         .classList.add("currect");
       viewTask(user);
-      document.querySelector(".btn_sidebar.back").remove();
       document.querySelector(".popUp_wrapper").remove();
       document.querySelector("#btn_tr").remove();
       document.querySelector(".forms").remove();
       welcomeScreen.classList.add("done");
+      document.querySelector(".btn_sidebar.back").remove();
       setTimeout(() => {
         welcomeScreen.remove();
         portrait.classList.remove("forward");
