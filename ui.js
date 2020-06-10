@@ -34,7 +34,7 @@ function resizeWindow() {
     );
 }
 
-window.addEventListener("resize", resizeWindow);
+window.addEventListener("resize", () => resizeWindow());
 resizeWindow();
 
 formsSpan.addEventListener("click", () => {
