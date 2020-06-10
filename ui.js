@@ -29,8 +29,9 @@ let scrollbarPosition =
   document.querySelector(".innerContainer").clientHeight -
   (document.querySelector("header").clientHeight +
     document.querySelector(".thead").clientHeight);
-employee.querySelector(".tbody").style.height = `${scrollbarPosition}px`;
-tasks.querySelector(".tbody").style.height = `${scrollbarPosition}px`;
+document
+  .querySelectorAll(".tbody")
+  .forEach((tbody) => (tbody.style.height = `${scrollbarPosition}px`));
 window.addEventListener("resize", () => {
   let vh = window.innerHeight * 0.01;
   document.body.style.setProperty("--vh", `${vh}px`);
@@ -38,8 +39,9 @@ window.addEventListener("resize", () => {
     document.querySelector(".innerContainer").clientHeight -
     (document.querySelector("header").clientHeight +
       document.querySelector(".thead").clientHeight);
-  employee.querySelector(".tbody").style.height = `${scrollbarPosition}px`;
-  tasks.querySelector(".tbody").style.height = `${scrollbarPosition}px`;
+  document
+    .querySelectorAll(".tbody")
+    .forEach((tbody) => (tbody.style.height = `${scrollbarPosition}px`));
   document.querySelector(".table_container").style.width = `${
     document.querySelector(".innerContainer").clientWidth -
     document.querySelector(".sidebar").clientWidth
@@ -52,17 +54,26 @@ formsSpan.addEventListener("click", () => {
 function showForm() {
   clearTimeout(formClearTimeout);
   formsSpan.classList.add("active");
+  document.querySelector(".forms").style.display = "block";
   if (section === "employee") {
-    document.querySelector(".forms").style.display = "block";
     setTimeout(() => form_emp.classList.toggle("hidden"), 0);
     setTimeout(() => {
       form_emp.querySelector('input[name="employee"]').focus();
     }, 500);
-  } else {
-    document.querySelector(".forms").style.display = "block";
+  } else if (section === "task") {
     setTimeout(() => form_task.classList.toggle("hidden"), 0);
     setTimeout(() => {
       form_task.querySelector('input[name="dress_name"]').focus();
+    }, 500);
+  } else if (section === "worker") {
+    setTimeout(() => form_worker.classList.toggle("hidden"), 0);
+    setTimeout(() => {
+      form_worker.querySelector('input[name="worker"]').focus();
+    }, 500);
+  } else if (section === "payments") {
+    setTimeout(() => form_payment.classList.toggle("hidden"), 0);
+    setTimeout(() => {
+      form_payment.querySelector('input[name="recieved"]').focus();
     }, 500);
   }
 }
@@ -71,10 +82,12 @@ function hideForm() {
   edit = false;
   form_emp.classList.add("hidden");
   form_task.classList.add("hidden");
+  form_worker.classList.add("hidden");
+  form_payment.classList.add("hidden");
   formsSpan.classList.remove("active");
   formClearTimeout = setTimeout(() => {
     form_emp.reset();
-    form_emp.reset();
+    form_worker.reset();
     document.querySelector(".forms").style.display = "none";
     for (var i = [...itemsToAdd.children].length; i > 1; i--) {
       [...itemsToAdd.children][i - 1].children[0].value.length === "" &&
@@ -107,8 +120,19 @@ function defaultDateValue() {
       date.getMonth() < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1
     }-${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}`;
   form_task.querySelector('input[type="date"]').value = dateFormatted;
+  form_worker.querySelector('input[type="date"]').value = dateFormatted;
+  form_payment.querySelector('input[type="date"].start').value = dateFormatted;
+  form_payment.querySelector('input[type="date"].end').value = dateFormatted;
+  return dateFormatted;
 }
 defaultDateValue();
+form_payment
+  .querySelector('input[type="date"].start')
+  .addEventListener("change", (e) => {
+    form_payment.querySelector(
+      'input[type="date"].end'
+    ).value = form_payment.querySelector('input[type="date"].start').value;
+  });
 
 const loginForm = document.querySelector("#loginForm"),
   username = loginForm.querySelector('input[name="username"]'),
@@ -134,13 +158,13 @@ netlifyIdentity.on("login", (user) => {
   login_pass.value = "";
   netlifyIdentity.close();
   getFromCloud(netlifyIdentity.currentUser());
+  getFromCloud_worker(netlifyIdentity.currentUser());
   welcomeScreen.classList.add("done");
   setTimeout(() => {
     welcomeScreen.remove();
     portrait.classList.remove("forward");
   }, 2000);
 });
-
 logout.addEventListener("click", () => {
   netlifyIdentity.logout();
   localStorage.clear();
@@ -216,4 +240,23 @@ window.addEventListener("DOMContentLoaded", () => {
   document.querySelector(".netlify-identity-login") &&
     (document.querySelector(".netlify-identity-login").textContent =
       "Management");
+});
+
+workers_li.addEventListener("click", () => {
+  if (
+    tableWrapper.querySelector("#employee").getBoundingClientRect().width > 0
+  ) {
+    tableWrapper.querySelector("#employee").style.display = "none";
+    tableWrapper.querySelector("#tasks").style.display = "none";
+    tableWrapper.querySelector("#workers").style.display = "grid";
+    tableWrapper.querySelector("#workers_payments").style.display = "grid";
+    updateWorkerList();
+    section = "worker";
+  } else {
+    tableWrapper.querySelector("#employee").style.display = "grid";
+    tableWrapper.querySelector("#tasks").style.display = "grid";
+    tableWrapper.querySelector("#workers").style.display = "none";
+    tableWrapper.querySelector("#workers_payments").style.display = "none";
+    section = "employee";
+  }
 });

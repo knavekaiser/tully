@@ -437,13 +437,19 @@ a {
 }
 
 #employee,
-#tasks {
+#tasks,
+#workers,
+#workers_payments {
   height: 100%;
   width: 50%;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 2.5rem calc(100% - 2.5rem);
   max-height: 100%;
+}
+#workers,
+#workers_payments {
+  display: none;
 }
 table {
   width: 100%;
@@ -453,10 +459,18 @@ table {
   border-bottom: 1px dotted #999;
   height: 2.4rem;
 }
-#employee tr {
+#employee tr,
+#workers tr,
+#workers_payments tr {
   display: grid;
   padding: 0rem 1rem;
   grid-template-columns: 0.7fr 0.5fr 0.5fr 0.5fr;
+}
+#workers_payments tr {
+  grid-template-columns: 1fr 0.5fr;
+}
+#workers_payments .thead {
+  white-space: nowrap;
 }
 #tasks tr {
   justify-content: center;
@@ -483,36 +497,6 @@ table {
 .paid {
   grid-column: 6;
 }
-.span1 {
-  grid-row: 1 / span 1;
-}
-.span2 {
-  grid-row: 1 / span 2;
-}
-.span3 {
-  grid-row: 1 / span 3;
-}
-.span4 {
-  grid-row: 1 / span 4;
-}
-.span5 {
-  grid-row: 1 / span 5;
-}
-.span6 {
-  grid-row: 1 / span 6;
-}
-.span7 {
-  grid-row: 1 / span 7;
-}
-.span8 {
-  grid-row: 1 / span 8;
-}
-.span9 {
-  grid-row: 1 / span 9;
-}
-.span10 {
-  grid-row: 1 / span 10;
-}
 .dressName {
   grid-column: 2;
   text-align: left !important;
@@ -536,7 +520,7 @@ td:not(:first-child) {
   padding: 0.5rem 0;
 }
 .tbody {
-  overflow-y: auto;
+  overflow-y: auto !important;
 }
 .tbody tr {
   min-height: 3.2rem;
@@ -599,6 +583,16 @@ tr button {
   font-style: italic;
   opacity: 0.7;
 }
+.abs,
+.abs:focus {
+  letter-spacing: 0.05em;
+  background: rgb(186, 1, 27);
+  background: linear-gradient(
+    153deg,
+    rgba(240, 1, 27, 0.2) 0%,
+    rgba(182, 1, 1, 0) 100%
+  ) !important;
+}
 .forms {
   display: none;
   position: absolute;
@@ -608,8 +602,20 @@ tr button {
   height: calc(var(--vh, 1vh) * 100);
   animation: fadeIn 0.5s;
 }
-.name {
+#workers .name {
   text-transform: capitalize;
+  position: relative;
+  transform: translateY(-15%);
+}
+#workers .name::after {
+  content: attr(data-content);
+  display: block;
+  position: absolute;
+  text-transform: lowercase;
+  bottom: 0;
+  font-style: italic;
+  color: #888;
+  font-size: 0.8em;
 }
 .forms span {
   background: rgba(0, 0, 0, 0);
@@ -673,7 +679,22 @@ form {
 #form_employee {
   grid-template-areas: "nm nm ad";
 }
-form input[name="employee"] {
+#form_worker {
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "nm nm" "dt sl" "ad ad";
+}
+#form_payment {
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "d1 d2" "py py" "ad ad";
+}
+form input[type="date"].start {
+  grid-area: d1;
+}
+form input[type="date"].end {
+  grid-area: d2;
+}
+form input[name="employee"],
+form input[name="worker"] {
   grid-area: nm;
 }
 form input {
@@ -736,9 +757,7 @@ form input[name="recieved"] {
   grid-area: py;
   width: 100%;
 }
-#loginForm button,
-#form_task button,
-#form_employee button {
+.forms form button {
   display: grid;
   justify-content: center;
   align-items: center;
@@ -752,13 +771,13 @@ form input[name="recieved"] {
   outline: none;
   height: 100%;
   width: 100%;
+  grid-area: ad;
 }
 #form_task button {
   grid-area: bt;
   height: 2.4rem;
 }
-#form_task button:hover,
-#form_employee button:hover {
+.forms form button:hover {
   background: #4bff92;
   color: white;
 }
