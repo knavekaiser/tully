@@ -259,4 +259,5 @@ workers_li.addEventListener("click", () => {
     tableWrapper.querySelector("#workers_payments").style.display = "none";
     section = "employee";
   }
+  toggleSidebar();
 });
