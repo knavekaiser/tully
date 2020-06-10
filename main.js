@@ -437,6 +437,7 @@ function updatePaymentList() {
     paymentList.appendChild(tr);
   });
   if (workers[person].abs.length > 0) {
+    workers[person].abs.sort((a, b) => (new Date(a) < new Date(b) ? -1 : 1));
     const tr = document.createElement("tr");
     tr.classList.add("abs");
     tr.classList.add("infoRow");
