@@ -1,5 +1,5 @@
 const innerContainer = document.querySelector(".innerContainer"),
-  sidebarSpan = document.querySelector(".sidebar span"),
+  sidebarSpan = document.querySelector(".sidebar_span"),
   welcomeScreen = document.querySelector(".welcomeScreen"),
   tableContainer = document.querySelector(".table_container"),
   sidebar = document.querySelector(".sidebar");
@@ -34,8 +34,7 @@ function resizeWindow() {
     );
 }
 
-resizeWindow();
-window.addEventListener("resize", () => resizeWindow());
+window.addEventListener("resize", resizeWindow());
 
 formsSpan.addEventListener("click", () => {
   hideForm();

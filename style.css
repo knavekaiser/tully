@@ -185,7 +185,7 @@ body {
   --ionicon-stroke-width: 36px;
   font-size: 1.3rem;
 }
-.sidebar > span {
+.sidebar_span {
   position: absolute;
   content: "";
   display: block;
@@ -198,7 +198,7 @@ body {
   transition: background 0.5s;
   z-index: 3;
 }
-.sidebar > span.active {
+.sidebar_span.active {
   pointer-events: all;
   background: rgba(0, 0, 0, 0.5);
 }
