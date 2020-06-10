@@ -179,7 +179,19 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  z-index: 1;
+  z-index: 5;
+  overflow-x: hidden;
+  overflow-y: auto;
+  direction: rtl;
+}
+.sidebar > ul,
+.sidebar > .about {
+  display: ltr;
+  position: relative;
+  left: -4px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgb(75 255 0 / 55%);
 }
 .sidebar ion-icon {
   --ionicon-stroke-width: 36px;
