@@ -420,7 +420,6 @@ function addPayment() {
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 function updatePaymentList() {
   paymentList.innerHTML = "";
-  workers[person].paid.sort((a, b) => (new Date(a) < new Date(b) ? -1 : 1));
   workers[person].paid.forEach((payment) => {
     const tr = document.createElement("tr");
     tr.classList.add("infoRow");
