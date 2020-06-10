@@ -3,7 +3,8 @@ const innerContainer = document.querySelector(".innerContainer"),
   welcomeScreen = document.querySelector(".welcomeScreen"),
   tableContainer = document.querySelector(".table_container"),
   sidebar = document.querySelector(".sidebar"),
-  tHead = document.querySelector(".thead");
+  tHead = document.querySelector(".thead"),
+  header = document.querySelector("header");
 let sidebarOpen = false;
 
 function toggleSidebar() {
@@ -26,14 +27,17 @@ function resizeWindow() {
   let vh = window.innerHeight * 0.01;
   document.body.style.setProperty("--vh", `${vh}px`);
   tableContainer.style.width = `${
-    innerContainer.clientWidth - document.querySelector(".sidebar").clientWidth
+    innerContainer.clientWidth - sidebar.clientWidth
   }px`;
-  let scrollbarPosition =
-    innerContainer.clientHeight -
-    (document.querySelector("header").clientHeight + tHead.clientHeight);
   document
     .querySelectorAll(".tbody")
-    .forEach((tbody) => (tbody.style.height = `${scrollbarPosition}px`));
+    .forEach(
+      (tbody) =>
+        (tbody.style.height = `${
+          innerContainer.clientHeight -
+          (header.clientHeight + tHead.clientHeight)
+        }px`)
+    );
 }
 
 resizeWindow();
