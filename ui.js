@@ -2,9 +2,7 @@ const innerContainer = document.querySelector(".innerContainer"),
   sidebarSpan = document.querySelector(".sidebar span"),
   welcomeScreen = document.querySelector(".welcomeScreen"),
   tableContainer = document.querySelector(".table_container"),
-  sidebar = document.querySelector(".sidebar"),
-  tHead = document.querySelector(".thead"),
-  header = document.querySelector("header");
+  sidebar = document.querySelector(".sidebar");
 let sidebarOpen = false;
 
 function toggleSidebar() {
