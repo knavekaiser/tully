@@ -59,11 +59,11 @@ btnSidebar.addEventListener("click", () => {
       ? toggleSidebar()
       : showEmpList();
     if (btnSidebar.children[0].classList.contains("unsaved")) {
-      section === "employee" ||
-        (section === "task" && updateCloud(netlifyIdentity.currentUser()));
-      section === "worker" ||
-        (section === "payments" &&
-          updateCloud_worker(netlifyIdentity.currentUser()));
+      if (section === "employee" || section === "task") {
+        updateCloud(netlifyIdentity.currentUser());
+      } else if (section === "worker" || section === "payments") {
+        updateCloud_worker(netlifyIdentity.currentUser());
+      }
     }
   }
 });
