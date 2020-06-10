@@ -950,9 +950,15 @@ fileInput.addEventListener("change", (e) => {
     let fr = new FileReader();
     fr.onload = function () {
       let raw = fr.result;
-      if (raw.search("let employees = {") >= 0) {
-        netlifyIdentity.currentUser() !== null &&
-          (employees = JSON.parse(raw.replace("let employees = ", "")));
+      if (
+        raw.search("let employees = {") >= 0 ||
+        raw.search("let workers = {") >= 0
+      ) {
+        if (netlifyIdentity.currentUser() !== null) {
+          section === "employee"
+            ? (employees = JSON.parse(raw.replace("let employees = ", "")))
+            : (workers = JSON.parse(raw.replace("let workers = ", "")));
+        }
         updateLS();
         toggleSidebar();
         updateEmpList();
@@ -967,15 +973,29 @@ backup.addEventListener("click", () => {
   backupOptions.classList.toggle("active");
 });
 backupOptions.addEventListener("click", (e) => {
-  let prefix = "let employees = ";
-  let raw =
-    e.target.textContent === "App Backup"
-      ? prefix.concat(JSON.stringify(employees))
-      : JSON.stringify(employees);
-  let blob = new Blob([raw], { type: "application/json" });
-  let uri = URL.createObjectURL(blob);
-  !e.target.classList.contains("active") && download(uri, e.target.textContent);
-  backupOptions.classList.remove("active");
+  if (section === "employee") {
+    let prefix = "let employees = ";
+    let raw =
+      e.target.textContent === "App Backup-emp"
+        ? prefix.concat(JSON.stringify(employees))
+        : JSON.stringify(employees);
+    let blob = new Blob([raw], { type: "application/json" });
+    let uri = URL.createObjectURL(blob);
+    !e.target.classList.contains("active") &&
+      download(uri, e.target.textContent);
+    backupOptions.classList.remove("active");
+  } else {
+    let prefix = "let workers = ";
+    let raw =
+      e.target.textContent === "App Backup-wrk"
+        ? prefix.concat(JSON.stringify(workers))
+        : JSON.stringify(workers);
+    let blob = new Blob([raw], { type: "application/json" });
+    let uri = URL.createObjectURL(blob);
+    !e.target.classList.contains("active") &&
+      download(uri, e.target.textContent);
+    backupOptions.classList.remove("active");
+  }
 });
 function download(url, type) {
   let a = document.createElement("a");
