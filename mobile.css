@@ -15,6 +15,9 @@
   padding: 0 0.5rem;
   grid-template-columns: 0.75fr 0.7fr 0.4fr 0.4fr 0.55fr 0.55fr;
 }
+#workers_payments tr {
+  grid-template-columns: 1fr 0.8fr;
+}
 .btn_sidebar {
   left: 0.5rem;
 }
