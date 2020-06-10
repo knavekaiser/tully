@@ -529,7 +529,7 @@ td:not(:first-child) {
   position: relative;
   transition: transform, background, 0.2s;
   border-radius: 5px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 .tbody tr:hover {
   background: rgba(0, 0, 0, 0.05);

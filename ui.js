@@ -1,7 +1,9 @@
-let vh = window.innerHeight * 0.01;
 const innerContainer = document.querySelector(".innerContainer"),
   sidebarSpan = document.querySelector(".sidebar span"),
-  welcomeScreen = document.querySelector(".welcomeScreen");
+  welcomeScreen = document.querySelector(".welcomeScreen"),
+  tableContainer = document.querySelector(".table_container"),
+  sidebar = document.querySelector(".sidebar"),
+  tHead = document.querySelector(".thead");
 let sidebarOpen = false;
 
 function toggleSidebar() {
@@ -20,33 +22,22 @@ function toggleSidebar() {
   sidebarOpen = !sidebarOpen;
 }
 sidebarSpan.addEventListener("click", toggleSidebar);
-document.body.style.setProperty("--vh", `${vh}px`);
-document.querySelector(".table_container").style.width = `${
-  document.querySelector(".innerContainer").clientWidth -
-  document.querySelector(".sidebar").clientWidth
-}px`;
-let scrollbarPosition =
-  document.querySelector(".innerContainer").clientHeight -
-  (document.querySelector("header").clientHeight +
-    document.querySelector(".thead").clientHeight);
-document
-  .querySelectorAll(".tbody")
-  .forEach((tbody) => (tbody.style.height = `${scrollbarPosition}px`));
-window.addEventListener("resize", () => {
+function resizeWindow() {
   let vh = window.innerHeight * 0.01;
   document.body.style.setProperty("--vh", `${vh}px`);
+  tableContainer.style.width = `${
+    innerContainer.clientWidth - document.querySelector(".sidebar").clientWidth
+  }px`;
   let scrollbarPosition =
-    document.querySelector(".innerContainer").clientHeight -
-    (document.querySelector("header").clientHeight +
-      document.querySelector(".thead").clientHeight);
+    innerContainer.clientHeight -
+    (document.querySelector("header").clientHeight + tHead.clientHeight);
   document
     .querySelectorAll(".tbody")
     .forEach((tbody) => (tbody.style.height = `${scrollbarPosition}px`));
-  document.querySelector(".table_container").style.width = `${
-    document.querySelector(".innerContainer").clientWidth -
-    document.querySelector(".sidebar").clientWidth
-  }px`;
-});
+}
+
+// resizeWindow();
+window.addEventListener("resize", () => resizeWindow());
 
 formsSpan.addEventListener("click", () => {
   hideForm();
