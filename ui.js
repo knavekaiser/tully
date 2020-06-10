@@ -30,7 +30,7 @@ function resizeWindow() {
   document
     .querySelectorAll(".tbody")
     .forEach(
-      (tbody) => (tbody.style.height = `${innerContainer.clientHeight - 86}px`)
+      (tbody) => (tbody.style.height = `${innerContainer.clientHeight - 88}px`)
     );
 }
 
