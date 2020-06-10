@@ -191,8 +191,8 @@ body {
   display: block;
   height: 100%;
   top: 0;
-  left: 10rem;
-  width: 36rem;
+  left: 0;
+  width: 100%;
   background: rgba(0, 0, 0, 0);
   pointer-events: none;
   transition: background 0.5s;
