@@ -1,16 +1,22 @@
 "use strict";
 let employees = {};
+let workers = {};
 const tableWrapper = document.querySelector(".table_wrapper"),
-  empList = document.querySelector("#employee .tbody tbody"),
   nameTag = document.querySelector(".nameTag"),
+  empList = document.querySelector("#employee .tbody tbody"),
   taskList = document.querySelector("#tasks .tbody tbody"),
+  workerList = document.querySelector("#workers .tbody tbody"),
+  paymentList = document.querySelector("#workers_payments .tbody tbody"),
   form_login = document.querySelector("#loginForm"),
   form_emp = document.querySelector("#form_employee"),
   form_task = document.querySelector("#form_task"),
+  form_worker = document.querySelector("#form_worker"),
+  form_payment = document.querySelector("#form_payment"),
   showPass = document.querySelector(".passDiv ion-icon"),
   itemsToAdd = form_task.querySelector(".itemsToAdd"),
   formsSpan = document.querySelector(".forms span"),
   btnSidebar = document.querySelector(".btn_sidebar"),
+  workers_li = document.querySelector(".workers_li"),
   fiscal_li = document.querySelector(".fiscal_li"),
   fiscalYears = document.querySelector(".fiscalYear"),
   lots_li = document.querySelector(".lots_li"),
@@ -48,11 +54,18 @@ function chageNameTag() {
   nameTag.classList.remove("disabled");
 }
 btnSidebar.addEventListener("click", () => {
-  if (netlifyIdentity.currentUser() !== null) {
-    section === "employee" ? toggleSidebar() : showEmpList();
-    btnSidebar.children[0].classList.contains("unsaved") &&
-      updateCloud(netlifyIdentity.currentUser());
+  // if (netlifyIdentity.currentUser() !== null) {
+  section === "employee" || section === "worker"
+    ? toggleSidebar()
+    : showEmpList();
+  if (btnSidebar.children[0].classList.contains("unsaved")) {
+    section === "employee" ||
+      (section === "task" && updateCloud(netlifyIdentity.currentUser()));
+    section === "worker" ||
+      (section === "payments" &&
+        updateCloud_worker(netlifyIdentity.currentUser()));
   }
+  // }
 });
 function showEmpList() {
   window.history.pushState("index", "the title", `/`);
@@ -61,8 +74,8 @@ function showEmpList() {
   }%) translateY(-25%)`;
   nameTag.classList.add("disabled");
   document.querySelector("header a div h1").classList.remove("disabled");
-  section = "employee";
-  updateEmpList();
+  section === "task" && ((section = "employee"), updateEmpList());
+  section === "payments" && ((section = "worker"), updateWorkerList());
   tableWrapper.style.left = "0";
   btnSidebar.classList.remove("back");
   person = "";
@@ -102,6 +115,22 @@ form_task.addEventListener("submit", (e) => {
   edit = false;
   btnSidebar.children[0].classList.add("unsaved");
 });
+form_worker.addEventListener("submit", (e) => {
+  e.preventDefault();
+  addWorker();
+  updateWorkerList();
+  hideForm();
+  edit = false;
+  btnSidebar.children[0].classList.add("unsaved");
+});
+form_payment.addEventListener("submit", (e) => {
+  e.preventDefault();
+  addPayment();
+  updatePaymentList();
+  hideForm();
+  edit = false;
+  btnSidebar.children[0].classList.add("unsaved");
+});
 lots_li.addEventListener("click", (e) => {
   toggleSidebar();
   person = "lots";
@@ -132,6 +161,18 @@ form_task
     }
   });
 
+function addWorker() {
+  let personToAdd = form_worker.querySelector("input[type='text']").value;
+  workers[personToAdd] = {
+    join: form_worker.querySelector("input[type='date']").value,
+    salary: form_worker.querySelector("input[type='number']").value,
+    paid: [],
+    abs: [],
+  };
+  updateLS();
+  form_worker.querySelector("input[type='text']").value = "";
+  form_worker.querySelector("input[type='number']").value = "";
+}
 function addEmp() {
   employees[form_emp.querySelector("input").value] = {};
   updateLS();
@@ -158,7 +199,46 @@ function updateEmpList() {
   });
   displayAddBtn(empList);
 }
-
+function updateWorkerList() {
+  workerList.innerHTML = "";
+  Object.entries(workers).forEach((worker, i) => {
+    const person = workers[worker[0]];
+    const tr = document.createElement("tr");
+    tr.classList.add("infoRow");
+    createTd(
+      worker[0],
+      tr,
+      "name",
+      "span",
+      `${person.join.split("-")[2]}-${
+        person.join.split("-")[1]
+      }-${person.join.split("-")[0].slice(-2)}, ${person.salary}`
+    );
+    createTd(
+      calculateSalary(
+        person.salary,
+        person.join,
+        defaultDateValue(),
+        person.abs
+      ).toLocaleString("en-IN"),
+      tr
+    );
+    createTd(getWorkerTotal(person).toLocaleString("en-IN"), tr);
+    createTd(
+      (
+        calculateSalary(
+          person.salary,
+          person.join,
+          defaultDateValue(),
+          person.abs
+        ) - getWorkerTotal(person)
+      ).toLocaleString("en-IN"),
+      tr
+    );
+    workerList.appendChild(tr);
+  });
+  displayAddBtn(workerList);
+}
 function addAddmore(dressName = "", qnt = "", group = "", className = "") {
   const itemToAdd = document.createElement("div");
   itemToAdd.classList.add("itemToAdd");
@@ -242,7 +322,6 @@ function itemtoAddEventListener() {
 itemtoAddEventListener();
 
 function addTask() {
-  const time = new Date();
   let date = form_task.querySelector('input[name="date"]').value;
   !(date in employees[person]) &&
     (employees[person][date] = { tasks: [], paid: 0 });
@@ -302,10 +381,81 @@ function updateTaskList() {
   });
   displayAddBtn(taskList);
 }
+function addPayment() {
+  let start = form_payment.querySelector('input[type="date"].start'),
+    end = form_payment.querySelector('input[type="date"].end'),
+    payment = form_payment.querySelector('input[type="number"]');
+  if (payment.value > 0) {
+    workers[person].paid.push({ date: start.value, paid: payment.value });
+  } else {
+    for (
+      var i = new Date(start.value);
+      i <= new Date(end.value);
+      i.setDate(i.getDate() + 1)
+    ) {
+      !workers[person].abs.includes(
+        `${i.getFullYear()}-${
+          i.getMonth() < 10 ? "0" + (i.getMonth() + 1) : i.getMonth() + 1
+        }-${i.getDate() < 10 ? "0" + i.getDate() : i.getDate()}`
+      ) &&
+        workers[person].abs.push(
+          `${i.getFullYear()}-${
+            i.getMonth() < 10 ? "0" + (i.getMonth() + 1) : i.getMonth() + 1
+          }-${i.getDate() < 10 ? "0" + i.getDate() : i.getDate()}`
+        );
+    }
+  }
+  updateLS();
+  end.value = "";
+  payment.value = "";
+}
+const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+function updatePaymentList() {
+  paymentList.innerHTML = "";
+  workers[person].paid.forEach((payment) => {
+    const tr = document.createElement("tr");
+    tr.classList.add("infoRow");
+    createTd(
+      `${payment.date.split("-")[2]}-${
+        payment.date.split("-")[1]
+      }-${payment.date.split("-")[0].slice(-2)}`,
+      tr,
+      `${payment.date} date`
+    );
+    createTd(payment.paid, tr, "payment");
+    paymentList.appendChild(tr);
+  });
+  if (workers[person].abs.length > 0) {
+    const tr = document.createElement("tr");
+    tr.classList.add("abs");
+    tr.classList.add("infoRow");
+    createTd(
+      `Absent ${
+        workers[person].abs.length > 1
+          ? "(" + workers[person].abs.length + " days)"
+          : ""
+      }`,
+      tr,
+      "absences",
+      workers[person].abs.length
+    );
+    workers[person].abs.forEach((day) => {
+      createTd(
+        `${days[new Date(day).getDay()]}, ${day.split("-")[2]}-${
+          day.split("-")[1]
+        }-${day.split("-")[0]}`,
+        tr,
+        "abs_date"
+      );
+    });
+    paymentList.appendChild(tr);
+  }
+  displayAddBtn(paymentList);
+}
 
 function displayAddBtn(element) {
-  netlifyIdentity.currentUser() !== null &&
-    (element.innerHTML += `
+  // netlifyIdentity.currentUser() !== null &&
+  element.innerHTML += `
   <tr id="btn_tr">
     <td class="btn_row add">
       <button id="td_btn" type="submit" onClick="showForm()" name="button">
@@ -319,7 +469,7 @@ function displayAddBtn(element) {
       }
     </td>
   </tr>
-  `);
+  `;
 }
 function createTasks(date, tasks, item, i) {
   const tr = document.createElement("tr");
@@ -329,7 +479,8 @@ function createTasks(date, tasks, item, i) {
       .split("-")[0]
       .slice(-2)}`,
     tr,
-    `${date[i]} date span${tasks[i].tasks.length}`
+    `${date[i]} date`,
+    tasks[i].tasks.length
   );
   tasks[i].tasks.forEach((task, j) => {
     createTd(task.dress, tr, "dressName");
@@ -348,7 +499,8 @@ function createTasks(date, tasks, item, i) {
     createTd(
       tasks[i].paid.toLocaleString("en-IN"),
       tr,
-      `paid span${tasks[i].tasks.length}`
+      `paid`,
+      tasks[i].tasks.length
     );
   } else {
     let pcsInLot = 0;
@@ -356,14 +508,17 @@ function createTasks(date, tasks, item, i) {
     createTd(
       pcsInLot.toLocaleString("en-IN"),
       tr,
-      `total span${tasks[i].tasks.length}`
+      `total`,
+      tasks[i].tasks.length
     );
   }
   taskList.appendChild(tr);
 }
-function createTd(textContent, parent, tdClass) {
+function createTd(textContent, parent, tdClass, span, data) {
   const td = document.createElement("td");
   !!tdClass && tdClass.split(" ").forEach((cls) => td.classList.add(cls));
+  !!span && (td.style.gridRow = `1 / span ${span}`);
+  !!data && td.setAttribute("data-content", data);
   td.textContent = textContent;
   parent.appendChild(td);
 }
@@ -383,6 +538,9 @@ function priceCheck(group) {
       break;
     default:
   }
+}
+function getDaysInBetween(from, to) {
+  return Math.abs((new Date(from) - new Date(to)) / 1000 / 60 / 60 / 24);
 }
 function getTotal(days, what) {
   let total = 0;
@@ -414,9 +572,37 @@ function getTotal(days, what) {
   }
   return total;
 }
+function getWorkerTotal(worker) {
+  let total = 0;
+  worker.paid.forEach((pay) => (total += +pay.paid));
+  return total;
+}
+function calculateSalary(salary, start, end, abs) {
+  let total = 0;
+  const startDate = new Date(
+      +start.split("-")[0],
+      +start.split("-")[1] - 1,
+      +start.split("-")[2]
+    ),
+    endDate = new Date(
+      +end.split("-")[0],
+      +end.split("-")[1] - 1,
+      +end.split("-")[2]
+    );
+  for (var d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+    !abs.includes(
+      `${d.getFullYear()}-${
+        d.getMonth() < 10 ? "0" + (d.getMonth() + 1) : d.getMonth() + 1
+      }-${d.getDate() < 10 ? "0" + d.getDate() : d.getDate()}`
+    ) &&
+      (total += salary / new Date(d.getYear(), d.getMonth() + 1, 0).getDate());
+  }
+  return Math.round(total);
+}
 
 function updateLS() {
   localStorage.setItem("employees", JSON.stringify(employees));
+  localStorage.setItem("workers", JSON.stringify(workers));
 }
 
 let clearTaskTimer,
@@ -458,10 +644,10 @@ tableWrapper.addEventListener("mouseup", (e) => {
   }
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
-  duration <= 350 &&
-    section === "employee" &&
-    e.target.tagName !== "BUTTON" &&
-    showEmpTasks(e);
+  if (duration <= 350) {
+    section === "employee" && e.target.tagName !== "BUTTON" && showEmpTasks(e);
+    section === "worker" && e.target.tagName !== "BUTTON" && showPayments(e);
+  }
 });
 tableWrapper.addEventListener("mousemove", (e) => {
   if (isDown) {
@@ -498,12 +684,28 @@ tableWrapper.addEventListener("touchend", (e) => {
   e.target.tagName === "BUTTON" && e.preventDefault();
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
-  duration <= 350 &&
-    section === "employee" &&
-    e.target.tagName !== "BUTTON" &&
-    showEmpTasks(e);
+  if (duration <= 350) {
+    section === "employee" && e.target.tagName !== "BUTTON" && showEmpTasks(e);
+    section === "worker" && e.target.tagName !== "BUTTON" && showPayments(e);
+  }
 });
 
+function showPayments(e) {
+  if (
+    e.target.classList.contains("name") ||
+    e.target.parentElement.children[0].classList.contains("name")
+  ) {
+    person = e.target.classList.contains("name")
+      ? e.target.textContent
+      : e.target.parentElement.children[0].textContent;
+    section = "payments";
+    tableWrapper.style.left = "-100%";
+    window.history.pushState("index", "the title", `/${person}`);
+    updatePaymentList();
+    btnSidebar.classList.add("back");
+    chageNameTag();
+  }
+}
 function showEmpTasks(e) {
   if (person !== "lots") {
     if (
@@ -538,7 +740,9 @@ function viewTask(user) {
   chageNameTag();
 }
 function showPopup(e) {
-  section === "employee"
+  section === "employee" ||
+  section === "worker" ||
+  (section === "payments" && target.parentElement.classList.contains("abs"))
     ? (popUp.children[0].children[0].style.display = "none")
     : popUp.children[0].children[0].removeAttribute("style");
   popUp.parentElement.classList.add("active");
@@ -594,11 +798,9 @@ popUp.parentElement.addEventListener("click", (e) => {
 });
 
 function popUp_edit() {
-  if (section === "employee") {
-    alert("Can't edit name");
-  } else {
-    edit = true;
-    showForm();
+  edit = true;
+  showForm();
+  if (section === "task") {
     let itemToEdit = employees[person][target.className.split(" ")[0]],
       date = target.className.split(" ")[0];
     itemsToAdd.innerHTML = "";
@@ -609,6 +811,14 @@ function popUp_edit() {
     person !== "lots" &&
       (form_task.querySelector('input[name="recieved"]').value =
         itemToEdit.paid);
+  } else {
+    if (line.classList.contains("date") || line.classList.contains("payment")) {
+      form_payment.querySelector('input[type="number"]').value =
+        target.nextElementSibling.textContent;
+      form_payment.querySelector(
+        'input[type="date"]'
+      ).value = target.className.split(" ")[0];
+    }
   }
 }
 function popUp_delete() {
@@ -617,7 +827,7 @@ function popUp_delete() {
       "p"
     ).textContent = `Are you sure you want to delete ${target.textContent}?`;
     delete_prompt.classList.add("active");
-  } else {
+  } else if (section === "task") {
     if (
       employees[person][target.className.split(" ")[0]].tasks.length === 1 ||
       line.classList.contains("infoRow") ||
@@ -631,17 +841,59 @@ function popUp_delete() {
         1
       );
     }
-    btnSidebar.children[0].classList.add("unsaved");
     updateTaskList();
+  } else if (section === "worker") {
+    delete_prompt.querySelector(
+      "p"
+    ).textContent = `Are you sure you want to delete ${target.textContent}?`;
+    delete_prompt.classList.add("active");
+  } else if (section === "payments") {
+    if (line.classList.contains("date") || line.classList.contains("payment")) {
+      if (!line.parentElement.classList.contains("abs")) {
+        workers[person].paid.forEach((pay, i) => {
+          pay.date === target.className.split(" ")[0] &&
+            workers[person].paid.splice(i, 1);
+        });
+      }
+    } else if (
+      line.classList.contains("absences") ||
+      line.classList.contains("abs_date")
+    ) {
+      if (line.classList.contains("absences")) {
+        workers[person].abs = [];
+      } else if (line.classList.contains("abs_date")) {
+        workers[person].abs.forEach((day, i) => {
+          if (
+            day ===
+            `${line.textContent.split(" ")[1].split("-")[2]}-${
+              line.textContent.split(" ")[1].split("-")[1]
+            }-${line.textContent.split(" ")[1].split("-")[0]}`
+          ) {
+            workers[person].abs.splice(i, 1);
+          }
+        });
+      }
+    }
+    updatePaymentList();
   }
+  btnSidebar.children[0].classList.add("unsaved");
   updateLS();
 }
 delete_prompt.addEventListener("click", (e) => {
-  if (e.target.textContent === "YES") {
-    btnSidebar.children[0].classList.add("unsaved");
-    delete employees[target.textContent];
-    updateEmpList();
-    updateLS();
+  if (section === "employee") {
+    if (e.target.textContent === "YES") {
+      btnSidebar.children[0].classList.add("unsaved");
+      delete employees[target.textContent];
+      updateEmpList();
+      updateLS();
+    }
+  } else if (section === "worker") {
+    if (e.target.textContent === "YES") {
+      btnSidebar.children[0].classList.add("unsaved");
+      delete workers[target.textContent];
+      updateWorkerList();
+      updateLS();
+    }
   }
   delete_prompt.classList.remove("active");
 });
@@ -661,8 +913,11 @@ clearAll.addEventListener("mousedown", (e) => {
   clearAllTimer = setTimeout(() => {
     localStorage.clear();
     employees = {};
+    workers = {};
+    section === "worker" && workers_li.click();
     updateEmpList();
     updateCloud(netlifyIdentity.currentUser());
+    updateCloud_worker(netlifyIdentity.currentUser());
     clearAll.querySelector("span").classList.remove("active");
   }, 2000);
   clearAll.querySelector("span").classList.add("active");
@@ -752,6 +1007,31 @@ function getFromCloud(userStatus) {
   fetchData().then((data) => {
     localStorage.setItem("employees", JSON.stringify(data.record));
     employees = JSON.parse(localStorage.getItem("employees"));
+    updateEmpList();
+  });
+}
+
+function updateCloud_worker(userStatus) {
+  fetch("/.netlify/functions/fetchWorkerData", {
+    method: "PUT",
+    headers: {
+      warning: JSON.stringify(userStatus),
+    },
+    body: JSON.stringify(workers),
+  }).then((res) => {
+    res.status === 200 && btnSidebar.children[0].classList.remove("unsaved");
+  });
+}
+function getFromCloud_worker(userStatus) {
+  const fetchData = async () =>
+    await (
+      await fetch("/.netlify/functions/fetchWorkerData", {
+        headers: { warning: JSON.stringify(userStatus) },
+      })
+    ).json();
+  fetchData().then((data) => {
+    localStorage.setItem("workers", JSON.stringify(data.record));
+    workers = JSON.parse(localStorage.getItem("workers"));
     updateEmpList();
   });
 }
