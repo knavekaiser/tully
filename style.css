@@ -186,7 +186,7 @@ body {
 }
 .sidebar > ul,
 .sidebar > .about {
-  display: ltr;
+  direction: ltr;
   position: relative;
   left: -4px;
 }
