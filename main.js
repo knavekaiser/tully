@@ -54,18 +54,18 @@ function chageNameTag() {
   nameTag.classList.remove("disabled");
 }
 btnSidebar.addEventListener("click", () => {
-  // if (netlifyIdentity.currentUser() !== null) {
-  section === "employee" || section === "worker"
-    ? toggleSidebar()
-    : showEmpList();
-  if (btnSidebar.children[0].classList.contains("unsaved")) {
-    section === "employee" ||
-      (section === "task" && updateCloud(netlifyIdentity.currentUser()));
-    section === "worker" ||
-      (section === "payments" &&
-        updateCloud_worker(netlifyIdentity.currentUser()));
+  if (netlifyIdentity.currentUser() !== null) {
+    section === "employee" || section === "worker"
+      ? toggleSidebar()
+      : showEmpList();
+    if (btnSidebar.children[0].classList.contains("unsaved")) {
+      section === "employee" ||
+        (section === "task" && updateCloud(netlifyIdentity.currentUser()));
+      section === "worker" ||
+        (section === "payments" &&
+          updateCloud_worker(netlifyIdentity.currentUser()));
+    }
   }
-  // }
 });
 function showEmpList() {
   window.history.pushState("index", "the title", `/`);
@@ -454,8 +454,7 @@ function updatePaymentList() {
 }
 
 function displayAddBtn(element) {
-  // netlifyIdentity.currentUser() !== null &&
-  element.innerHTML += `
+  netlifyIdentity.currentUser() !== null && element.innerHTML += `
   <tr id="btn_tr">
     <td class="btn_row add">
       <button id="td_btn" type="submit" onClick="showForm()" name="button">

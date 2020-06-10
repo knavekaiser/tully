@@ -145,26 +145,26 @@ window.onpopstate = function (e) {
   cls_dashboard.clientWidth > 0 && cls_dashboard.click();
   sidebarSpan.classList.contains("active") && btnSidebar.click();
 };
-// window.addEventListener("beforeunload", function (e) {
-//   if (btnSidebar.children[0].classList.contains("unsaved")) {
-//     e.preventDefault();
-//     e.returnValue = "";
-//   }
-// });
+window.addEventListener("beforeunload", function (e) {
+  if (btnSidebar.children[0].classList.contains("unsaved")) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
 
-const user = "boom"; //netlifyIdentity.currentUser();
-// netlifyIdentity.on("login", (user) => {
-//   login_user.value = "";
-//   login_pass.value = "";
-//   netlifyIdentity.close();
-//   getFromCloud(netlifyIdentity.currentUser());
-//   getFromCloud_worker(netlifyIdentity.currentUser());
-//   welcomeScreen.classList.add("done");
-//   setTimeout(() => {
-//     welcomeScreen.remove();
-//     portrait.classList.remove("forward");
-//   }, 2000);
-// });
+const user = netlifyIdentity.currentUser();
+netlifyIdentity.on("login", (user) => {
+  login_user.value = "";
+  login_pass.value = "";
+  netlifyIdentity.close();
+  getFromCloud(netlifyIdentity.currentUser());
+  getFromCloud_worker(netlifyIdentity.currentUser());
+  welcomeScreen.classList.add("done");
+  setTimeout(() => {
+    welcomeScreen.remove();
+    portrait.classList.remove("forward");
+  }, 2000);
+});
 logout.addEventListener("click", () => {
   netlifyIdentity.logout();
   localStorage.clear();
@@ -260,10 +260,3 @@ workers_li.addEventListener("click", () => {
     section = "employee";
   }
 });
-
-workers = JSON.parse(localStorage.getItem("workers"));
-employees = JSON.parse(localStorage.getItem("employees"));
-updateEmpList();
-welcomeScreen.remove();
-workers_li.click();
-// showForm();
