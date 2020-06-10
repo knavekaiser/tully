@@ -593,6 +593,15 @@ tr button {
     rgba(182, 1, 1, 0) 100%
   ) !important;
 }
+.iron {
+  letter-spacing: 0.05em;
+  background: rgb(186, 1, 27);
+  background: linear-gradient(
+    153deg,
+    rgba(240, 237, 1, 0.2) 0%,
+    rgba(182, 1, 1, 0) 100%
+  ) !important;
+}
 .forms {
   display: none;
   position: absolute;
@@ -602,8 +611,10 @@ tr button {
   height: calc(var(--vh, 1vh) * 100);
   animation: fadeIn 0.5s;
 }
-#workers .name {
+.name {
   text-transform: capitalize;
+}
+#workers .name {
   position: relative;
   transform: translateY(-15%);
 }

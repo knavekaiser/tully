@@ -185,6 +185,7 @@ function updateEmpList() {
       const tr = document.createElement("tr"),
         days = Object.entries(employee[1]);
       tr.classList.add("infoRow");
+      employee[0] === "iron" && tr.classList.add("iron");
       createTd(employee[0], tr, "name");
       createTd(getTotal(days, "production").toLocaleString("en-IN"), tr);
       createTd(getTotal(days, "paid").toLocaleString("en-IN"), tr);
@@ -243,7 +244,6 @@ function addAddmore(dressName = "", qnt = "", group = "", className = "") {
   const itemToAdd = document.createElement("div");
   itemToAdd.classList.add("itemToAdd");
   className && itemToAdd.classList.add(className);
-
   itemToAdd.innerHTML = `
 <input
 type="text"
@@ -259,10 +259,18 @@ min="0"
 value="${qnt}" disabled/>
 <select class="groups" name="group" placeholder="group" disabled>
 <option value="" hidden >Group</option>
-<option value="S" ${group === "S" && "SELECTED"}>Small</option>
+${
+  person !== "iron" &&
+  `<option value="S" ${group === "S" && "SELECTED"}>Small</option>
 <option value="L" ${group === "L" && "SELECTED"}>Large</option>
 <option value="F" ${group === "F" && "SELECTED"}>Fancy</option>
-<option value="1" ${group === "1" && "SELECTED"}>One Pc.</option>
+<option value="1" ${group === "1" && "SELECTED"}>One Pc.</option>`
+}
+${
+  person === "iron" &&
+  `<option value="iS" ${group === "iS" && "SELECTED"}>Iron Small</option>
+<option value="iL" ${group === "iL" && "SELECTED"}>Iron Large</option>`
+}
 </select>
 `;
   itemsToAdd.appendChild(itemToAdd);
@@ -343,7 +351,7 @@ function addTask() {
       }
     });
   }
-  if (person !== "lots") {
+  if (person !== "lots" || person !== "iron") {
     employees[person][date].paid = +form_task.querySelector(
       'input[name="recieved"]'
     ).value;
@@ -464,7 +472,9 @@ function displayAddBtn(element) {
         section === "employee"
           ? `<div class="label"><ion-icon name="person-add-outline"></ion-icon><p>Add more people...</p></div>`
           : `<div class="label"> <ion-icon name="add-outline"></ion-icon> <p>${
-              person !== "lots" ? "Add more tasks..." : "Add more lots..."
+              person !== "lots" || person !== "iron"
+                ? "Add more tasks..."
+                : "Add more lots..."
             }</p></div>`
       }
     </td>
@@ -486,7 +496,7 @@ function createTasks(date, tasks, item, i) {
     createTd(task.dress, tr, "dressName");
     createTd(task.qnt.toLocaleString("en-IN"), tr, "qnt");
     createTd(task.group, tr, "grp");
-    person !== "lots" &&
+    if (person !== "lots" || person !== "iron") {
       createTd(
         (task.qnt > 0 ? task.qnt * priceCheck(task.group) : 0).toLocaleString(
           "en-IN"
@@ -494,8 +504,9 @@ function createTasks(date, tasks, item, i) {
         tr,
         "total"
       );
+    }
   });
-  if (person !== "lots") {
+  if (person !== "lots" || person !== "iron") {
     createTd(
       tasks[i].paid.toLocaleString("en-IN"),
       tr,
@@ -535,6 +546,12 @@ function priceCheck(group) {
       break;
     case "F":
       return 43;
+      break;
+    case "iS":
+      return 1.5;
+      break;
+    case "iL":
+      return 2.5;
       break;
     default:
   }
@@ -645,7 +662,11 @@ tableWrapper.addEventListener("mouseup", (e) => {
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
   if (duration <= 350) {
-    section === "employee" && e.target.tagName !== "BUTTON" && showEmpTasks(e);
+    section === "employee" &&
+      e.target.tagName !== "BUTTON" &&
+      (showEmpTasks(e),
+      (itemsToAdd.innerHTML = ""),
+      addAddmore("", "", "", ""));
     section === "worker" && e.target.tagName !== "BUTTON" && showPayments(e);
   }
 });
@@ -685,7 +706,11 @@ tableWrapper.addEventListener("touchend", (e) => {
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
   if (duration <= 350) {
-    section === "employee" && e.target.tagName !== "BUTTON" && showEmpTasks(e);
+    section === "employee" &&
+      e.target.tagName !== "BUTTON" &&
+      (showEmpTasks(e),
+      (itemsToAdd.innerHTML = ""),
+      addAddmore("", "", "", ""));
     section === "worker" && e.target.tagName !== "BUTTON" && showPayments(e);
   }
 });
