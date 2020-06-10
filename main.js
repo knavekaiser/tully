@@ -57,7 +57,7 @@ btnSidebar.addEventListener("click", () => {
   if (netlifyIdentity.currentUser() !== null) {
     section === "employee" || section === "worker"
       ? toggleSidebar()
-      : showEmpList();
+      : showPrimaryList();
     if (btnSidebar.children[0].classList.contains("unsaved")) {
       if (section === "employee" || section === "task") {
         updateCloud(netlifyIdentity.currentUser());
@@ -67,7 +67,7 @@ btnSidebar.addEventListener("click", () => {
     }
   }
 });
-function showEmpList() {
+function showPrimaryList() {
   window.history.pushState("index", "the title", `/`);
   nameTag.parentElement.style.transform = `translateX(-${
     window.innerWidth >= 500 ? 50 : 100

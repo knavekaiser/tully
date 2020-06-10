@@ -36,7 +36,7 @@ function resizeWindow() {
     .forEach((tbody) => (tbody.style.height = `${scrollbarPosition}px`));
 }
 
-// resizeWindow();
+resizeWindow();
 window.addEventListener("resize", () => resizeWindow());
 
 formsSpan.addEventListener("click", () => {
@@ -131,7 +131,7 @@ const loginForm = document.querySelector("#loginForm"),
 
 window.onpopstate = function (e) {
   e.preventDefault();
-  section !== "employee" && showEmpList();
+  section !== "employee" && showPrimaryList();
   formsSpan.clientWidth > 0 && hideForm();
   cls_dashboard.clientWidth > 0 && cls_dashboard.click();
   sidebarSpan.classList.contains("active") && btnSidebar.click();
@@ -198,7 +198,7 @@ form_login.addEventListener("submit", (e) => {
       document.querySelector("h3.nameTag").addEventListener("click", (e) => {
         e.preventDefault();
         tableWrapper.style.left = "0";
-        showEmpList();
+        showPrimaryList();
         section = "employee";
       });
     })
@@ -251,4 +251,5 @@ workers_li.addEventListener("click", () => {
     section = "employee";
   }
   toggleSidebar();
+  resizeWindow();
 });
