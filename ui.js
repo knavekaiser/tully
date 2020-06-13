@@ -171,7 +171,6 @@ login_pass.addEventListener("keyup", () =>
 form_login.addEventListener("submit", (e) => {
   e.preventDefault();
   const url = "/.netlify/functions/fetchViwerData";
-
   fetch(url, { headers: { from: login_user.value, warning: login_pass.value } })
     .then((res) => {
       if (res.status === 200) {
@@ -190,9 +189,15 @@ form_login.addEventListener("submit", (e) => {
         welcomeScreen.remove();
         portrait.classList.remove("forward");
       }, 2000);
-      document.querySelector(".btn_sidebar").remove();
       document.querySelector(".popUp_wrapper").remove();
       document.querySelector(".forms").remove();
+      workers_li.remove();
+      lots_li.remove();
+      dashboard_li.remove();
+      backup_li.remove();
+      backupOptions.remove();
+      upload_li.remove();
+      clear.remove();
       document.querySelector("h3.nameTag").addEventListener("click", (e) => {
         e.preventDefault();
         tableWrapper.style.left = "0";
@@ -251,3 +256,29 @@ workers_li.addEventListener("click", () => {
   toggleSidebar();
   resizeWindow();
 });
+
+function updateTestData() {
+  fetch("https://api.jsonbin.io/v3/b/5ecff70d79382f568bcea8c6/1", {
+    headers: {
+      "Content-Type": "application/json",
+      "X-Master-Key":
+        "$2b$10$aEycq511HDsvlIxZW5Q44upAnU0Fx4Lgq3wlZkA8gl/zOi9rZKOj2",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      employees = data.record;
+      localStorage.setItem("employees", JSON.stringify(employees));
+      const emp = JSON.parse(localStorage.getItem("employees"));
+      const corrected = {};
+      employees = corrected;
+      Object.entries(emp).forEach((employee) => {
+        corrected[employee[0]] = {};
+        Object.entries(emp[employee[0]]).forEach((day, i) => {
+          corrected[employee[0]][`${day[0]}:2019-20`] =
+            emp[employee[0]][day[0]];
+        });
+      });
+      localStorage.setItem("employees", JSON.stringify(employees));
+    });
+}

@@ -39,10 +39,7 @@ const tableWrapper = document.querySelector(".table_wrapper"),
   delete_prompt = document.querySelector(".delete_prompt");
 let section = "employee",
   person,
-  fiscalYear = {
-    from: "-",
-    to: "-",
-  },
+  fiscalYear = "2019-20",
   edit = false;
 
 function chageNameTag() {
@@ -54,10 +51,10 @@ function chageNameTag() {
   nameTag.classList.remove("disabled");
 }
 btnSidebar.addEventListener("click", () => {
+  section === "employee" || section === "worker"
+    ? toggleSidebar()
+    : showPrimaryList();
   if (netlifyIdentity.currentUser() !== null) {
-    section === "employee" || section === "worker"
-      ? toggleSidebar()
-      : showPrimaryList();
     if (btnSidebar.children[0].classList.contains("unsaved")) {
       if (section === "employee" || section === "task") {
         updateCloud(netlifyIdentity.currentUser());
@@ -330,7 +327,8 @@ function itemtoAddEventListener() {
 itemtoAddEventListener();
 
 function addTask() {
-  let date = form_task.querySelector('input[name="date"]').value;
+  let date =
+    form_task.querySelector('input[name="date"]').value + ":" + fiscalYear;
   !(date in employees[person]) &&
     (employees[person][date] = { tasks: [], paid: 0 });
   if (
@@ -351,7 +349,7 @@ function addTask() {
       }
     });
   }
-  if (person !== "lots" || person !== "iron") {
+  if (person !== "lots" && person !== "iron") {
     employees[person][date].paid = +form_task.querySelector(
       'input[name="recieved"]'
     ).value;
@@ -376,15 +374,10 @@ function updateTaskList() {
     employees[person][day] && tasks.push(employees[person][day]);
   });
   date.forEach((item, i) => {
-    if (new Date(fiscalYear.from) == "Invalid Date") {
-      createTasks(date, tasks, item, i);
+    if (fiscalYear === "All time") {
+      createTask(date[i], tasks, i);
     } else {
-      if (
-        new Date(item) >= new Date(fiscalYear.from) &&
-        new Date(item) <= new Date(fiscalYear.to)
-      ) {
-        createTasks(date, tasks, item, i);
-      }
+      date[i].split(":")[1] === fiscalYear && createTask(date[i], tasks, i);
     }
   });
   displayAddBtn(taskList);
@@ -467,40 +460,37 @@ function updatePaymentList() {
 
 function displayAddBtn(element) {
   netlifyIdentity.currentUser() !== null &&
+    fiscalYear !== "All time" &&
     (element.innerHTML += `
-  <tr id="btn_tr">
+    <tr id="btn_tr">
     <td class="btn_row add">
-      <button id="td_btn" type="submit" onClick="showForm()" name="button">
-      </button>
-      ${
-        section === "employee"
-          ? `<div class="label"><ion-icon name="person-add-outline"></ion-icon><p>Add more people...</p></div>`
-          : `<div class="label"> <ion-icon name="add-outline"></ion-icon> <p>${
-              person !== "lots" || person !== "iron"
-                ? "Add more tasks..."
-                : "Add more lots..."
-            }</p></div>`
-      }
+    <button id="td_btn" type="submit" onClick="showForm()" name="button">
+    </button>
+    ${
+      section === "employee"
+        ? `<div class="label"><ion-icon name="person-add-outline"></ion-icon><p>Add more people...</p></div>`
+        : `<div class="label"> <ion-icon name="add-outline"></ion-icon> <p>${
+            person !== "lots" && person !== "iron"
+              ? "Add more tasks..."
+              : "Add more lots..."
+          }</p></div>`
+    }
     </td>
-  </tr>
-  `);
+    </tr>
+    `);
 }
-function createTasks(date, tasks, item, i) {
+function createTask(date, tasks, i) {
   const tr = document.createElement("tr");
   tr.classList.add("infoRow");
-  createTd(
-    `${date[i].split("-")[2]}-${date[i].split("-")[1]}-${date[i]
-      .split("-")[0]
-      .slice(-2)}`,
-    tr,
-    `${date[i]} date`,
-    tasks[i].tasks.length
-  );
+  let dateFormatted = `${date.split(":")[0].split("-")[2]}-${
+    date.split(":")[0].split("-")[1]
+  }-${date.split(":")[0].split("-")[0].slice(-2)}`;
+  createTd(`${dateFormatted}`, tr, `${date[0]} date`, tasks[i].tasks.length);
   tasks[i].tasks.forEach((task, j) => {
     createTd(task.dress, tr, "dressName");
     createTd(task.qnt.toLocaleString("en-IN"), tr, "qnt");
     createTd(task.group, tr, "grp");
-    if (person !== "lots" || person !== "iron") {
+    if (person !== "lots" && person !== "iron") {
       createTd(
         (task.qnt > 0 ? task.qnt * priceCheck(task.group) : 0).toLocaleString(
           "en-IN"
@@ -510,7 +500,7 @@ function createTasks(date, tasks, item, i) {
       );
     }
   });
-  if (person !== "lots" || person !== "iron") {
+  if (person !== "lots" && person !== "iron") {
     createTd(
       tasks[i].paid.toLocaleString("en-IN"),
       tr,
@@ -565,8 +555,8 @@ function getDaysInBetween(from, to) {
 }
 function getTotal(days, what) {
   let total = 0;
-  if (new Date(fiscalYear.from) == "Invalid Date") {
-    days.forEach((day) => {
+  days.forEach((day) => {
+    if (fiscalYear === "All time") {
       if (what === "production") {
         day[1].tasks.forEach((task) => {
           total += task.qnt > 0 ? task.qnt * priceCheck(task.group) : 0;
@@ -574,13 +564,8 @@ function getTotal(days, what) {
       } else {
         total += day[1].paid;
       }
-    });
-  } else {
-    days.forEach((day) => {
-      if (
-        new Date(day[0]) >= new Date(fiscalYear.from) &&
-        new Date(day[0]) <= new Date(fiscalYear.to)
-      ) {
+    } else {
+      if (day[0].split(":")[1] === fiscalYear) {
         if (what === "production") {
           day[1].tasks.forEach((task) => {
             total += task.qnt > 0 ? task.qnt * priceCheck(task.group) : 0;
@@ -589,8 +574,8 @@ function getTotal(days, what) {
           total += day[1].paid;
         }
       }
-    });
-  }
+    }
+  });
   return total;
 }
 function getWorkerTotal(worker) {
@@ -831,7 +816,7 @@ function popUp_edit() {
   showForm();
   if (section === "task") {
     let itemToEdit = employees[person][target.className.split(" ")[0]],
-      date = target.className.split(" ")[0];
+      date = target.className.split(" ")[0].split(":")[0];
     itemsToAdd.innerHTML = "";
     form_task.querySelector('input[name="date"]').value = date;
     itemToEdit.tasks.forEach((item) => {
@@ -846,7 +831,7 @@ function popUp_edit() {
         target.nextElementSibling.textContent;
       form_payment.querySelector(
         'input[type="date"]'
-      ).value = target.className.split(" ")[0];
+      ).value = target.className.split(" ")[0].split(":")[0];
     }
   }
 }
@@ -1126,81 +1111,63 @@ function updateDashboard() {
     pcsInLot = [];
   // Crunches main data!
   for (const name in employees) {
-    if (name !== "lots") {
+    if (name !== "lots" && name !== "iron") {
       for (const day in employees[name]) {
-        !([day] in data) && (data[day] = { tasks: [], paid: 0 });
-        Object.keys(employees[name][day]).forEach((task, k) => {
-          task === "paid"
-            ? (data[day].paid += employees[name][day][task])
-            : data[day].tasks.push(...employees[name][day][task]);
-        });
+        if (fiscalYear === "All time") {
+          !([day] in data) && (data[day] = { tasks: [], paid: 0 });
+          Object.keys(employees[name][day]).forEach((task, k) => {
+            task === "paid"
+              ? (data[day].paid += employees[name][day][task])
+              : data[day].tasks.push(...employees[name][day][task]);
+          });
+        } else {
+          if (day.split(":")[1] === fiscalYear) {
+            if (!([day] in data) && day.split(":")[1] === fiscalYear) {
+              data[day] = { tasks: [], paid: 0 };
+            }
+            Object.keys(employees[name][day]).forEach((task, k) => {
+              task === "paid"
+                ? (data[day].paid += employees[name][day][task])
+                : data[day].tasks.push(...employees[name][day][task]);
+            });
+          }
+        }
       }
     }
   }
+
   //sorts dates
   Object.keys(data).forEach((days) => dates.push(days));
-  dates.sort((a, b) => (new Date(a) < new Date(b) ? -1 : 1));
-
+  dates.sort((a, b) =>
+    new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
+  );
   // Puts data in diffrent groups
   Object.keys(data).forEach((days, i) => {
-    if (new Date(fiscalYear.from) == "Invalid Date") {
-      let arr = data[dates[i]].tasks;
-      allPayments.push(data[dates[i]].paid);
-      let dailyProd = 0;
-      arr.forEach((task) => {
-        if (task.qnt !== "-") {
-          switch (task.group) {
-            case "S":
-              groupS.total += task.qnt;
-              break;
-            case "L":
-              groupL.total += task.qnt;
-              break;
-            case "F":
-              groupF.total += task.qnt;
-              break;
-            case "1":
-              group1.total += task.qnt;
-              break;
-            default:
-          }
+    let arr = data[dates[i]].tasks;
+    allPayments.push(data[dates[i]].paid);
+    let dailyProd = 0;
+    arr.forEach((task) => {
+      if (task.qnt !== "-") {
+        switch (task.group) {
+          case "S":
+            groupS.total += task.qnt;
+            break;
+          case "L":
+            groupL.total += task.qnt;
+            break;
+          case "F":
+            groupF.total += task.qnt;
+            break;
+          case "1":
+            group1.total += task.qnt;
+            break;
+          default:
         }
-        dailyProd +=
-          parseInt(task.qnt) > 0 ? task.qnt * priceCheck(task.group) : 0;
-      });
-      production.push(dailyProd);
-    } else {
-      if (
-        new Date(days) >= new Date(fiscalYear.from) &&
-        new Date(days) <= new Date(fiscalYear.to)
-      ) {
-        let arr = data[dates[i]].tasks;
-        allPayments.push(data[dates[i]].paid);
-        let dailyProd = 0;
-        arr.forEach((task) => {
-          if (task.qnt !== "-") {
-            switch (task.group) {
-              case "S":
-                groupS.total += task.qnt;
-                break;
-              case "L":
-                groupL.total += task.qnt;
-                break;
-              case "F":
-                groupF.total += task.qnt;
-                break;
-              case "1":
-                group1.total += task.qnt;
-                break;
-              default:
-            }
-          }
-          dailyProd +=
-            parseInt(task.qnt) > 0 ? task.qnt * priceCheck(task.group) : 0;
-        });
-        production.push(dailyProd);
       }
-    }
+      dailyProd +=
+        parseInt(task.qnt) > 0 ? task.qnt * priceCheck(task.group) : 0;
+    });
+    production.push(dailyProd);
   });
 
   let selectedDate = dates[dates.length - 1];
@@ -1217,14 +1184,17 @@ function updateDashboard() {
     data: {
       labels: [
         ...dates.map((item) => {
-          if (new Date(fiscalYear.from) == "Invalid Date") {
+          if (fiscalYear === "All time") {
             return item.split("-")[2] + "-" + item.split("-")[1];
           } else {
-            if (
-              new Date(item) >= new Date(fiscalYear.from) &&
-              new Date(item) <= new Date(fiscalYear.to)
-            ) {
-              return item.split("-")[2] + "-" + item.split("-")[1];
+            if (item.split(":")[1] === fiscalYear) {
+              return (
+                item.split(":")[0].split("-")[2] +
+                "-" +
+                item.split(":")[0].split("-")[1] +
+                "-" +
+                item.split(":")[0].split("-")[0]
+              );
             }
           }
         }),
@@ -1303,23 +1273,8 @@ fiscal_li.addEventListener("click", (e) => {
   fiscalYears.classList.toggle("active");
 });
 fiscalYears.addEventListener("click", (e) => {
-  if (e.target.textContent === "All time") {
-    fiscalYear.from = "-";
-    fiscalYear.to = "-";
-    fiscal_li.querySelector("p:last-child").textContent = "Fiscal Yr.";
-  } else {
-    if (e.target.textContent === "2019-2020") {
-      fiscalYear.from = "2019-09-05";
-      fiscalYear.to = "2020-05-31";
-    } else if (e.target.textContent === "2020-2021") {
-      fiscalYear.from = "2020-06-01";
-      fiscalYear.to = "2021-05-19";
-    }
-    fiscal_li.querySelector("p:last-child").textContent =
-      e.target.textContent.split("-")[0] +
-      "-" +
-      e.target.textContent.split("-")[1].slice(-2);
-  }
+  fiscal_li.querySelector("p:last-child").textContent = e.target.textContent;
+  fiscalYear = e.target.textContent;
   fiscalYears.classList.remove("active");
   updateEmpList();
 });
