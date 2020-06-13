@@ -197,7 +197,7 @@ form_login.addEventListener("submit", (e) => {
       backup.remove();
       backupOptions.remove();
       upload_li.remove();
-      clear.remove();
+      clearAll.remove();
       document.querySelector("h3.nameTag").addEventListener("click", (e) => {
         e.preventDefault();
         tableWrapper.style.left = "0";
