@@ -256,29 +256,3 @@ workers_li.addEventListener("click", () => {
   toggleSidebar();
   resizeWindow();
 });
-
-function updateTestData() {
-  fetch("https://api.jsonbin.io/v3/b/5ecff70d79382f568bcea8c6/1", {
-    headers: {
-      "Content-Type": "application/json",
-      "X-Master-Key":
-        "$2b$10$aEycq511HDsvlIxZW5Q44upAnU0Fx4Lgq3wlZkA8gl/zOi9rZKOj2",
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      employees = data.record;
-      localStorage.setItem("employees", JSON.stringify(employees));
-      const emp = JSON.parse(localStorage.getItem("employees"));
-      const corrected = {};
-      employees = corrected;
-      Object.entries(emp).forEach((employee) => {
-        corrected[employee[0]] = {};
-        Object.entries(emp[employee[0]]).forEach((day, i) => {
-          corrected[employee[0]][`${day[0]}:2019-20`] =
-            emp[employee[0]][day[0]];
-        });
-      });
-      localStorage.setItem("employees", JSON.stringify(employees));
-    });
-}

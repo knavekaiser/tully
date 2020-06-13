@@ -39,7 +39,7 @@ const tableWrapper = document.querySelector(".table_wrapper"),
   delete_prompt = document.querySelector(".delete_prompt");
 let section = "employee",
   person,
-  fiscalYear = "2019-20",
+  fiscalYear = "2020-21",
   edit = false;
 
 function chageNameTag() {
@@ -1278,3 +1278,4 @@ fiscalYears.addEventListener("click", (e) => {
   fiscalYears.classList.remove("active");
   updateEmpList();
 });
+fiscal_li.querySelector("p:last-child").textContent = "2020-21";
