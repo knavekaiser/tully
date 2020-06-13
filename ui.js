@@ -194,7 +194,7 @@ form_login.addEventListener("submit", (e) => {
       workers_li.remove();
       lots_li.remove();
       dashboard_li.remove();
-      backup_li.remove();
+      backup.remove();
       backupOptions.remove();
       upload_li.remove();
       clear.remove();
