@@ -1138,11 +1138,11 @@ function updateDashboard() {
     }
   }
 
-  Object.keys(employees.lots).forEach((day, i) => {
-    if (i === Object.keys(employees.lots).length - 1) {
-      pcsInLot.push(...employees.lots[day].tasks);
-    }
-  });
+  // Object.keys(employees.lots).forEach((day, i) => {
+  //   if (i === Object.keys(employees.lots).length - 1) {
+  //     pcsInLot.push(...employees.lots[day].tasks);
+  //   }
+  // });
 
   //sorts dates
   Object.keys(data).forEach((days) => dates.push(days));
