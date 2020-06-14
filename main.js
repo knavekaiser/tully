@@ -51,17 +51,19 @@ function chageNameTag() {
   nameTag.classList.remove("disabled");
 }
 btnSidebar.addEventListener("click", () => {
-  section === "employee" || section === "worker"
-    ? toggleSidebar()
-    : showPrimaryList();
-  if (netlifyIdentity.currentUser() !== null) {
-    if (btnSidebar.children[0].classList.contains("unsaved")) {
-      if (section === "employee" || section === "task") {
-        updateCloud(netlifyIdentity.currentUser());
-      } else if (section === "worker" || section === "payments") {
-        updateCloud_worker(netlifyIdentity.currentUser());
+  if (section === "employee" || section === "worker") {
+    toggleSidebar();
+    if (netlifyIdentity.currentUser() !== null) {
+      if (btnSidebar.children[0].classList.contains("unsaved")) {
+        if (section === "employee" || section === "task") {
+          updateCloud(netlifyIdentity.currentUser());
+        } else if (section === "worker" || section === "payments") {
+          updateCloud_worker(netlifyIdentity.currentUser());
+        }
       }
     }
+  } else {
+    showPrimaryList();
   }
 });
 function showPrimaryList() {
