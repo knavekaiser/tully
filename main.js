@@ -1169,6 +1169,15 @@ function updateDashboard() {
     });
     production.push(dailyProd);
   });
+  console.log({
+    dates,
+    production,
+    allPayments,
+    groupS,
+    groupL,
+    groupF,
+    group1,
+  });
 
   let selectedDate = dates[dates.length - 1];
   for (const date in employees.lots) {
@@ -1202,14 +1211,14 @@ function updateDashboard() {
       datasets: [
         {
           fill: false,
-          label: "Production, 2019-2020",
+          label: "Production, " + fiscalYear,
           data: [...production],
           borderWidth: 3,
           borderColor: ["rgba(90, 165, 227, 1)"],
         },
         {
           fill: false,
-          label: "Payments, 2019-2020",
+          label: "Payments, " + fiscalYear,
           data: [...allPayments],
           borderWidth: 3,
           borderColor: ["rgba(255, 99, 132, 1)"],
