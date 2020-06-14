@@ -1136,16 +1136,12 @@ function updateDashboard() {
     }
   }
 
-  for (const name in employees) {
-    if (name === "lots") {
-      for (const day in employee.lots) {
-        if (fiscalYear === "All time") {
-          pcsInLot.push(...day.tasks);
-        } else {
-          console.log("ran");
-          day.split(":")[1] === fiscalYear && pcsInLot.push(...day.tasks);
-        }
-      }
+  for (const day in employee.lots) {
+    if (fiscalYear === "All time") {
+      pcsInLot.push(...day.tasks);
+    } else {
+      console.log("ran");
+      day.split(":")[1] === fiscalYear && pcsInLot.push(...day.tasks);
     }
   }
 
