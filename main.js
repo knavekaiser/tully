@@ -1133,6 +1133,14 @@ function updateDashboard() {
           }
         }
       }
+    } else if (name === "lots") {
+      for (const day in employee.lots) {
+        if (fiscalYear === "All time") {
+          pcsInLot.push(...day.tasks);
+        } else {
+          day.split(":")[1] === fiscalYear && pcsInLot.push(...day.tasks);
+        }
+      }
     }
   }
 
@@ -1169,7 +1177,6 @@ function updateDashboard() {
     });
     production.push(dailyProd);
   });
-  console.log({ pcsInLot });
 
   let selectedDate = dates[dates.length - 1];
   for (const date in employees.lots) {
@@ -1251,6 +1258,7 @@ function updateDashboard() {
   });
   weekLot.querySelector("h3").textContent = totalInLot.toLocaleString();
   weekLot.querySelector("p").textContent = totalLots;
+  console.log({ pcsInLot });
 
   yearProduction.querySelector("h3").textContent = (
     groupS.total +
