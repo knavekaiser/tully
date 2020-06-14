@@ -1143,6 +1143,7 @@ function updateDashboard() {
       if (fiscalYear === "All time") {
         pcsInLot.push(...employees.lots[day].tasks);
       } else {
+        console.log("ran");
         day.split(":")[1] === fiscalYear &&
           pcsInLot.push(...employees.lots[day].tasks);
       }
