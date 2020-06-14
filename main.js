@@ -1138,10 +1138,11 @@ function updateDashboard() {
 
   for (const day in employees.lots) {
     if (fiscalYear === "All time") {
-      pcsInLot.push(...day.tasks);
+      pcsInLot.push(...employees[day].tasks);
     } else {
-      console.log("ran");
-      day.split(":")[1] === fiscalYear && pcsInLot.push(...day.tasks);
+      console.log(day);
+      day.split(":")[1] === fiscalYear &&
+        pcsInLot.push(...employees[day].tasks);
     }
   }
 
