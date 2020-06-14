@@ -1136,7 +1136,7 @@ function updateDashboard() {
     }
   }
 
-  for (const day in employee.lots) {
+  for (const day in employees.lots) {
     if (fiscalYear === "All time") {
       pcsInLot.push(...day.tasks);
     } else {
