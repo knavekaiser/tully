@@ -1169,15 +1169,7 @@ function updateDashboard() {
     });
     production.push(dailyProd);
   });
-  console.log({
-    dates,
-    production,
-    allPayments,
-    groupS,
-    groupL,
-    groupF,
-    group1,
-  });
+  console.log({ pcsInLot });
 
   let selectedDate = dates[dates.length - 1];
   for (const date in employees.lots) {
