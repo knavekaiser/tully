@@ -1138,14 +1138,16 @@ function updateDashboard() {
     }
   }
 
+  console.log("before", pcsInLot);
   Object.keys(employees.lots).forEach((day, i) => {
     if (i === Object.keys(employees.lots).length - 1) {
       if (fiscalYear === "All time") {
         pcsInLot.push(...employees.lots[day].tasks);
+        console.log("if", pcsInLot);
       } else {
-        console.log("ran");
         day.split(":")[1] === fiscalYear &&
           pcsInLot.push(...employees.lots[day].tasks);
+        console.log("else", pcsInLot);
       }
     }
   });
