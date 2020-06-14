@@ -485,7 +485,7 @@ function createTask(date, tasks, i) {
   let dateFormatted = `${date.split(":")[0].split("-")[2]}-${
     date.split(":")[0].split("-")[1]
   }-${date.split(":")[0].split("-")[0].slice(-2)}`;
-  createTd(`${dateFormatted}`, tr, `${date[0]} date`, tasks[i].tasks.length);
+  createTd(`${dateFormatted}`, tr, `${date} date`, tasks[i].tasks.length);
   tasks[i].tasks.forEach((task, j) => {
     createTd(task.dress, tr, "dressName");
     createTd(task.qnt.toLocaleString("en-IN"), tr, "qnt");
