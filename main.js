@@ -103,7 +103,7 @@ function showPrimaryList() {
   }, 450);
 }
 document.addEventListener("keyup", (e) => {
-  if (e.keyCode === 8) {
+  if (e.keyCode === 8 && netlifyIdentity.currentUser() !== null) {
     if (formsSpan.getBoundingClientRect().height > 0) {
     } else {
       if (dashboard.classList.contains("active")) {
@@ -1206,7 +1206,6 @@ function getFromCloud(data, userStatus) {
       })
     ).json();
   fetchData().then((data) => {
-    console.log(data);
     if (data === "emp") {
       localStorage.setItem("employees", JSON.stringify(data.record));
       employees = JSON.parse(localStorage.getItem("employees"));
