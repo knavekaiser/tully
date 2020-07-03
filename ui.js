@@ -176,52 +176,52 @@ login_user.addEventListener("keyup", () =>
 login_pass.addEventListener("keyup", () =>
   login_pass.classList.remove("wrongInput")
 );
-form_login.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const url = "/.netlify/functions/fetchViwerData";
-  fetch(url, { headers: { from: login_user.value, warning: login_pass.value } })
-    .then((res) => {
-      if (res.status === 200) {
-        return res.json();
-      } else {
-        throw res.status;
-      }
-    })
-    .then((data) => {
-      employees[login_user.value] = data;
-      login_user.classList.add("currect");
-      login_pass.classList.add("currect");
-      updateEmpList();
-      welcomeScreen.classList.add("done");
-      setTimeout(() => {
-        welcomeScreen.remove();
-        portrait.classList.remove("forward");
-      }, 2000);
-      document.querySelector(".popUp_wrapper").remove();
-      document.querySelector(".forms").remove();
-      workers_li.remove();
-      lots_li.remove();
-      dashboard_li.remove();
-      backup.remove();
-      backupOptions.remove();
-      upload_li.remove();
-      clearAll.remove();
-      document.querySelector("h3.nameTag").addEventListener("click", (e) => {
-        e.preventDefault();
-        tableWrapper.style.left = "0";
-        showPrimaryList();
-        section = "employee";
-      });
-    })
-    .catch((err) => {
-      if (err === 403) {
-        login_user.classList.add("wrongInput");
-        login_pass.classList.add("wrongInput");
-      } else {
-        console.log(err);
-      }
-    });
-});
+// form_login.addEventListener("submit", (e) => {
+//   e.preventDefault();
+//   const url = "/.netlify/functions/fetchViwerData";
+//   fetch(url, { headers: { from: login_user.value, warning: login_pass.value } })
+//     .then((res) => {
+//       if (res.status === 200) {
+//         return res.json();
+//       } else {
+//         throw res.status;
+//       }
+//     })
+//     .then((data) => {
+//       employees[login_user.value] = data;
+//       login_user.classList.add("currect");
+//       login_pass.classList.add("currect");
+//       updateEmpList();
+//       welcomeScreen.classList.add("done");
+//       setTimeout(() => {
+//         welcomeScreen.remove();
+//         portrait.classList.remove("forward");
+//       }, 2000);
+//       document.querySelector(".popUp_wrapper").remove();
+//       document.querySelector(".forms").remove();
+//       workers_li.remove();
+//       lots_li.remove();
+//       dashboard_li.remove();
+//       backup.remove();
+//       backupOptions.remove();
+//       upload_li.remove();
+//       clearAll.remove();
+//       document.querySelector("h3.nameTag").addEventListener("click", (e) => {
+//         e.preventDefault();
+//         tableWrapper.style.left = "0";
+//         showPrimaryList();
+//         section = "employee";
+//       });
+//     })
+//     .catch((err) => {
+//       if (err === 403) {
+//         login_user.classList.add("wrongInput");
+//         login_pass.classList.add("wrongInput");
+//       } else {
+//         console.log(err);
+//       }
+//     });
+// });
 let passwordShown = false;
 showPass.addEventListener("click", () => {
   if (!passwordShown) {
@@ -277,3 +277,29 @@ sections.addEventListener("click", (e) => {
   );
   itemtoAddEventListener();
 });
+// production_li.addEventListener("click", () => {
+//   tableWrapper.querySelector("#workers").style.display = "none";
+//   tableWrapper.querySelector("#workers_payments").style.display = "none";
+//   tableWrapper.querySelector("#employee").style.display = "none";
+//   tableWrapper.querySelector("#tasks").style.display = "none";
+//   tableWrapper.querySelector("#production").style.display = "grid";
+//   section = "production";
+//   toggleSidebar();
+//   document.querySelector(".sections").classList.remove("active");
+//   section_li.textContent = "Production";
+//   itemsToAdd = document.querySelector(
+//     `${
+//       section === "production" ? "#form_production" : "#form_task"
+//     } .itemsToAdd`
+//   );
+//   itemtoAddEventListener();
+// });
+employees = JSON.parse(localStorage.getItem("employees"));
+// production = JSON.parse(localStorage.getItem("production"));
+updateEmpList();
+welcomeScreen.remove();
+// production_li.click();
+// updateProduction();
+// section = "production";
+// section = "task";
+// showForm();
