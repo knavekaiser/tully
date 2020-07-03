@@ -1206,6 +1206,7 @@ function getFromCloud(data, userStatus) {
       })
     ).json();
   fetchData().then((data) => {
+    console.log(data);
     if (data === "emp") {
       localStorage.setItem("employees", JSON.stringify(data.record));
       employees = JSON.parse(localStorage.getItem("employees"));
