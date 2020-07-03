@@ -44,7 +44,7 @@ function showForm() {
   clearTimeout(formClearTimeout);
   formsSpan.classList.add("active");
   document.querySelector(".forms").style.display = "block";
-  if (section === "employee") {
+  if (section === "employees") {
     setTimeout(() => form_emp.classList.toggle("hidden"), 0);
     setTimeout(() => {
       form_emp.querySelector('input[name="employee"]').focus();
@@ -54,7 +54,7 @@ function showForm() {
     setTimeout(() => {
       form_task.querySelector('input[name="dress_name"]').focus();
     }, 500);
-  } else if (section === "worker") {
+  } else if (section === "workers") {
     setTimeout(() => form_worker.classList.toggle("hidden"), 0);
     setTimeout(() => {
       form_worker.querySelector('input[name="worker"]').focus();
@@ -136,7 +136,7 @@ const loginForm = document.querySelector("#loginForm"),
 
 window.onpopstate = function (e) {
   e.preventDefault();
-  section !== "employee" && showPrimaryList();
+  section !== "employees" && showPrimaryList();
   formsSpan.clientWidth > 0 && hideForm();
   cls_dashboard.clientWidth > 0 && cls_dashboard.click();
   sidebarSpan.classList.contains("active") && btnSidebar.click();
@@ -210,7 +210,7 @@ login_pass.addEventListener("keyup", () =>
 //         e.preventDefault();
 //         tableWrapper.style.left = "0";
 //         showPrimaryList();
-//         section = "employee";
+//         section = "employees";
 //       });
 //     })
 //     .catch((err) => {
@@ -252,13 +252,13 @@ sections.addEventListener("click", (e) => {
   if (target.classList.contains("workers_li")) {
     tableWrapper.querySelector("#workers").style.display = "grid";
     tableWrapper.querySelector("#workers_payments").style.display = "grid";
-    section = "worker";
+    section = "workers";
     section_li.textContent = "Workers";
     updateWorkerList();
   } else if (target.classList.contains("contractors_li")) {
     tableWrapper.querySelector("#employee").style.display = "grid";
     tableWrapper.querySelector("#tasks").style.display = "grid";
-    section = "employee";
+    section = "employees";
     section_li.textContent = "Contractors";
     updateEmpList();
   } else if (target.classList.contains("production_li")) {
@@ -272,7 +272,7 @@ sections.addEventListener("click", (e) => {
   toggleSidebar();
   itemsToAdd = document.querySelector(
     `${
-      section === "employee" || section === "task"
+      section === "employees" || section === "task"
         ? "#form_task"
         : "#form_production"
     } .itemsToAdd`

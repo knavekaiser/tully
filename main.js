@@ -43,7 +43,7 @@ const tableWrapper = document.querySelector(".table_wrapper"),
   yearValue = document.querySelector(".thisYear .value"),
   popUp = document.querySelector(".popUp"),
   delete_prompt = document.querySelector(".delete_prompt");
-let section = "employee",
+let section = "employees",
   person,
   fiscalYear = "2020-21",
   edit = false,
@@ -63,16 +63,16 @@ function chageNameTag() {
 }
 btnSidebar.addEventListener("click", () => {
   if (
-    section === "employee" ||
-    section === "worker" ||
+    section === "employees" ||
+    section === "workers" ||
     section === "production"
   ) {
     toggleSidebar();
     if (netlifyIdentity.currentUser() !== null) {
       if (btnSidebar.children[0].classList.contains("unsaved")) {
-        if (section === "employee" || section === "task") {
+        if (section === "employees" || section === "task") {
           updateCloud("emp", netlifyIdentity.currentUser());
-        } else if (section === "worker" || section === "payments") {
+        } else if (section === "workers" || section === "payments") {
           updateCloud("wor", netlifyIdentity.currentUser());
         } else if (section === "production") {
           updateCloud("pro", netlifyIdentity.currentUser());
@@ -90,8 +90,8 @@ function showPrimaryList() {
   }%) translateY(-25%)`;
   nameTag.classList.add("disabled");
   document.querySelector("header a div h1").classList.remove("disabled");
-  section === "task" && ((section = "employee"), updateEmpList());
-  section === "payments" && ((section = "worker"), updateWorkerList());
+  section === "task" && ((section = "employees"), updateEmpList());
+  section === "payments" && ((section = "workers"), updateWorkerList());
   tableWrapper.style.left = "0";
   btnSidebar.classList.remove("back");
   person = "";
@@ -574,7 +574,7 @@ function displayAddBtn(element) {
     <button id="td_btn" type="submit" onClick="showForm()" name="button">
     </button>
     ${
-      section === "employee"
+      section === "employees"
         ? `<div class="label"><ion-icon name="person-add-outline"></ion-icon><p>Add more people...</p></div>`
         : `<div class="label"> <ion-icon name="add-outline"></ion-icon> <p>${
             person !== "lots" && person !== "iron"
@@ -788,10 +788,8 @@ tableWrapper.addEventListener("mouseup", (e) => {
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
   if (duration <= 350) {
-    section === "employee" && e.target.tagName !== "BUTTON" && showEmpTasks(e);
-    // (itemsToAdd.innerHTML = ""),
-    // addAddmore("", "", "", ""));
-    section === "worker" && e.target.tagName !== "BUTTON" && showPayments(e);
+    section === "employees" && e.target.tagName !== "BUTTON" && showEmpTasks(e);
+    section === "workers" && e.target.tagName !== "BUTTON" && showPayments(e);
   }
 });
 tableWrapper.addEventListener("mousemove", (e) => {
@@ -830,12 +828,12 @@ tableWrapper.addEventListener("touchend", (e) => {
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
   if (duration <= 350) {
-    section === "employee" &&
+    section === "employees" &&
       e.target.tagName !== "BUTTON" &&
       (showEmpTasks(e),
       (itemsToAdd.innerHTML = ""),
       addAddmore("", "", "", ""));
-    section === "worker" && e.target.tagName !== "BUTTON" && showPayments(e);
+    section === "workers" && e.target.tagName !== "BUTTON" && showPayments(e);
   }
 });
 
@@ -880,17 +878,9 @@ function showEmpTasks(e) {
     window.history.pushState("index", "the title", `/${person}`);
   }
 }
-// function viewTask(user) {
-//   person = user;
-//   section = "task";
-//   tableWrapper.style.left = "-100%";
-//   updateTaskList();
-//   btnSidebar.classList.add("back");
-//   chageNameTag();
-// }
 function showPopup(e) {
-  section === "employee" ||
-  section === "worker" ||
+  section === "employees" ||
+  section === "workers" ||
   (section === "payments" && target.parentElement.classList.contains("abs"))
     ? (popUp.children[0].children[0].style.display = "none")
     : popUp.children[0].children[0].removeAttribute("style");
@@ -984,7 +974,7 @@ function popUp_edit() {
   }
 }
 function popUp_delete() {
-  if (section === "employee") {
+  if (section === "employees") {
     delete_prompt.querySelector(
       "p"
     ).textContent = `Are you sure you want to delete ${target.textContent}?`;
@@ -1020,7 +1010,7 @@ function popUp_delete() {
       );
     }
     updateProduction();
-  } else if (section === "worker") {
+  } else if (section === "workers") {
     delete_prompt.querySelector(
       "p"
     ).textContent = `Are you sure you want to delete ${target.textContent}?`;
@@ -1058,14 +1048,14 @@ function popUp_delete() {
   updateLS();
 }
 delete_prompt.addEventListener("click", (e) => {
-  if (section === "employee") {
+  if (section === "employees") {
     if (e.target.textContent === "YES") {
       btnSidebar.children[0].classList.add("unsaved");
       delete employees[target.textContent];
       updateEmpList();
       updateLS();
     }
-  } else if (section === "worker") {
+  } else if (section === "workers") {
     if (e.target.textContent === "YES") {
       btnSidebar.children[0].classList.add("unsaved");
       delete workers[target.textContent];
@@ -1092,7 +1082,7 @@ clearAll.addEventListener("mousedown", (e) => {
     localStorage.clear();
     employees = {};
     workers = {};
-    section === "worker" && workers_li.click();
+    section === "workers" && workers_li.click();
     updateEmpList();
     updateCloud("emp", netlifyIdentity.currentUser());
     updateCloud("pro", netlifyIdentity.currentUser());
@@ -1134,7 +1124,7 @@ fileInput.addEventListener("change", (e) => {
         raw.search("let workers = {") >= 0
       ) {
         if (netlifyIdentity.currentUser() !== null) {
-          section === "employee"
+          section === "employees"
             ? (employees = JSON.parse(raw.replace("let employees = ", "")))
             : (workers = JSON.parse(raw.replace("let workers = ", "")));
         }
@@ -1152,21 +1142,25 @@ backup.addEventListener("click", () => {
   backupOptions.classList.toggle("active");
 });
 backupOptions.addEventListener("click", (e) => {
-  if (section === "employee") {
+  let raw = `${"dd"}`;
+  if (section === "employees") {
     let prefix = "let employees = ";
     let raw =
-      e.target.textContent === "App Backup-emp"
+      e.target.textContent === "App Backup"
         ? prefix.concat(JSON.stringify(employees))
         : JSON.stringify(employees);
     let blob = new Blob([raw], { type: "application/json" });
     let uri = URL.createObjectURL(blob);
-    !e.target.classList.contains("active") &&
-      download(uri, e.target.textContent);
+    download(
+      uri,
+      `${e.target.textContent === "App Backup "}`,
+      e.target.textContent
+    );
     backupOptions.classList.remove("active");
-  } else {
+  } else if (section === "workers") {
     let prefix = "let workers = ";
     let raw =
-      e.target.textContent === "App Backup-wrk"
+      e.target.textContent === "App Backup"
         ? prefix.concat(JSON.stringify(workers))
         : JSON.stringify(workers);
     let blob = new Blob([raw], { type: "application/json" });
@@ -1174,14 +1168,26 @@ backupOptions.addEventListener("click", (e) => {
     !e.target.classList.contains("active") &&
       download(uri, e.target.textContent);
     backupOptions.classList.remove("active");
+  } else {
+    let prefix = "let production = ";
+    let raw =
+      e.target.textContent === "App Backup"
+        ? prefix.concat(JSON.stringify(production))
+        : JSON.stringify(production);
+    let blob = new Blob([raw], { type: "application/json" });
+    let uri = URL.createObjectURL(blob);
+    !e.target.classList.contains("active") &&
+      download(uri, e.target.textContent);
+    backupOptions.classList.remove("active");
   }
 });
-function download(url, type) {
+function download(url, name, type) {
+  let date = new Date();
   let a = document.createElement("a");
   a.href = url;
   a.download = `WORKPLACE-${
     type === "App Backup" ? "Backup" : "Raw"
-  }-${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`;
+  }-${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
   a.click();
 }
 
@@ -1299,12 +1305,6 @@ function updateDashboard() {
       }
     }
   }
-
-  // Object.keys(employees.lots).forEach((day, i) => {
-  //   if (i === Object.keys(employees.lots).length - 1) {
-  //     pcsInLot.push(...employees.lots[day].tasks);
-  //   }
-  // });
 
   //sorts dates
   Object.keys(data).forEach((days) => dates.push(days));
