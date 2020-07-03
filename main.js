@@ -92,7 +92,6 @@ function showPrimaryList() {
   document.querySelector("header a div h1").classList.remove("disabled");
   section === "task" && ((section = "employee"), updateEmpList());
   section === "payments" && ((section = "worker"), updateWorkerList());
-  section === "production" && updateProduction();
   tableWrapper.style.left = "0";
   btnSidebar.classList.remove("back");
   person = "";
