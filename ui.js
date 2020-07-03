@@ -153,8 +153,8 @@ netlifyIdentity.on("login", (user) => {
   login_user.value = "";
   login_pass.value = "";
   netlifyIdentity.close();
-  getFromCloud("pro", netlifyIdentity.currentUser());
   getFromCloud("emp", netlifyIdentity.currentUser());
+  getFromCloud("pro", netlifyIdentity.currentUser());
   getFromCloud_worker(netlifyIdentity.currentUser());
   welcomeScreen.classList.add("done");
   setTimeout(() => {
