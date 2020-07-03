@@ -1137,6 +1137,7 @@ fileInput.addEventListener("change", (e) => {
           }
         }
         updateLS();
+        btnSidebar.children[0].classList.add("unsaved");
         toggleSidebar();
       } else {
         alert("PLease Select a valid file.");
