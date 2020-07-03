@@ -20,10 +20,21 @@
         <span class="sidebar_span"></span>
         <div class="sidebar">
           <ul>
-            <li class="workers_li">
-              <ion-icon name="people-outline"></ion-icon>
-              <p>Workers</p>
+            <li class="section_li">
+              <ion-icon name="albums-outline"></ion-icon>
+              <p>Section</p>
             </li>
+            <ul class="sections">
+              <li class="contractors_li">
+                <p>Contractors</p>
+              </li>
+              <li class="workers_li">
+                <p>Workers</p>
+              </li>
+              <li class="production_li">
+                <p>Production</p>
+              </li>
+            </ul>
             <li class="fiscal_li">
               <p>৳</p>
               <p>Fiscal Yr.</p>
@@ -171,6 +182,28 @@
                 </table>
               </div>
             </section>
+            <section id="production" >
+              <div class="thead">
+                <table>
+                  <thead>
+                    <tr>
+                      <td>Ref.</td>
+                      <td>Date</td>
+                      <td>Dress</td>
+                      <td>Pcs.</td>
+                      <td>Cost</td>
+                      <td>Total</td>
+                      <td>Paid</td>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="tbody">
+                <table>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </section>
           </div>
         </div>
         <div class="welcomeScreen">
@@ -266,6 +299,21 @@
           min="0"
           required
         />
+        <button type="submit" name="button">
+          <ion-icon name="add-outline"></ion-icon>
+        </button>
+      </form>
+      <form id="form_production" class="form hidden" autocomplete="off">
+        <input type="date" name="date" required />
+        <input type="number" class="ref" name="ref" placeholder="Ref." min="0" required />
+        <div class="itemsToAdd">
+          <div class="itemToAdd">
+            <input type="text" name="dress_name" maxlength="25" placeholder="Item name" required/>
+            <input type="number" name="qnt" placeholder="Pcs." min="0" required />
+            <input type="number" name="cost" placeholder="Cost" min="0" required />
+          </div>
+        </div>
+        <input type="number" name="recieved" placeholder="Payment" min="0" required/>
         <button type="submit" name="button">
           <ion-icon name="add-outline"></ion-icon>
         </button>

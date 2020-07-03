@@ -1,4 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;1,300&display=swap");
+@font-face {
+  font-family: stamp;
+  src: url(./img/Stamp.ttf);
+}
 * {
   margin: 0;
   padding: 0;
@@ -229,10 +233,14 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 .sidebar .fiscalYear,
-.sidebar .backup_options {
+.sidebar .backup_options,
+.sidebar .sections {
   height: 0;
   overflow: hidden;
   transition: height 0.35s ease-out;
+}
+.sidebar .sections.active {
+  height: 135px;
 }
 .sidebar .fiscalYear.active {
   height: 135px;
@@ -444,7 +452,8 @@ a {
 #employee,
 #tasks,
 #workers,
-#workers_payments {
+#workers_payments,
+#production {
   height: 100%;
   width: 50%;
   display: grid;
@@ -453,7 +462,8 @@ a {
   max-height: 100%;
 }
 #workers,
-#workers_payments {
+#workers_payments,
+#production {
   display: none;
 }
 table {
@@ -466,7 +476,8 @@ table {
 }
 #employee tr,
 #workers tr,
-#workers_payments tr {
+#workers_payments tr,
+#production tr {
   display: grid;
   padding: 0rem 1rem;
   grid-template-columns: 0.7fr 0.5fr 0.5fr 0.5fr;
@@ -485,6 +496,9 @@ table {
   grid-template-columns: 0.9fr 0.8fr 0.4fr 0.4fr 0.5fr 0.5fr;
   grid-template-rows: repeat(auto, auto);
 }
+#production tr {
+  grid-template-columns: 0.2fr 0.4fr 0.7fr 0.25fr 0.25fr 0.4fr 0.4fr;
+}
 #tasks.lots tr {
   grid-template-columns: 0.7fr 0.8fr 0.45fr 0.4fr 0.5fr;
 }
@@ -499,8 +513,43 @@ table {
 #tasks.lots thead tr td:last-child {
   display: none;
 }
+#production .thead td:nth-child(2),
+#production .thead td:nth-child(3) {
+  text-align: left !important;
+}
+#production .thead td:nth-child(4),
+#production .thead td:nth-child(5) {
+  text-align: center;
+}
 .paid {
   grid-column: 6;
+}
+#production .ref {
+  grid-column: 1;
+  font-family: stamp;
+  font-size: 1.4rem;
+  text-align: left;
+}
+
+.product .date {
+  grid-column: 2;
+  text-align: left;
+}
+.product .dressName {
+  grid-column: 3;
+}
+.product .qnt {
+  grid-column: 4;
+  text-align: center;
+}
+.product .total {
+  grid-column: 6;
+}
+.product .cost {
+  text-align: center;
+}
+.product .paid {
+  grid-column: 7;
 }
 .dressName {
   grid-column: 2;
@@ -693,18 +742,24 @@ form {
     "bt bt bt";
 }
 #form_employee {
-  grid-template-areas: "nm nm ad";
+  grid-template-areas: "nm nm bt";
 }
 #form_worker {
   grid-template-columns: 1fr 1fr;
-  grid-template-areas: "nm nm" "dt sl" "ad ad";
+  grid-template-areas: "nm nm" "dt sl" "bt bt";
 }
 #form_payment {
   grid-template-columns: 1fr 1fr;
-  grid-template-areas: "d1 d2" "py py" "ad ad";
+  grid-template-areas: "d1 d2" "py py" "bt bt";
 }
-form input[type="date"].start {
-  grid-area: d1;
+#form_production {
+  grid-template-columns: 1fr 0.2fr;
+  grid-template-areas: "dt rf" "it it" "py py" "bt bt";
+}
+#form_production .ref {
+  font-family: stamp;
+  font-size: 1.5rem;
+  text-align: center;
 }
 form input[type="date"].end {
   grid-area: d2;
@@ -741,6 +796,9 @@ form input[name="date"] {
   grid-column-gap: 0.4rem;
   grid-auto-flow: column;
   display: grid;
+}
+#form_production .itemToAdd {
+  grid-template-columns: 1fr 0.38fr 0.55fr;
 }
 .itemToAdd.semi {
   opacity: 0.7;
@@ -787,7 +845,7 @@ form input[name="recieved"] {
   outline: none;
   height: 100%;
   width: 100%;
-  grid-area: ad;
+  grid-area: bt;
 }
 #form_task button {
   grid-area: bt;

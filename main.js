@@ -1,22 +1,28 @@
 "use strict";
 let employees = {};
 let workers = {};
+let production = {};
 const tableWrapper = document.querySelector(".table_wrapper"),
   nameTag = document.querySelector(".nameTag"),
   empList = document.querySelector("#employee .tbody tbody"),
   taskList = document.querySelector("#tasks .tbody tbody"),
   workerList = document.querySelector("#workers .tbody tbody"),
   paymentList = document.querySelector("#workers_payments .tbody tbody"),
+  productionList = document.querySelector("#production .tbody tbody"),
   form_login = document.querySelector("#loginForm"),
   form_emp = document.querySelector("#form_employee"),
   form_task = document.querySelector("#form_task"),
   form_worker = document.querySelector("#form_worker"),
   form_payment = document.querySelector("#form_payment"),
+  form_production = document.querySelector("#form_production"),
   showPass = document.querySelector(".passDiv ion-icon"),
-  itemsToAdd = form_task.querySelector(".itemsToAdd"),
   formsSpan = document.querySelector(".forms span"),
   btnSidebar = document.querySelector(".btn_sidebar"),
+  section_li = document.querySelector(".section_li"),
+  sections = document.querySelector(".sections"),
   workers_li = document.querySelector(".workers_li"),
+  contractors_li = document.querySelector(".contractors_li"),
+  production_li = document.querySelector(".production_li"),
   fiscal_li = document.querySelector(".fiscal_li"),
   fiscalYears = document.querySelector(".fiscalYear"),
   lots_li = document.querySelector(".lots_li"),
@@ -40,7 +46,12 @@ const tableWrapper = document.querySelector(".table_wrapper"),
 let section = "employee",
   person,
   fiscalYear = "2020-21",
-  edit = false;
+  edit = false,
+  itemsToAdd = document.querySelector(
+    `${
+      section === "production" ? "#form_production" : "#form_task"
+    } .itemsToAdd`
+  );
 
 function chageNameTag() {
   nameTag.textContent = person.toUpperCase();
@@ -51,12 +62,16 @@ function chageNameTag() {
   nameTag.classList.remove("disabled");
 }
 btnSidebar.addEventListener("click", () => {
-  if (section === "employee" || section === "worker") {
+  if (
+    section === "employee" ||
+    section === "worker" ||
+    section === "production"
+  ) {
     toggleSidebar();
     if (netlifyIdentity.currentUser() !== null) {
       if (btnSidebar.children[0].classList.contains("unsaved")) {
         if (section === "employee" || section === "task") {
-          updateCloud(netlifyIdentity.currentUser());
+          updateCloud("emp", netlifyIdentity.currentUser());
         } else if (section === "worker" || section === "payments") {
           updateCloud_worker(netlifyIdentity.currentUser());
         }
@@ -130,6 +145,14 @@ form_payment.addEventListener("submit", (e) => {
   edit = false;
   btnSidebar.children[0].classList.add("unsaved");
 });
+form_production.addEventListener("submit", (e) => {
+  e.preventDefault();
+  addProduct();
+  updateProduction();
+  hideForm();
+  edit = false;
+  btnSidebar.children[0].classList.add("unsaved");
+});
 lots_li.addEventListener("click", (e) => {
   toggleSidebar();
   person = "lots";
@@ -160,6 +183,33 @@ form_task
     }
   });
 
+form_production
+  .querySelector('input[name="dress_name"]')
+  .addEventListener("keyup", (e) => {
+    if (
+      form_production.querySelector('input[name="dress_name"]').value === "-"
+    ) {
+      form_production
+        .querySelector('input[name="qnt"]')
+        .setAttribute("disabled", true);
+      form_production
+        .querySelector('input[name="cost"]')
+        .setAttribute("disabled", true);
+      form_production
+        .querySelector('input[name="ref"]')
+        .setAttribute("disabled", true);
+    } else {
+      form_production
+        .querySelector('input[name="qnt"]')
+        .removeAttribute("disabled");
+      form_production
+        .querySelector('input[name="cost"]')
+        .removeAttribute("disabled");
+      form_production
+        .querySelector('input[name="ref"]')
+        .removeAttribute("disabled");
+    }
+  });
 function addWorker() {
   let personToAdd = form_worker.querySelector("input[type='text']").value;
   workers[personToAdd] = {
@@ -239,23 +289,64 @@ function updateWorkerList() {
   });
   displayAddBtn(workerList);
 }
+
+function addProduct() {
+  let date =
+    form_production.querySelector('input[name="date"]').value +
+    ":" +
+    fiscalYear;
+  !(date in production) &&
+    (production[date] = {
+      ref: form_production.querySelector('input[name="ref"]').value,
+      product: [],
+      paid: form_production.querySelector('input[name="recieved"]').value,
+    });
+  if (
+    itemsToAdd.children[0].querySelector('input[name="dress_name"]').value !==
+    "-"
+  ) {
+    let itemToAdd = [...itemsToAdd.children];
+    production[date].product = [];
+    itemToAdd.forEach((item, i) => {
+      if (item.querySelector('input[name="dress_name"]').value.length > 0) {
+        production[date].product.push({
+          dress: item.querySelector('input[name="dress_name"]').value,
+          qnt: +item.querySelector('input[name="qnt"]').value,
+          cost: item.querySelector('input[name="cost"]').value,
+        });
+      }
+    });
+  }
+  updateLS();
+  form_production.querySelector('input[name="ref"]').value = "";
+  itemsToAdd.querySelector('input[name="dress_name"]').value = "";
+  itemsToAdd.querySelector('input[name="qnt"]').value = "";
+  itemsToAdd.querySelector('input[name="cost"]').value = "";
+  form_production.querySelector('input[name="recieved"]').value = "";
+}
+function updateProduction() {
+  productionList.innerHTML = "";
+  const dates = Object.keys(production);
+  dates.sort((a, b) =>
+    new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
+  );
+  dates.forEach((date) => {
+    if (fiscalYear === "All time") {
+      createProduction(date);
+    } else {
+      date.split(":")[1] === fiscalYear && createProduction(date);
+    }
+  });
+  displayAddBtn(productionList);
+}
 function addAddmore(dressName = "", qnt = "", group = "", className = "") {
   const itemToAdd = document.createElement("div");
   itemToAdd.classList.add("itemToAdd");
   className && itemToAdd.classList.add(className);
-  itemToAdd.innerHTML = `
-<input
-type="text"
-name="dress_name"
-maxlength="25"
-placeholder="Add more item"
-value="${dressName}"/>
-<input
-type="number"
-name="qnt"
-placeholder="Pcs."
-min="0"
-value="${qnt}" disabled/>
+  section === "task"
+    ? (itemToAdd.innerHTML = `
+<input type="text" name="dress_name" maxlength="25" placeholder="Add more item" value="${dressName}"/>
+<input type="number" name="qnt" placeholder="Pcs." min="0" value="${qnt}" disabled/>
 <select class="groups" name="group" placeholder="group" disabled>
 <option value="" hidden >Group</option>
 ${
@@ -271,7 +362,12 @@ ${
 <option value="iL" ${group === "iL" && "SELECTED"}>Iron Large</option>`
 }
 </select>
-`;
+`)
+    : (itemToAdd.innerHTML = `
+  <input type="text" name="dress_name" maxlength="25" placeholder="Add more item" value="${dressName}"/>
+  <input type="number" name="qnt" placeholder="Pcs." min="0" value="${qnt}" disabled/>
+  <input type="number" name="cost" placeholder="Cost" min="0" value="${group}" required disabled/>
+  `);
   itemsToAdd.appendChild(itemToAdd);
   itemsToAdd
     .querySelector(".itemToAdd:last-child")
@@ -286,24 +382,29 @@ function itemtoAddEventListener() {
     .querySelector(".itemToAdd:last-child")
     .querySelector("input[name='dress_name']");
   items.addEventListener("keyup", (e) => {
-    const [qntInput, groupInput] = [
+    const [qntInput, groupInput, ref] = [
       e.target.parentElement.children[1],
       e.target.parentElement.children[2],
+      form_production.querySelector('input[name="ref"]'),
     ];
     if (e.target.value === "-") {
       qntInput.removeAttribute("required");
-      groupInput.removeAttribute("required");
       qntInput.setAttribute("disabled", true);
+      groupInput.removeAttribute("required");
       groupInput.setAttribute("disabled", true);
+      ref.removeAttribute("required");
+      ref.setAttribute("disabled", true);
       [...e.target.parentElement.parentElement.children].length > 1 &&
         (e.target.value = "");
     } else {
       if (e.target.value.length > 0) {
         e.target.setAttribute("required", "true");
         qntInput.removeAttribute("disabled");
-        groupInput.removeAttribute("disabled");
         qntInput.setAttribute("required", "true");
+        groupInput.removeAttribute("disabled");
         groupInput.setAttribute("required", "true");
+        ref.removeAttribute("disabled");
+        ref.setAttribute("required", "true");
         !items.parentElement.nextElementSibling &&
           addAddmore("", "", "", "semi");
       } else {
@@ -371,7 +472,9 @@ function updateTaskList() {
   taskList.innerHTML = "";
   const date = Object.keys(employees[person]),
     tasks = [];
-  date.sort((a, b) => (new Date(a) < new Date(b) ? -1 : 1));
+  date.sort((a, b) =>
+    new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
+  );
   date.forEach((day) => {
     employees[person][day] && tasks.push(employees[person][day]);
   });
@@ -521,11 +624,40 @@ function createTask(date, tasks, i) {
   }
   taskList.appendChild(tr);
 }
+function createProduction(date) {
+  const tr = document.createElement("tr"),
+    products = production[date].product;
+  tr.classList.add("infoRow");
+  tr.classList.add("product");
+  let dateFormatted = `${date.split(":")[0].split("-")[2]}-${
+    date.split(":")[0].split("-")[1]
+  }-${date.split(":")[0].split("-")[0].slice(-2)}`;
+  createTd(`${dateFormatted}`, tr, `${date} date`, products.length);
+  createTd(`${production[date].ref}`, tr, `ref`, products.length);
+  products.length === 0 &&
+    (createTd("-", tr, "dressName"),
+    createTd("-", tr, "qnt"),
+    createTd("-", tr, "cost"));
+  products.forEach((product) => {
+    createTd(product.dress, tr, "dressName");
+    createTd(product.qnt.toLocaleString("en-IN"), tr, "qnt");
+    createTd(product.cost, tr, "cost");
+    createTd((product.qnt * product.cost).toLocaleString("en-IN"), tr, "total");
+  });
+  createTd(
+    production[date].paid.toLocaleString("en-IN"),
+    tr,
+    `paid`,
+    products.length
+  );
+  productionList.appendChild(tr);
+}
 function createTd(textContent, parent, tdClass, span, data) {
   const td = document.createElement("td");
-  !!tdClass && tdClass.split(" ").forEach((cls) => td.classList.add(cls));
-  !!span && (td.style.gridRow = `1 / span ${span}`);
-  !!data && td.setAttribute("data-content", data);
+  tdClass && tdClass.split(" ").forEach((cls) => td.classList.add(cls));
+  (span || span === 0) &&
+    (td.style.gridRow = `1 / span ${span > 0 ? span : 1}`);
+  data && td.setAttribute("data-content", data);
   td.textContent = textContent;
   parent.appendChild(td);
 }
@@ -544,10 +676,10 @@ function priceCheck(group) {
       return 43;
       break;
     case "iS":
-      return 1.5;
+      return 2.5;
       break;
     case "iL":
-      return 2.5;
+      return 4;
       break;
     default:
   }
@@ -611,6 +743,7 @@ function calculateSalary(salary, start, end, abs) {
 function updateLS() {
   localStorage.setItem("employees", JSON.stringify(employees));
   localStorage.setItem("workers", JSON.stringify(workers));
+  localStorage.setItem("production", JSON.stringify(production));
 }
 
 let clearTaskTimer,
@@ -653,9 +786,8 @@ tableWrapper.addEventListener("mouseup", (e) => {
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
   if (duration <= 350) {
-    section === "employee" &&
-      e.target.tagName !== "BUTTON" &&
-      (showEmpTasks(e),
+    section ===
+      ("employee" && e.target.tagName !== "BUTTON" && showEmpTasks(e),
       (itemsToAdd.innerHTML = ""),
       addAddmore("", "", "", ""));
     section === "worker" && e.target.tagName !== "BUTTON" && showPayments(e);
@@ -827,6 +959,19 @@ function popUp_edit() {
     person !== "lots" &&
       (form_task.querySelector('input[name="recieved"]').value =
         itemToEdit.paid);
+  } else if (section === "production") {
+    let productsToEdit = production[target.className.split(" ")[0]].product,
+      date = target.className.split(" ")[0].split(":")[0];
+    itemsToAdd.innerHTML = "";
+    form_production.querySelector('input[name="date"]').value = date;
+    form_production.querySelector('input[name="ref"]').value =
+      production[target.className.split(" ")[0]].ref;
+    productsToEdit.length === 0 && addAddmore("-");
+    productsToEdit.forEach((product) => {
+      addAddmore(product.dress, product.qnt, product.cost);
+    });
+    form_production.querySelector('input[name="recieved"]').value =
+      production[target.className.split(" ")[0]].paid;
   } else {
     if (line.classList.contains("date") || line.classList.contains("payment")) {
       form_payment.querySelector('input[type="number"]').value =
@@ -858,6 +1003,22 @@ function popUp_delete() {
       );
     }
     updateTaskList();
+  } else if (section === "production") {
+    if (
+      production[target.className.split(" ")[0]].product.length <= 1 ||
+      line.classList.contains("infoRow") ||
+      line.classList.contains(".ref") ||
+      line.classList.contains("date") ||
+      line.classList.contains("paid")
+    ) {
+      delete production[target.className.split(" ")[0]];
+    } else {
+      production[target.className.split(" ")[0]].product.splice(
+        getIndex(target, line),
+        1
+      );
+    }
+    updateProduction();
   } else if (section === "worker") {
     delete_prompt.querySelector(
       "p"
@@ -932,7 +1093,8 @@ clearAll.addEventListener("mousedown", (e) => {
     workers = {};
     section === "worker" && workers_li.click();
     updateEmpList();
-    updateCloud(netlifyIdentity.currentUser());
+    updateCloud("emp", netlifyIdentity.currentUser());
+    updateCloud("pro", netlifyIdentity.currentUser());
     updateCloud_worker(netlifyIdentity.currentUser());
     clearAll.querySelector("span").classList.remove("active");
   }, 2000);
@@ -1024,26 +1186,35 @@ function download(url, type) {
 
 let url = "/.netlify/functions/fetchData";
 
-function updateCloud(userStatus) {
+function updateCloud(data, userStatus) {
   fetch(url, {
     method: "PUT",
     headers: {
+      from: data,
       warning: JSON.stringify(userStatus),
     },
-    body: JSON.stringify(employees),
+    body: JSON.stringify(data === "emp" ? employees : production),
   }).then((res) => {
     res.status === 200 && btnSidebar.children[0].classList.remove("unsaved");
   });
 }
-function getFromCloud(userStatus) {
+function getFromCloud(data, userStatus) {
   const fetchData = async () =>
     await (
-      await fetch(url, { headers: { warning: JSON.stringify(userStatus) } })
+      await fetch(url, {
+        headers: { from: data, warning: JSON.stringify(userStatus) },
+      })
     ).json();
   fetchData().then((data) => {
-    localStorage.setItem("employees", JSON.stringify(data.record));
-    employees = JSON.parse(localStorage.getItem("employees"));
-    updateEmpList();
+    if (data === "emp") {
+      localStorage.setItem("employees", JSON.stringify(data.record));
+      employees = JSON.parse(localStorage.getItem("employees"));
+      updateEmpList();
+    } else {
+      localStorage.setItem("production", JSON.stringify(data.record));
+      production = JSON.parse(localStorage.getItem("production"));
+      updateProduction();
+    }
   });
 }
 
@@ -1277,6 +1448,9 @@ function updateDashboard() {
   ).toLocaleString("en-IN");
 }
 
+section_li.addEventListener("click", (e) => {
+  sections.classList.toggle("active");
+});
 fiscal_li.addEventListener("click", (e) => {
   fiscalYears.classList.toggle("active");
 });
@@ -1285,5 +1459,6 @@ fiscalYears.addEventListener("click", (e) => {
   fiscalYear = e.target.textContent;
   fiscalYears.classList.remove("active");
   updateEmpList();
+  updateProduction();
 });
 fiscal_li.querySelector("p:last-child").textContent = "2020-21";

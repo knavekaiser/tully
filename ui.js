@@ -64,6 +64,11 @@ function showForm() {
     setTimeout(() => {
       form_payment.querySelector('input[name="recieved"]').focus();
     }, 500);
+  } else if (section === "production") {
+    setTimeout(() => form_production.classList.toggle("hidden"), 0);
+    setTimeout(() => {
+      form_production.querySelector('input[name="date"]').focus();
+    }, 500);
   }
 }
 let formClearTimeout;
@@ -73,6 +78,7 @@ function hideForm() {
   form_task.classList.add("hidden");
   form_worker.classList.add("hidden");
   form_payment.classList.add("hidden");
+  form_production.classList.add("hidden");
   formsSpan.classList.remove("active");
   formClearTimeout = setTimeout(() => {
     form_emp.reset();
@@ -112,6 +118,7 @@ function defaultDateValue() {
   form_worker.querySelector('input[type="date"]').value = dateFormatted;
   form_payment.querySelector('input[type="date"].start').value = dateFormatted;
   form_payment.querySelector('input[type="date"].end').value = dateFormatted;
+  form_production.querySelector('input[type="date"]').value = dateFormatted;
   return dateFormatted;
 }
 defaultDateValue();
@@ -146,7 +153,8 @@ netlifyIdentity.on("login", (user) => {
   login_user.value = "";
   login_pass.value = "";
   netlifyIdentity.close();
-  getFromCloud(netlifyIdentity.currentUser());
+  getFromCloud("emp", netlifyIdentity.currentUser());
+  getFromCloud("pro", netlifyIdentity.currentUser());
   getFromCloud_worker(netlifyIdentity.currentUser());
   welcomeScreen.classList.add("done");
   setTimeout(() => {
@@ -236,23 +244,62 @@ window.addEventListener("DOMContentLoaded", () => {
       "Management");
 });
 
-workers_li.addEventListener("click", () => {
-  if (
-    tableWrapper.querySelector("#employee").getBoundingClientRect().width > 0
-  ) {
-    tableWrapper.querySelector("#employee").style.display = "none";
-    tableWrapper.querySelector("#tasks").style.display = "none";
+sections.addEventListener("click", (e) => {
+  let target = e.target.tagName === "P" ? e.target.parentElement : e.target;
+  document.querySelectorAll("#employee_section section").forEach((section) => {
+    section.style.display = "none";
+  });
+  if (target.classList.contains("workers_li")) {
     tableWrapper.querySelector("#workers").style.display = "grid";
     tableWrapper.querySelector("#workers_payments").style.display = "grid";
-    updateWorkerList();
     section = "worker";
-  } else {
+    section_li.textContent = "Workers";
+  } else if (target.classList.contains("contractors_li")) {
     tableWrapper.querySelector("#employee").style.display = "grid";
     tableWrapper.querySelector("#tasks").style.display = "grid";
-    tableWrapper.querySelector("#workers").style.display = "none";
-    tableWrapper.querySelector("#workers_payments").style.display = "none";
     section = "employee";
+    section_li.textContent = "Contractors";
+  } else if (target.classList.contains("production_li")) {
+    tableWrapper.querySelector("#production").style.display = "grid";
+    section = "production";
+    section_li.textContent = "Production";
+    updateProduction();
   }
-  toggleSidebar();
+  document.querySelector(".sections").classList.remove("active");
   resizeWindow();
+  toggleSidebar();
+  itemsToAdd = document.querySelector(
+    `${
+      section === "employee" || section === "task"
+        ? "#form_task"
+        : "#form_production"
+    } .itemsToAdd`
+  );
+  itemtoAddEventListener();
 });
+// production_li.addEventListener("click", () => {
+//   tableWrapper.querySelector("#workers").style.display = "none";
+//   tableWrapper.querySelector("#workers_payments").style.display = "none";
+//   tableWrapper.querySelector("#employee").style.display = "none";
+//   tableWrapper.querySelector("#tasks").style.display = "none";
+//   tableWrapper.querySelector("#production").style.display = "grid";
+//   section = "production";
+//   toggleSidebar();
+//   document.querySelector(".sections").classList.remove("active");
+//   section_li.textContent = "Production";
+//   itemsToAdd = document.querySelector(
+//     `${
+//       section === "production" ? "#form_production" : "#form_task"
+//     } .itemsToAdd`
+//   );
+//   itemtoAddEventListener();
+// });
+// employees = JSON.parse(localStorage.getItem("employees"));
+// production = JSON.parse(localStorage.getItem("production"));
+// updateEmpList();
+// welcomeScreen.remove();
+// production_li.click();
+// updateProduction();
+// section = "production";
+// section = "task";
+// showForm();
