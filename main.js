@@ -1189,14 +1189,13 @@ function download(url, type) {
 let url = "/.netlify/functions/fetchData";
 
 function updateCloud(dir, userStatus) {
-  let body = dir === "emp" ? employees : production;
   fetch(url, {
     method: "PUT",
     headers: {
       from: dir,
       warning: JSON.stringify(userStatus),
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(dir === "emp" ? employees : production),
   }).then((res) => {
     res.status === 200 && btnSidebar.children[0].classList.remove("unsaved");
   });
