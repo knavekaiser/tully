@@ -1164,9 +1164,9 @@ function download(url, type) {
   let date = new Date();
   let a = document.createElement("a");
   a.href = url;
-  a.download = `WORKPLACE-${
+  a.download = `TULLY-${
     type === "App Backup" ? "Backup" : "Raw"
-  }-${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+  }-${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}-${section}`;
   a.click();
 }
 
