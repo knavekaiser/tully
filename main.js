@@ -74,6 +74,8 @@ btnSidebar.addEventListener("click", () => {
           updateCloud("emp", netlifyIdentity.currentUser());
         } else if (section === "worker" || section === "payments") {
           updateCloud_worker(netlifyIdentity.currentUser());
+        } else if (section === "production") {
+          updateCloud("pro", netlifyIdentity.currentUser());
         }
       }
     }
