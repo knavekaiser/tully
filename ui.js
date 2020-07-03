@@ -279,29 +279,3 @@ sections.addEventListener("click", (e) => {
   );
   itemtoAddEventListener();
 });
-// production_li.addEventListener("click", () => {
-//   tableWrapper.querySelector("#workers").style.display = "none";
-//   tableWrapper.querySelector("#workers_payments").style.display = "none";
-//   tableWrapper.querySelector("#employee").style.display = "none";
-//   tableWrapper.querySelector("#tasks").style.display = "none";
-//   tableWrapper.querySelector("#production").style.display = "grid";
-//   section = "production";
-//   toggleSidebar();
-//   document.querySelector(".sections").classList.remove("active");
-//   section_li.textContent = "Production";
-//   itemsToAdd = document.querySelector(
-//     `${
-//       section === "production" ? "#form_production" : "#form_task"
-//     } .itemsToAdd`
-//   );
-//   itemtoAddEventListener();
-// });
-employees = JSON.parse(localStorage.getItem("employees"));
-production = JSON.parse(localStorage.getItem("production"));
-updateEmpList();
-welcomeScreen.remove();
-// production_li.click();
-// updateProduction();
-// section = "production";
-// section = "task";
-// showForm();
