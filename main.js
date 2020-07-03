@@ -788,10 +788,9 @@ tableWrapper.addEventListener("mouseup", (e) => {
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
   if (duration <= 350) {
-    section ===
-      ("employee" && e.target.tagName !== "BUTTON" && showEmpTasks(e),
-      (itemsToAdd.innerHTML = ""),
-      addAddmore("", "", "", ""));
+    section === "employee" && e.target.tagName !== "BUTTON" && showEmpTasks(e);
+    // (itemsToAdd.innerHTML = ""),
+    // addAddmore("", "", "", ""));
     section === "worker" && e.target.tagName !== "BUTTON" && showPayments(e);
   }
 });
@@ -881,14 +880,14 @@ function showEmpTasks(e) {
     window.history.pushState("index", "the title", `/${person}`);
   }
 }
-function viewTask(user) {
-  person = user;
-  section = "task";
-  tableWrapper.style.left = "-100%";
-  updateTaskList();
-  btnSidebar.classList.add("back");
-  chageNameTag();
-}
+// function viewTask(user) {
+//   person = user;
+//   section = "task";
+//   tableWrapper.style.left = "-100%";
+//   updateTaskList();
+//   btnSidebar.classList.add("back");
+//   chageNameTag();
+// }
 function showPopup(e) {
   section === "employee" ||
   section === "worker" ||
