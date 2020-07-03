@@ -1188,28 +1188,28 @@ function download(url, type) {
 
 let url = "/.netlify/functions/fetchData";
 
-function updateCloud(data, userStatus) {
+function updateCloud(dir, userStatus) {
   fetch(url, {
     method: "PUT",
     headers: {
-      from: data,
+      from: dir,
       warning: JSON.stringify(userStatus),
     },
-    body: JSON.stringify(data === "emp" ? employees : production),
+    body: JSON.stringify(dir === "emp" ? employees : production),
   }).then((res) => {
     res.status === 200 && btnSidebar.children[0].classList.remove("unsaved");
   });
 }
-function getFromCloud(data, userStatus) {
+function getFromCloud(dir, userStatus) {
   const fetchData = async () =>
     await (
       await fetch(url, {
-        headers: { from: data, warning: JSON.stringify(userStatus) },
+        headers: { from: dir, warning: JSON.stringify(userStatus) },
       })
     ).json();
   fetchData().then((data) => {
     console.log(data);
-    if (data === "emp") {
+    if (dir === "emp") {
       localStorage.setItem("employees", JSON.stringify(data.record));
       employees = JSON.parse(localStorage.getItem("employees"));
       updateEmpList();
