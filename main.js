@@ -73,7 +73,7 @@ btnSidebar.addEventListener("click", () => {
         if (section === "employee" || section === "task") {
           updateCloud("emp", netlifyIdentity.currentUser());
         } else if (section === "worker" || section === "payments") {
-          updateCloud_worker(netlifyIdentity.currentUser());
+          updateCloud("wor", netlifyIdentity.currentUser());
         } else if (section === "production") {
           updateCloud("pro", netlifyIdentity.currentUser());
         }
@@ -1097,7 +1097,7 @@ clearAll.addEventListener("mousedown", (e) => {
     updateEmpList();
     updateCloud("emp", netlifyIdentity.currentUser());
     updateCloud("pro", netlifyIdentity.currentUser());
-    updateCloud_worker(netlifyIdentity.currentUser());
+    updateCloud("wor", netlifyIdentity.currentUser());
     clearAll.querySelector("span").classList.remove("active");
   }, 2000);
   clearAll.querySelector("span").classList.add("active");
@@ -1189,13 +1189,24 @@ function download(url, type) {
 let url = "/.netlify/functions/fetchData";
 
 function updateCloud(dir, userStatus) {
+  let body = {};
+  switch (dir) {
+    case "emp":
+      body = employees;
+      break;
+    case "pro":
+      body = production;
+      break;
+    case "wor":
+      body = workers;
+  }
   fetch(url, {
     method: "PUT",
     headers: {
       from: dir,
       warning: JSON.stringify(userStatus),
     },
-    body: JSON.stringify(dir === "emp" ? employees : production),
+    body: JSON.stringify(body),
   }).then((res) => {
     res.status === 200 && btnSidebar.children[0].classList.remove("unsaved");
   });
@@ -1212,36 +1223,15 @@ function getFromCloud(dir, userStatus) {
       localStorage.setItem("employees", JSON.stringify(data.record));
       employees = JSON.parse(localStorage.getItem("employees"));
       updateEmpList();
-    } else {
+    } else if (dir === "pro") {
       localStorage.setItem("production", JSON.stringify(data.record));
       production = JSON.parse(localStorage.getItem("production"));
       updateProduction();
+    } else {
+      localStorage.setItem("workers", JSON.stringify(data.record));
+      workers = JSON.parse(localStorage.getItem("workers"));
+      updateEmpList();
     }
-  });
-}
-
-function updateCloud_worker(userStatus) {
-  fetch("/.netlify/functions/fetchWorkerData", {
-    method: "PUT",
-    headers: {
-      warning: JSON.stringify(userStatus),
-    },
-    body: JSON.stringify(workers),
-  }).then((res) => {
-    res.status === 200 && btnSidebar.children[0].classList.remove("unsaved");
-  });
-}
-function getFromCloud_worker(userStatus) {
-  const fetchData = async () =>
-    await (
-      await fetch("/.netlify/functions/fetchWorkerData", {
-        headers: { warning: JSON.stringify(userStatus) },
-      })
-    ).json();
-  fetchData().then((data) => {
-    localStorage.setItem("workers", JSON.stringify(data.record));
-    workers = JSON.parse(localStorage.getItem("workers"));
-    updateEmpList();
   });
 }
 

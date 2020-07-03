@@ -155,7 +155,7 @@ netlifyIdentity.on("login", (user) => {
   netlifyIdentity.close();
   getFromCloud("emp", netlifyIdentity.currentUser());
   getFromCloud("pro", netlifyIdentity.currentUser());
-  getFromCloud_worker(netlifyIdentity.currentUser());
+  getFromCloud("wor", netlifyIdentity.currentUser());
   welcomeScreen.classList.add("done");
   setTimeout(() => {
     welcomeScreen.remove();
@@ -254,11 +254,13 @@ sections.addEventListener("click", (e) => {
     tableWrapper.querySelector("#workers_payments").style.display = "grid";
     section = "worker";
     section_li.textContent = "Workers";
+    updateWorkerList();
   } else if (target.classList.contains("contractors_li")) {
     tableWrapper.querySelector("#employee").style.display = "grid";
     tableWrapper.querySelector("#tasks").style.display = "grid";
     section = "employee";
     section_li.textContent = "Contractors";
+    updateEmpList();
   } else if (target.classList.contains("production_li")) {
     tableWrapper.querySelector("#production").style.display = "grid";
     section = "production";
@@ -295,7 +297,7 @@ sections.addEventListener("click", (e) => {
 //   itemtoAddEventListener();
 // });
 employees = JSON.parse(localStorage.getItem("employees"));
-// production = JSON.parse(localStorage.getItem("production"));
+production = JSON.parse(localStorage.getItem("production"));
 updateEmpList();
 welcomeScreen.remove();
 // production_li.click();
