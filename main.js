@@ -1149,10 +1149,11 @@ backup.addEventListener("click", () => {
   backupOptions.classList.toggle("active");
 });
 backupOptions.addEventListener("click", (e) => {
-  let raw = `${e.target.textContent === "App Backup" ? `let ${section} = ` : ""}
-  ${section === "employees" ? JSON.stringify(employees) : ""}
-  ${section === "workers" ? JSON.stringify(workers) : ""}
-  ${section === "production" ? JSON.stringify(production) : ""}`;
+  let raw = `${
+    e.target.textContent === "App Backup" ? `let ${section} = ` : ""
+  }${section === "employees" ? JSON.stringify(employees) : ""}${
+    section === "workers" ? JSON.stringify(workers) : ""
+  }${section === "production" ? JSON.stringify(production) : ""}`;
   let blob = new Blob([raw], { type: "application/json" });
   let uri = URL.createObjectURL(blob);
   download(uri, e.target.textContent);
