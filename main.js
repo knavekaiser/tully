@@ -1119,18 +1119,25 @@ fileInput.addEventListener("change", (e) => {
     let fr = new FileReader();
     fr.onload = function () {
       let raw = fr.result;
-      if (
-        raw.search("let employees = {") >= 0 ||
-        raw.search("let workers = {") >= 0
-      ) {
+      if (raw.search(`let ${section} = {`) >= 0) {
         if (netlifyIdentity.currentUser() !== null) {
-          section === "employees"
-            ? (employees = JSON.parse(raw.replace("let employees = ", "")))
-            : (workers = JSON.parse(raw.replace("let workers = ", "")));
+          switch (section) {
+            case "employees":
+              employees = JSON.parse(raw.replace("let employees = ", ""));
+              updateEmpList();
+              break;
+            case "workers":
+              workers = JSON.parse(raw.replace("let workers = ", ""));
+              updateWorkerList();
+              break;
+            case "production":
+              production = JSON.parse(raw.replace("let production = ", ""));
+              updateProduction();
+              break;
+          }
         }
         updateLS();
         toggleSidebar();
-        updateEmpList();
       } else {
         alert("PLease Select a valid file.");
       }
@@ -1142,46 +1149,16 @@ backup.addEventListener("click", () => {
   backupOptions.classList.toggle("active");
 });
 backupOptions.addEventListener("click", (e) => {
-  let raw = `${"dd"}`;
-  if (section === "employees") {
-    let prefix = "let employees = ";
-    let raw =
-      e.target.textContent === "App Backup"
-        ? prefix.concat(JSON.stringify(employees))
-        : JSON.stringify(employees);
-    let blob = new Blob([raw], { type: "application/json" });
-    let uri = URL.createObjectURL(blob);
-    download(
-      uri,
-      `${e.target.textContent === "App Backup "}`,
-      e.target.textContent
-    );
-    backupOptions.classList.remove("active");
-  } else if (section === "workers") {
-    let prefix = "let workers = ";
-    let raw =
-      e.target.textContent === "App Backup"
-        ? prefix.concat(JSON.stringify(workers))
-        : JSON.stringify(workers);
-    let blob = new Blob([raw], { type: "application/json" });
-    let uri = URL.createObjectURL(blob);
-    !e.target.classList.contains("active") &&
-      download(uri, e.target.textContent);
-    backupOptions.classList.remove("active");
-  } else {
-    let prefix = "let production = ";
-    let raw =
-      e.target.textContent === "App Backup"
-        ? prefix.concat(JSON.stringify(production))
-        : JSON.stringify(production);
-    let blob = new Blob([raw], { type: "application/json" });
-    let uri = URL.createObjectURL(blob);
-    !e.target.classList.contains("active") &&
-      download(uri, e.target.textContent);
-    backupOptions.classList.remove("active");
-  }
+  let raw = `${e.target.textContent === "App Backup" ? `let ${section} = ` : ""}
+  ${section === "employees" ? JSON.stringify(employees) : ""}
+  ${section === "workers" ? JSON.stringify(workers) : ""}
+  ${section === "production" ? JSON.stringify(production) : ""}`;
+  let blob = new Blob([raw], { type: "application/json" });
+  let uri = URL.createObjectURL(blob);
+  download(uri, e.target.textContent);
+  backupOptions.classList.remove("active");
 });
-function download(url, name, type) {
+function download(url, type) {
   let date = new Date();
   let a = document.createElement("a");
   a.href = url;
