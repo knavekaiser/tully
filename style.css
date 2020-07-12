@@ -480,7 +480,7 @@ table {
 #production tr {
   display: grid;
   padding: 0rem 1rem;
-  grid-template-columns: 0.7fr 0.5fr 0.5fr 0.5fr;
+  grid-template-columns: 0.7fr 0.5fr 0.4fr 0.5fr 0.5fr;
 }
 #workers_payments tr {
   grid-template-columns: 1fr 0.5fr;
@@ -583,7 +583,6 @@ td:not(:first-child) {
   position: relative;
   transition: transform, background, 0.2s;
   border-radius: 5px;
-  /* overflow: hidden; */
 }
 .tbody tr:hover {
   background: rgba(0, 0, 0, 0.05);

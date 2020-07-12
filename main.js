@@ -184,7 +184,7 @@ form_task
         .removeAttribute("disabled");
     }
   });
-
+let lastDay;
 form_production
   .querySelector('input[name="dress_name"]')
   .addEventListener("keyup", (e) => {
@@ -238,6 +238,15 @@ function updateEmpList() {
       tr.classList.add("infoRow");
       employee[0] === "iron" && tr.classList.add("iron");
       createTd(employee[0], tr, "name");
+      if (employees[employee[0]][lastDay]) {
+        createTd(
+          employees[employee[0]][lastDay].paid.toLocaleString("en-IN"),
+          tr,
+          "lastPay"
+        );
+      } else {
+        createTd(0, tr, "lastPay");
+      }
       createTd(getTotal(days, "production").toLocaleString("en-IN"), tr);
       createTd(getTotal(days, "paid").toLocaleString("en-IN"), tr);
       createTd(
@@ -1290,6 +1299,7 @@ function updateDashboard() {
   dates.sort((a, b) =>
     new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
   );
+  lastDay = dates[dates.length - 1];
   // Puts data in diffrent groups
   Object.keys(data).forEach((days, i) => {
     let arr = data[dates[i]].tasks;
