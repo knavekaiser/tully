@@ -463,7 +463,7 @@ function addTask() {
       }
     });
   }
-  if (person !== "lots" && person !== "iron") {
+  if (person !== "lots") {
     employees[person][date].paid = +form_task.querySelector(
       'input[name="recieved"]'
     ).value;
