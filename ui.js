@@ -156,6 +156,7 @@ netlifyIdentity.on("login", (user) => {
   getFromCloud("emp", netlifyIdentity.currentUser());
   getFromCloud("pro", netlifyIdentity.currentUser());
   getFromCloud("wor", netlifyIdentity.currentUser());
+  updateDashboard();
   welcomeScreen.classList.add("done");
   setTimeout(() => {
     welcomeScreen.remove();
