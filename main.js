@@ -586,9 +586,7 @@ function displayAddBtn(element) {
       section === "employees"
         ? `<div class="label"><ion-icon name="person-add-outline"></ion-icon><p>Add more people...</p></div>`
         : `<div class="label"> <ion-icon name="add-outline"></ion-icon> <p>${
-            person !== "lots" && person !== "iron"
-              ? "Add more tasks..."
-              : "Add more lots..."
+            person !== "lots" ? "Add more tasks..." : "Add more lots..."
           }</p></div>`
     }
     </td>
@@ -625,7 +623,7 @@ function createTask(date, tasks, i) {
     );
   } else {
     let pcsInLot = 0;
-    tasks[0].tasks.forEach((item, i) => item.qnt > 0 && (pcsInLot += item.qnt));
+    tasks[i].tasks.forEach((item, i) => item.qnt > 0 && (pcsInLot += item.qnt));
     createTd(
       pcsInLot.toLocaleString("en-IN"),
       tr,
