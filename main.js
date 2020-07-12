@@ -81,6 +81,8 @@ btnSidebar.addEventListener("click", () => {
     }
   } else {
     showPrimaryList();
+    itemsToAdd.innerHTML = "";
+    addAddmore("", "", "", "");
   }
 });
 function showPrimaryList() {
@@ -330,9 +332,8 @@ function addProduct() {
   }
   updateLS();
   form_production.querySelector('input[name="ref"]').value = "";
-  itemsToAdd.querySelector('input[name="dress_name"]').value = "";
-  itemsToAdd.querySelector('input[name="qnt"]').value = "";
-  itemsToAdd.querySelector('input[name="cost"]').value = "";
+  itemsToAdd.innerHTML = "";
+  addAddmore("", "", "", "");
   form_production.querySelector('input[name="recieved"]').value = "";
 }
 function updateProduction() {
@@ -474,9 +475,8 @@ function addTask() {
   for (var i = [...itemsToAdd.children].length; i > 1; i--) {
     [...itemsToAdd.children][i - 1].remove();
   }
-  itemsToAdd.querySelector('input[name="dress_name"]').value = "";
-  itemsToAdd.querySelector('input[name="qnt"]').value = "";
-  itemsToAdd.querySelector('select[name="group"]').value = "";
+  itemsToAdd.innerHTML = "";
+  addAddmore("", "", "", "");
   form_task.querySelector('input[name="recieved"]').value = "";
 }
 function updateTaskList() {
@@ -606,7 +606,7 @@ function createTask(date, tasks, i) {
     createTd(task.dress, tr, "dressName");
     createTd(task.qnt.toLocaleString("en-IN"), tr, "qnt");
     createTd(task.group, tr, "grp");
-    if (person !== "lots" && person !== "iron") {
+    if (person !== "lots") {
       createTd(
         (task.qnt > 0 ? task.qnt * priceCheck(task.group) : 0).toLocaleString(
           "en-IN"
@@ -616,7 +616,7 @@ function createTask(date, tasks, i) {
       );
     }
   });
-  if (person !== "lots" && person !== "iron") {
+  if (person !== "lots") {
     createTd(
       tasks[i].paid.toLocaleString("en-IN"),
       tr,
@@ -837,11 +837,7 @@ tableWrapper.addEventListener("touchend", (e) => {
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
   if (duration <= 350) {
-    section === "employees" &&
-      e.target.tagName !== "BUTTON" &&
-      (showEmpTasks(e),
-      (itemsToAdd.innerHTML = ""),
-      addAddmore("", "", "", ""));
+    section === "employees" && e.target.tagName !== "BUTTON" && showEmpTasks(e);
     section === "workers" && e.target.tagName !== "BUTTON" && showPayments(e);
   }
 });

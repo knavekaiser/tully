@@ -70,6 +70,9 @@ function showForm() {
       form_production.querySelector('input[name="date"]').focus();
     }, 500);
   }
+
+  itemsToAdd.children.length <= 1 && (itemsToAdd.innerHTML = ""),
+    addAddmore("", "", "", "");
 }
 let formClearTimeout;
 function hideForm() {
