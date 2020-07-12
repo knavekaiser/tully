@@ -156,7 +156,6 @@ netlifyIdentity.on("login", (user) => {
   getFromCloud("emp", netlifyIdentity.currentUser());
   getFromCloud("pro", netlifyIdentity.currentUser());
   getFromCloud("wor", netlifyIdentity.currentUser());
-  updateDashboard();
   welcomeScreen.classList.add("done");
   setTimeout(() => {
     welcomeScreen.remove();
@@ -192,7 +191,6 @@ form_login.addEventListener("submit", (e) => {
       employees[login_user.value] = data;
       login_user.classList.add("currect");
       login_pass.classList.add("currect");
-      updateDashboard();
       updateEmpList();
       welcomeScreen.classList.add("done");
       setTimeout(() => {

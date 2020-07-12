@@ -1215,6 +1215,7 @@ function getFromCloud(dir, userStatus) {
     if (dir === "emp") {
       localStorage.setItem("employees", JSON.stringify(data.record));
       employees = JSON.parse(localStorage.getItem("employees"));
+      updateDashboard();
       updateEmpList();
     } else if (dir === "pro") {
       localStorage.setItem("production", JSON.stringify(data.record));
