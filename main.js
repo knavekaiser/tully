@@ -684,6 +684,7 @@ function updatePayment() {
   payment_fabric.appendChild(tr_production);
   payment_wage.appendChild(tr_recieved);
   payment_wage.appendChild(tr_due);
+  displayAddBtn(payment_wage);
 }
 
 function displayAddBtn(element) {
@@ -698,7 +699,13 @@ function displayAddBtn(element) {
       section === "employees"
         ? `<div class="label"><ion-icon name="person-add-outline"></ion-icon><p>Add more people...</p></div>`
         : `<div class="label"> <ion-icon name="add-outline"></ion-icon> <p>${
-            person !== "lots" ? "Add more tasks..." : "Add more lots..."
+            person !== "lots"
+              ? `${
+                  section === "payments" || section === "wages"
+                    ? "Add payment."
+                    : "Add more tasks..."
+                }`
+              : "Add more lots..."
           }</p></div>`
     }
     </td>
