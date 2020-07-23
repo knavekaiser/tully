@@ -246,6 +246,14 @@ function updateEmpList() {
         days = Object.entries(employee[1]);
       tr.classList.add("infoRow");
       employee[0] === "iron" && tr.classList.add("iron");
+      document
+        .querySelector("#employee .thead thead td:nth-child(2)")
+        .setAttribute(
+          "data-date",
+          `${lastDay.split(":")[0].split("-")[2]}-${
+            lastDay.split(":")[0].split("-")[1]
+          }`
+        );
       createTd(employee[0], tr, "name");
       if (employees[employee[0]][lastDay]) {
         createTd(
@@ -324,7 +332,6 @@ function addProduct() {
       product: [],
       payments: { fabric: 0, wage: 0 },
     });
-  console.log(uploadImg.dataset.url);
   if (section === "production") {
     let itemToAdd = [...itemsToAdd.children];
     production[date].product = [];
