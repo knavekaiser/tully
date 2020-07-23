@@ -201,7 +201,7 @@ form_task
         .removeAttribute("disabled");
     }
   });
-let lastDay;
+let lastDay = "";
 form_bill
   .querySelector('input[name="dress_name"]')
   .addEventListener("keyup", (e) => {
@@ -454,8 +454,8 @@ function itemtoAddEventListener() {
         qntInput.setAttribute("required", "true");
         groupInput.removeAttribute("disabled");
         groupInput.setAttribute("required", "true");
-        wageInput.removeAttribute("disabled");
-        wageInput.setAttribute("required", "true");
+        wageInput && wageInput.removeAttribute("disabled");
+        wageInput && wageInput.setAttribute("required", "true");
         ref.removeAttribute("disabled");
         ref.setAttribute("required", "true");
         !items.parentElement.nextElementSibling &&
