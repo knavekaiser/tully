@@ -31,8 +31,14 @@
               <li class="workers_li">
                 <p>Workers</p>
               </li>
+              <li class="bill_li">
+                <p>Bill</p>
+              </li>
               <li class="production_li">
                 <p>Production</p>
+              </li>
+              <li class="wages_li">
+                <p>Wages</p>
               </li>
             </ul>
             <li class="fiscal_li">
@@ -105,7 +111,7 @@
           </div>
         </header>
         <div class="table_container">
-          <div id="employee_section" class="table_wrapper">
+          <div class="table_wrapper">
             <section id="employee">
               <div class="thead">
                 <table>
@@ -192,9 +198,7 @@
                       <td>Date</td>
                       <td>Dress</td>
                       <td>Pcs.</td>
-                      <td>Cost</td>
                       <td>Total</td>
-                      <td>Paid</td>
                     </tr>
                   </thead>
                 </table>
@@ -203,6 +207,67 @@
                 <table>
                   <tbody></tbody>
                 </table>
+              </div>
+            </section>
+            <section id="production_detail" >
+              <div class="banner">
+                <a href="" target="_blank" class="ref">no.</a>
+                <p class="date">13-09-20</p>
+              </div>
+              <div class="thead">
+                <table>
+                  <thead>
+                    <tr>
+                      <td>Dress</td>
+                      <td>Pcs.</td>
+                      <td>Cost</td>
+                      <td>Taka</td>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div class="tbody">
+                <table>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </section>
+            <section id="payments">
+              <div class="fabric">
+                <div class="thead">
+                  <table>
+                    <thead>
+                      <tr>
+                        <td>Ref.</td>
+                        <td>Date</td>
+                        <td>Qnt.</td>
+                        <td>total</td>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+                <div class="tbody">
+                  <table>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="wage">
+                <div class="thead">
+                  <table>
+                    <thead>
+                      <tr>
+                        <td>Date</td>
+                        <td>Taka</td>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+                <div class="tbody">
+                  <table>
+                    <tbody></tbody>
+                  </table>
+                </div>
               </div>
             </section>
           </div>
@@ -290,7 +355,7 @@
           <ion-icon name="add-outline"></ion-icon>
         </button>
       </form>
-      <form id="form_payment" class="form hidden" autocomplete="off">
+      <form id="form_worker_payment" class="form hidden" autocomplete="off">
         <input type="date" class="start" name="date" required />
         <input type="date" class="end" name="date" />
         <input
@@ -304,8 +369,12 @@
           <ion-icon name="add-outline"></ion-icon>
         </button>
       </form>
-      <form id="form_production" class="form hidden" autocomplete="off">
+      <form id="form_bill" class="form hidden" autocomplete="off">
         <input type="date" name="date" required />
+        <input id="uploadImg" type="file" name="Add image" accept=".jpg, .png" value="">
+        <button type="button" class="uploadImg" name="button">
+          <ion-icon name="image-outline"></ion-icon>
+        </button>
         <input type="number" class="ref" name="ref" placeholder="Ref." min="0" required />
         <div class="itemsToAdd">
           <div class="itemToAdd">
@@ -314,7 +383,14 @@
             <input type="number" name="cost" placeholder="Cost" min="0" required />
           </div>
         </div>
-        <input type="number" name="recieved" placeholder="Payment" min="0" required/>
+        <button type="submit" name="button">
+          <ion-icon name="add-outline"></ion-icon>
+        </button>
+      </form>
+      <form id="form_payment" class="form hidden"  autocomplete="off">
+        <input type="date" name="date" required />
+        <input type="number" name="fabric" placeholder="Fabric" min="0" required />
+        <input type="number" name="wage" placeholder="Wage" min="0" required />
         <button type="submit" name="button">
           <ion-icon name="add-outline"></ion-icon>
         </button>

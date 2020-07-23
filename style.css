@@ -238,16 +238,17 @@ body {
   height: 0;
   overflow: hidden;
   transition: height 0.35s ease-out;
+  background: rgba(255, 255, 255, 0.2);
 }
 .sidebar .sections.active {
-  height: 135px;
+  height: 225px;
 }
 .sidebar .fiscalYear.active {
   height: 135px;
 }
 .sidebar .backup_options.active {
   height: 90px;
-  /* overflow: visible; */
+  overflow: visible;
 }
 .sidebar li:hover {
   transform: scale(1.1);
@@ -255,7 +256,7 @@ body {
 .sidebar li:active {
   transform: scale(0.9);
 }
-.upload {
+input[type="file"] {
   height: 0;
   width: 0;
   display: none;
@@ -358,6 +359,7 @@ a h3 {
   word-break: keep-all;
   transition: opacity 0.2s ease-in-out;
   opacity: 1;
+  line-height: 1.2rem;
 }
 header a {
   position: relative;
@@ -448,12 +450,12 @@ a {
   transition: left 0.5s;
   left: 0;
 }
-
 #employee,
 #tasks,
 #workers,
 #workers_payments,
-#production {
+#production,
+#production_detail {
   height: 100%;
   width: 50%;
   display: grid;
@@ -461,9 +463,14 @@ a {
   grid-template-rows: 2.5rem calc(100% - 2.5rem);
   max-height: 100%;
 }
+#production_detail {
+  grid-template-rows: 2.5rem 2.5rem calc(100% - 2.5rem);
+}
 #workers,
 #workers_payments,
-#production {
+#production,
+#production_detail,
+#payments {
   display: none;
 }
 table {
@@ -477,13 +484,19 @@ table {
 #employee tr,
 #workers tr,
 #workers_payments tr,
-#production tr {
+#production tr,
+#production_detail tr,
+#payments tr {
   display: grid;
   padding: 0rem 1rem;
-  grid-template-columns: 0.7fr 0.5fr 0.4fr 0.5fr 0.5fr;
+  grid-template-columns: 0.6fr 0.5fr 0.4fr 0.5fr 0.5fr;
+}
+#workers tr {
+  grid-template-columns: 0.7fr 0.4fr 0.5fr 0.5fr;
 }
 #workers_payments tr {
   grid-template-columns: 1fr 0.5fr;
+  grid-template-areas: "dt py";
 }
 #workers_payments .thead {
   white-space: nowrap;
@@ -494,13 +507,29 @@ table {
   display: grid;
   padding: 0rem 1rem;
   grid-template-columns: 0.9fr 0.8fr 0.4fr 0.4fr 0.5fr 0.5fr;
+  grid-template-areas: "dt dr qt gr tl py";
   grid-template-rows: repeat(auto, auto);
 }
 #production tr {
-  grid-template-columns: 0.2fr 0.4fr 0.7fr 0.25fr 0.25fr 0.4fr 0.4fr;
+  grid-template-columns: 0.2fr 0.4fr 0.7fr 0.25fr 0.4fr;
+  grid-template-areas: "rf dt dr qt tl";
+}
+#production_detail tr {
+  grid-template-columns: 0.5fr 0.3fr 0.25fr 0.3fr;
+  grid-template-areas: "dr qt co tl";
 }
 #tasks.lots tr {
   grid-template-columns: 0.7fr 0.8fr 0.45fr 0.4fr 0.5fr;
+  grid-template-areas: "dt dr qt gr tl";
+}
+#payments tr {
+  padding: 0 0.5rem;
+  grid-template-columns: 0.2fr 0.4fr 0.2fr 0.3fr;
+  grid-template-areas: "rf dt qt tl";
+}
+#payments .wage tr {
+  grid-template-columns: 0.5fr 0.5fr;
+  grid-template-areas: "dt tl";
 }
 #tasks.lots .thead {
   background: radial-gradient(
@@ -514,60 +543,100 @@ table {
   display: none;
 }
 #production .thead td:nth-child(2),
-#production .thead td:nth-child(3) {
+#production .thead td:nth-child(3),
+#payments .fabric .thead td:nth-child(2) {
   text-align: left !important;
 }
-#production .thead td:nth-child(4),
-#production .thead td:nth-child(5) {
+#production .thead td:nth-child(4) {
   text-align: center;
 }
-.paid {
-  grid-column: 6;
-}
-#production .ref {
-  grid-column: 1;
-  font-family: stamp;
-  font-size: 1.4rem;
-  text-align: left;
-}
-
-.product .date {
-  grid-column: 2;
-  text-align: left;
-}
-.product .dressName {
-  grid-column: 3;
-}
-.product .qnt {
-  grid-column: 4;
-  text-align: center;
-}
-.product .total {
-  grid-column: 6;
-}
-.product .cost {
-  text-align: center;
-}
-.product .paid {
-  grid-column: 7;
+.date {
+  grid-area: dt;
 }
 .dressName {
-  grid-column: 2;
+  grid-area: dr;
+  grid-row: auto;
   text-align: left !important;
 }
 .qnt {
-  grid-column: 3;
-  text-align: center !important;
+  text-align: center;
+  grid-area: qt;
+  grid-row: auto;
 }
 .grp {
-  grid-column: 4;
+  grid-area: gr;
+  grid-row: auto;
   text-align: center !important;
 }
 .total {
-  grid-column: 5;
+  grid-area: tl;
+  grid-row: auto;
+  text-align: right;
+}
+.cost {
+  text-align: center;
+  grid-template-areas: co;
+  grid-row: auto;
+}
+.paid {
+  grid-area: py;
+  grid-row: auto;
+}
+#payments {
+  height: 100%;
+  width: 50%;
+  grid-template-columns: 0.6fr 0.4fr;
+}
+#payments .fabric {
+  border-right: 1px solid gray;
+}
+.production,
+.recieved {
+  background: linear-gradient(
+    153deg,
+    rgba(0, 240, 27, 0.2) 0%,
+    rgba(182, 1, 1, 0) 100%
+  );
+}
+.due {
+  background: linear-gradient(
+    153deg,
+    rgba(240, 1, 27, 0.2) 0%,
+    rgba(182, 1, 1, 0) 100%
+  );
 }
 td:not(:first-child) {
   text-align: right;
+}
+.banner {
+  background: linear-gradient(
+    350deg,
+    rgba(0, 240, 27, 0.2) 0%,
+    rgba(182, 1, 1, 0) 100%
+  );
+  padding: 0.5rem 1rem;
+  display: grid;
+  grid-template-areas: "no dt";
+}
+.banner .ref {
+  grid-area: no;
+  position: relative;
+  transform: translateX(26px);
+}
+.banner .date {
+  text-align: right;
+}
+.deduction {
+  text-align: right !important;
+}
+.banner .ref::before {
+  content: "Nō";
+  display: block;
+  position: absolute;
+  left: -26px;
+  top: 3px;
+  font-family: roboto;
+  font-size: 1rem;
 }
 .tbody tr td {
   max-width: 100%;
@@ -747,18 +816,26 @@ form {
   grid-template-columns: 1fr 1fr;
   grid-template-areas: "nm nm" "dt sl" "bt bt";
 }
-#form_payment {
+#form_worker_payment {
   grid-template-columns: 1fr 1fr;
   grid-template-areas: "d1 d2" "py py" "bt bt";
 }
-#form_production {
-  grid-template-columns: 1fr 0.2fr;
-  grid-template-areas: "dt rf" "it it" "py py" "bt bt";
+#form_bill {
+  grid-template-columns: 0.25fr 0.25fr 0.25fr 0.25fr;
+  grid-template-areas: "dt dt rf im" "it it it it" "bt bt bt bt";
 }
-#form_production .ref {
+#form_payment {
+  grid-template-columns: 1fr;
+  grid-auto-rows: 1fr;
+  grid-template-areas: "dt dt" "py py" "bt bt";
+}
+#form_bill .ref {
+  text-align: center !important;
+}
+.ref {
   font-family: stamp;
   font-size: 1.5rem;
-  text-align: center;
+  text-align: left !important;
 }
 form input[type="date"].start {
   grid-area: d1;
@@ -799,8 +876,8 @@ form input[name="date"] {
   grid-auto-flow: column;
   display: grid;
 }
-#form_production .itemToAdd {
-  grid-template-columns: 1fr 0.38fr 0.55fr;
+#form_bill .itemToAdd {
+  grid-template-columns: 0.8fr 0.35fr 0.35fr 0.3fr;
 }
 .itemToAdd.semi {
   opacity: 0.7;
@@ -852,6 +929,60 @@ form input[name="recieved"] {
 #form_task button {
   grid-area: bt;
   height: 2.4rem;
+}
+#form_bill button.uploadImg {
+  grid-area: im;
+  font-size: 1.3rem;
+  position: relative;
+  z-index: 10;
+}
+#form_bill button.uploadImg::before {
+  content: "";
+  display: block;
+  position: absolute;
+  background: white;
+  z-index: -1;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+}
+#form_bill button.uploading {
+  background: orange;
+}
+#form_bill button.uploading::before {
+  animation: uploading 1s ease-in-out infinite;
+}
+#form_bill button.uploaded {
+  background: #05fe67;
+}
+#form_bill button.uploaded::before {
+  transform: scale(0.92, 0.85);
+  animation: uploaded 4s ease-in-out forwards;
+}
+#form_bill button.uploadFailed {
+  background: red;
+}
+#form_bill button.uploadFailed::before {
+  transform: scale(0.92, 0.85);
+}
+@keyframes uploaded {
+  0% {
+    transform: scale(0.92, 0.85);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+@keyframes uploading {
+  0% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(0.92, 0.85);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
 }
 .forms form button:hover {
   background: #4bff92;
@@ -1008,7 +1139,6 @@ form input[name="recieved"] {
   height: calc(var(--vh, 1vh) * 100);
   width: 100%;
   z-index: 10;
-  display: none;
   transition: opacity, transform, 0.25s ease-out;
   transform: scale(0.9);
   opacity: 0;

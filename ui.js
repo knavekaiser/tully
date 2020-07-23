@@ -13,6 +13,7 @@ function toggleSidebar() {
     : ((innerContainer.style.left = `${
         window.innerWidth <= 480 ? -9.7 : -9
       }rem`),
+      sections.classList.remove("active"),
       sidebarSpan.classList.remove("active"),
       portrait.classList.remove("active"),
       fiscalYears.classList.remove("active"),
@@ -59,20 +60,25 @@ function showForm() {
     setTimeout(() => {
       form_worker.querySelector('input[name="worker"]').focus();
     }, 500);
-  } else if (section === "payments") {
-    setTimeout(() => form_payment.classList.toggle("hidden"), 0);
+  } else if (section === "workerPayments") {
+    setTimeout(() => form_worker_payment.classList.toggle("hidden"), 0);
     setTimeout(() => {
-      form_payment.querySelector('input[name="recieved"]').focus();
+      form_worker_payment.querySelector('input[name="recieved"]').focus();
     }, 500);
   } else if (section === "production") {
-    setTimeout(() => form_production.classList.toggle("hidden"), 0);
+    setTimeout(() => form_bill.classList.toggle("hidden"), 0);
     setTimeout(() => {
-      form_production.querySelector('input[name="date"]').focus();
+      form_bill.querySelector('input[name="date"]').focus();
+    }, 500);
+  } else if (section === "payments" || section === "wages") {
+    setTimeout(() => form_payment.classList.toggle("hidden"), 0);
+    setTimeout(() => {
+      form_payment.querySelector('input[name="date"]').focus();
     }, 500);
   }
 
-  itemsToAdd.children.length <= 1 && (itemsToAdd.innerHTML = ""),
-    addAddmore("", "", "", "");
+  itemsToAdd.children.length <= 1 &&
+    ((itemsToAdd.innerHTML = ""), addAddmore("", "", "", ""));
 }
 let formClearTimeout;
 function hideForm() {
@@ -80,8 +86,9 @@ function hideForm() {
   form_emp.classList.add("hidden");
   form_task.classList.add("hidden");
   form_worker.classList.add("hidden");
+  form_worker_payment.classList.add("hidden");
+  form_bill.classList.add("hidden");
   form_payment.classList.add("hidden");
-  form_production.classList.add("hidden");
   formsSpan.classList.remove("active");
   formClearTimeout = setTimeout(() => {
     form_emp.reset();
@@ -119,18 +126,25 @@ function defaultDateValue() {
     }-${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}`;
   form_task.querySelector('input[type="date"]').value = dateFormatted;
   form_worker.querySelector('input[type="date"]').value = dateFormatted;
-  form_payment.querySelector('input[type="date"].start').value = dateFormatted;
-  form_payment.querySelector('input[type="date"].end').value = dateFormatted;
-  form_production.querySelector('input[type="date"]').value = dateFormatted;
+  form_worker_payment.querySelector(
+    'input[type="date"].start'
+  ).value = dateFormatted;
+  form_worker_payment.querySelector(
+    'input[type="date"].end'
+  ).value = dateFormatted;
+  form_bill.querySelector('input[type="date"]').value = dateFormatted;
+  form_payment.querySelector('input[type="date"]').value = dateFormatted;
   return dateFormatted;
 }
 defaultDateValue();
-form_payment
+form_worker_payment
   .querySelector('input[type="date"].start')
   .addEventListener("change", (e) => {
-    form_payment.querySelector(
+    form_worker_payment.querySelector(
       'input[type="date"].end'
-    ).value = form_payment.querySelector('input[type="date"].start').value;
+    ).value = form_worker_payment.querySelector(
+      'input[type="date"].start'
+    ).value;
   });
 
 const loginForm = document.querySelector("#loginForm"),
@@ -249,9 +263,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
 sections.addEventListener("click", (e) => {
   let target = e.target.tagName === "P" ? e.target.parentElement : e.target;
-  document.querySelectorAll("#employee_section section").forEach((section) => {
+  tableWrapper.querySelectorAll("section").forEach((section) => {
     section.style.display = "none";
   });
+  nameTag.parentElement.style.transform = `translateX(-${
+    window.innerWidth >= 500 ? 50 : 100
+  }%) translateY(-25%)`;
+  nameTag.classList.add("disabled");
+  document.querySelector("header a div h1").classList.remove("disabled");
   if (target.classList.contains("workers_li")) {
     tableWrapper.querySelector("#workers").style.display = "grid";
     tableWrapper.querySelector("#workers_payments").style.display = "grid";
@@ -264,11 +283,44 @@ sections.addEventListener("click", (e) => {
     section = "employees";
     section_li.textContent = "Contractors";
     updateEmpList();
-  } else if (target.classList.contains("production_li")) {
+  } else if (target.classList.contains("bill_li")) {
     tableWrapper.querySelector("#production").style.display = "grid";
+    tableWrapper.querySelector("#production_detail").style.display = "grid";
     section = "production";
-    section_li.textContent = "Production";
+    section_li.textContent = "Bill";
     updateProduction();
+  } else if (
+    target.classList.contains("production_li") ||
+    target.classList.contains("wages_li")
+  ) {
+    tableWrapper.querySelector("#payments").style.display = "grid";
+    if (target.classList.contains("production_li")) {
+      section = "payments";
+      section_li.textContent = "Production";
+      form_payment.querySelector("input[name='fabric']").style.display =
+        "block";
+      form_payment
+        .querySelector("input[name='fabric']")
+        .setAttribute("required", true);
+      form_payment.querySelector("input[name='wage']").style.display = "none";
+      form_payment
+        .querySelector("input[name='wage']")
+        .removeAttribute("required");
+      changeNameTag("Production");
+    } else {
+      section = "wages";
+      form_payment.querySelector("input[name='wage']").style.display = "block";
+      form_payment
+        .querySelector("input[name='wage']")
+        .setAttribute("required", true);
+      form_payment.querySelector("input[name='fabric']").style.display = "none";
+      form_payment
+        .querySelector("input[name='fabric']")
+        .removeAttribute("required");
+      section_li.textContent = "Wages";
+      changeNameTag("Wages");
+    }
+    updatePayment();
   }
   document.querySelector(".sections").classList.remove("active");
   resizeWindow();
@@ -277,8 +329,53 @@ sections.addEventListener("click", (e) => {
     `${
       section === "employees" || section === "task"
         ? "#form_task"
-        : "#form_production"
+        : "#form_bill"
     } .itemsToAdd`
   );
   itemtoAddEventListener();
+});
+
+const uploadImg = document.querySelector("#uploadImg");
+const uploadImgBtn = document.querySelector("#form_bill button.uploadImg");
+document
+  .querySelector(".uploadImg")
+  .addEventListener("click", () => uploadImg.click());
+uploadImg.addEventListener("change", (e) => {
+  if (uploadImg.files) {
+    const formdata = new FormData();
+    formdata.append("image", uploadImg.files[0]);
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        Authorization: "Client-ID 057a33e6c517454",
+      },
+      body: formdata,
+      redirect: "follow",
+    };
+    uploadImgBtn.classList.add("uploading");
+    uploadImgBtn.setAttribute("disabled", true);
+    form_bill
+      .querySelector("button[type='submit']")
+      .setAttribute("disabled", true);
+    fetch("https://api.imgur.com/3/image", requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        uploadImg.setAttribute("data-url", result.data.link);
+        uploadImgBtn.classList.remove("uploading");
+        uploadImgBtn.classList.add("uploaded");
+        setTimeout(() => uploadImgBtn.classList.remove("uploaded"), 4000);
+        uploadImgBtn.removeAttribute("disabled");
+        form_bill
+          .querySelector("button[type='submit']")
+          .removeAttribute("disabled");
+      })
+      .catch((error) => {
+        uploadImgBtn.classList.remove("uploading");
+        uploadImgBtn.classList.add("uploadFailed");
+        uploadImgBtn.removeAttribute("disabled");
+        form_bill
+          .querySelector("button[type='submit']")
+          .removeAttribute("disabled");
+      });
+  }
 });

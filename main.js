@@ -7,14 +7,18 @@ const tableWrapper = document.querySelector(".table_wrapper"),
   empList = document.querySelector("#employee .tbody tbody"),
   taskList = document.querySelector("#tasks .tbody tbody"),
   workerList = document.querySelector("#workers .tbody tbody"),
-  paymentList = document.querySelector("#workers_payments .tbody tbody"),
+  workerPayment = document.querySelector("#workers_payments .tbody tbody"),
+  payment_fabric = document.querySelector("#payments .fabric .tbody tbody"),
+  payment_wage = document.querySelector("#payments .wage .tbody tbody"),
   productionList = document.querySelector("#production .tbody tbody"),
+  productionDetail = document.querySelector("#production_detail .tbody tbody"),
   form_login = document.querySelector("#loginForm"),
   form_emp = document.querySelector("#form_employee"),
   form_task = document.querySelector("#form_task"),
   form_worker = document.querySelector("#form_worker"),
+  form_worker_payment = document.querySelector("#form_worker_payment"),
+  form_bill = document.querySelector("#form_bill"),
   form_payment = document.querySelector("#form_payment"),
-  form_production = document.querySelector("#form_production"),
   showPass = document.querySelector(".passDiv ion-icon"),
   formsSpan = document.querySelector(".forms span"),
   btnSidebar = document.querySelector(".btn_sidebar"),
@@ -30,7 +34,7 @@ const tableWrapper = document.querySelector(".table_wrapper"),
   backup = document.querySelector(".backup_li"),
   backupOptions = document.querySelector(".backup_options"),
   upload_li = document.querySelector(".upload_li"),
-  fileInput = document.querySelector('input[type="file"]'),
+  fileInput = document.querySelector("input.upload"),
   clearAll = document.querySelector(".clear"),
   logout = document.querySelector(".logout"),
   cls_dashboard = document.querySelector(".cls_dashboard"),
@@ -48,13 +52,11 @@ let section = "employees",
   fiscalYear = "2020-21",
   edit = false,
   itemsToAdd = document.querySelector(
-    `${
-      section === "production" ? "#form_production" : "#form_task"
-    } .itemsToAdd`
+    `${section === "production" ? "#form_bill" : "#form_task"} .itemsToAdd`
   );
 
-function chageNameTag() {
-  nameTag.textContent = person.toUpperCase();
+function changeNameTag(name) {
+  nameTag.textContent = name.toUpperCase();
   nameTag.parentElement.style.transform = `translateX(-${
     window.innerWidth >= 500 ? 50 : 100
   }%) translateY(-75%)`;
@@ -65,14 +67,16 @@ btnSidebar.addEventListener("click", () => {
   if (
     section === "employees" ||
     section === "workers" ||
-    section === "production"
+    section === "production" ||
+    section === "payments" ||
+    section === "wages"
   ) {
     toggleSidebar();
     if (netlifyIdentity.currentUser() !== null) {
       if (btnSidebar.children[0].classList.contains("unsaved")) {
         if (section === "employees" || section === "task") {
           updateCloud("emp", netlifyIdentity.currentUser());
-        } else if (section === "workers" || section === "payments") {
+        } else if (section === "workers" || section === "workerPayments") {
           updateCloud("wor", netlifyIdentity.currentUser());
         } else if (section === "production") {
           updateCloud("pro", netlifyIdentity.currentUser());
@@ -93,7 +97,8 @@ function showPrimaryList() {
   nameTag.classList.add("disabled");
   document.querySelector("header a div h1").classList.remove("disabled");
   section === "task" && ((section = "employees"), updateEmpList());
-  section === "payments" && ((section = "workers"), updateWorkerList());
+  section === "workerPayments" && ((section = "workers"), updateWorkerList());
+  section === "production_detail" && (section = "production");
   tableWrapper.style.left = "0";
   btnSidebar.classList.remove("back");
   person = "";
@@ -141,15 +146,15 @@ form_worker.addEventListener("submit", (e) => {
   edit = false;
   btnSidebar.children[0].classList.add("unsaved");
 });
-form_payment.addEventListener("submit", (e) => {
+form_worker_payment.addEventListener("submit", (e) => {
   e.preventDefault();
-  addPayment();
-  updatePaymentList();
+  addWorkerPayment();
+  updateWorkerPayment();
   hideForm();
   edit = false;
   btnSidebar.children[0].classList.add("unsaved");
 });
-form_production.addEventListener("submit", (e) => {
+form_bill.addEventListener("submit", (e) => {
   e.preventDefault();
   addProduct();
   updateProduction();
@@ -157,10 +162,20 @@ form_production.addEventListener("submit", (e) => {
   edit = false;
   btnSidebar.children[0].classList.add("unsaved");
 });
+form_payment.addEventListener("submit", (e) => {
+  e.preventDefault();
+  addProduct();
+  updatePayment();
+  hideForm();
+  edit = false;
+  btnSidebar.children[0].classList.add("unsaved");
+});
 lots_li.addEventListener("click", (e) => {
-  toggleSidebar();
+  document.querySelector(".contractors_li").click();
   person = "lots";
   showEmpTasks(e);
+  toggleSidebar();
+  toggleSidebar();
   form_task.classList.add("lots");
   form_task.querySelector('input[name="recieved"]').removeAttribute("required");
   form_task
@@ -187,31 +202,23 @@ form_task
     }
   });
 let lastDay;
-form_production
+form_bill
   .querySelector('input[name="dress_name"]')
   .addEventListener("keyup", (e) => {
-    if (
-      form_production.querySelector('input[name="dress_name"]').value === "-"
-    ) {
-      form_production
+    if (form_bill.querySelector('input[name="dress_name"]').value === "-") {
+      form_bill
         .querySelector('input[name="qnt"]')
         .setAttribute("disabled", true);
-      form_production
+      form_bill
         .querySelector('input[name="cost"]')
         .setAttribute("disabled", true);
-      form_production
+      form_bill
         .querySelector('input[name="ref"]')
         .setAttribute("disabled", true);
     } else {
-      form_production
-        .querySelector('input[name="qnt"]')
-        .removeAttribute("disabled");
-      form_production
-        .querySelector('input[name="cost"]')
-        .removeAttribute("disabled");
-      form_production
-        .querySelector('input[name="ref"]')
-        .removeAttribute("disabled");
+      form_bill.querySelector('input[name="qnt"]').removeAttribute("disabled");
+      form_bill.querySelector('input[name="cost"]').removeAttribute("disabled");
+      form_bill.querySelector('input[name="ref"]').removeAttribute("disabled");
     }
   });
 function addWorker() {
@@ -305,19 +312,20 @@ function updateWorkerList() {
 
 function addProduct() {
   let date =
-    form_production.querySelector('input[name="date"]').value +
-    ":" +
-    fiscalYear;
+    section === "production"
+      ? form_bill.querySelector('input[name="date"]').value + ":" + fiscalYear
+      : form_payment.querySelector('input[name="date"]').value +
+        ":" +
+        fiscalYear;
   !(date in production) &&
     (production[date] = {
-      ref: form_production.querySelector('input[name="ref"]').value,
+      ref: +form_bill.querySelector('input[name="ref"]').value || 0,
+      img: uploadImg.dataset.url || "",
       product: [],
-      paid: form_production.querySelector('input[name="recieved"]').value,
+      payments: { fabric: 0, wage: 0 },
     });
-  if (
-    itemsToAdd.children[0].querySelector('input[name="dress_name"]').value !==
-    "-"
-  ) {
+  console.log(uploadImg.dataset.url);
+  if (section === "production") {
     let itemToAdd = [...itemsToAdd.children];
     production[date].product = [];
     itemToAdd.forEach((item, i) => {
@@ -325,17 +333,27 @@ function addProduct() {
         production[date].product.push({
           dress: item.querySelector('input[name="dress_name"]').value,
           qnt: +item.querySelector('input[name="qnt"]').value,
-          cost: item.querySelector('input[name="cost"]').value,
+          cost: +item.querySelector('input[name="cost"]').value,
+          wage: +item.querySelector('input[name="wage"]').value,
         });
       }
     });
+  } else {
+    section === "payments"
+      ? (production[date].payments.fabric = +form_payment.querySelector(
+          'input[name="fabric"]'
+        ).value)
+      : (production[date].payments.wage = +form_payment.querySelector(
+          'input[name="wage"]'
+        ).value);
   }
+
   updateLS();
-  form_production.querySelector('input[name="ref"]').value = "";
+  form_bill.querySelector('input[name="ref"]').value = "";
   itemsToAdd.innerHTML = "";
   addAddmore("", "", "", "");
-  form_production.querySelector('input[name="recieved"]').value = "";
 }
+
 function updateProduction() {
   productionList.innerHTML = "";
   const dates = Object.keys(production);
@@ -351,35 +369,46 @@ function updateProduction() {
   });
   displayAddBtn(productionList);
 }
+
 function addAddmore(dressName = "", qnt = "", group = "", className = "") {
   const itemToAdd = document.createElement("div");
   itemToAdd.classList.add("itemToAdd");
   className && itemToAdd.classList.add(className);
-  section === "task"
-    ? (itemToAdd.innerHTML = `
+  if (section === "task") {
+    itemToAdd.innerHTML = `
 <input type="text" name="dress_name" maxlength="25" placeholder="Add more item" value="${dressName}"/>
-<input type="number" name="qnt" placeholder="Pcs." min="0" value="${qnt}" disabled/>
-<select class="groups" name="group" placeholder="group" disabled>
+<input type="number" name="qnt" placeholder="Pcs." min="0" value="${qnt}" ${
+      dressName.length === 0 && "disabled"
+    }/>
+<select class="groups" name="group" placeholder="group" ${
+      dressName.length === 0 && "disabled"
+    }>
 <option value="" hidden >Group</option>
 ${
-  person !== "iron" &&
-  `<option value="S" ${group === "S" && "SELECTED"}>Small</option>
+  person !== "iron"
+    ? `<option value="S" ${group === "S" && "SELECTED"}>Small</option>
 <option value="L" ${group === "L" && "SELECTED"}>Large</option>
 <option value="F" ${group === "F" && "SELECTED"}>Fancy</option>
 <option value="1" ${group === "1" && "SELECTED"}>One Pc.</option>`
-}
-${
-  person === "iron" &&
-  `<option value="iS" ${group === "iS" && "SELECTED"}>Iron Small</option>
+    : `<option value="iS" ${group === "iS" && "SELECTED"}>Iron Small</option>
 <option value="iL" ${group === "iL" && "SELECTED"}>Iron Large</option>`
 }
 </select>
-`)
-    : (itemToAdd.innerHTML = `
-  <input type="text" name="dress_name" maxlength="25" placeholder="Add more item" value="${dressName}"/>
-  <input type="number" name="qnt" placeholder="Pcs." min="0" value="${qnt}" disabled/>
-  <input type="number" name="cost" placeholder="Cost" min="0" value="${group}" required disabled/>
-  `);
+`;
+  } else {
+    itemToAdd.innerHTML = `
+<input type="text" name="dress_name" maxlength="25" placeholder="Item" value="${dressName}"/>
+<input type="number" name="qnt" placeholder="Pcs." min="0" value="${qnt}" ${
+      dressName.length === 0 && "disabled"
+    }/>
+<input type="number" name="cost" placeholder="Cost" min="0" value="${group}" required ${
+      dressName.length === 0 && "disabled"
+    }/>
+<input type="number" name="wage" placeholder="Wage" min="0" value="${className}" required ${
+      dressName.length === 0 && "disabled"
+    }/>
+`;
+  }
   itemsToAdd.appendChild(itemToAdd);
   itemsToAdd
     .querySelector(".itemToAdd:last-child")
@@ -394,16 +423,19 @@ function itemtoAddEventListener() {
     .querySelector(".itemToAdd:last-child")
     .querySelector("input[name='dress_name']");
   items.addEventListener("keyup", (e) => {
-    const [qntInput, groupInput, ref] = [
+    const [qntInput, groupInput, wageInput, ref] = [
       e.target.parentElement.children[1],
       e.target.parentElement.children[2],
-      form_production.querySelector('input[name="ref"]'),
+      e.target.parentElement.children[3],
+      form_bill.querySelector('input[name="ref"]'),
     ];
     if (e.target.value === "-") {
       qntInput.removeAttribute("required");
       qntInput.setAttribute("disabled", true);
       groupInput.removeAttribute("required");
       groupInput.setAttribute("disabled", true);
+      wageInput.removeAttribute("required");
+      wageInput.setAttribute("disabled", true);
       ref.removeAttribute("required");
       ref.setAttribute("disabled", true);
       [...e.target.parentElement.parentElement.children].length > 1 &&
@@ -415,6 +447,8 @@ function itemtoAddEventListener() {
         qntInput.setAttribute("required", "true");
         groupInput.removeAttribute("disabled");
         groupInput.setAttribute("required", "true");
+        wageInput.removeAttribute("disabled");
+        wageInput.setAttribute("required", "true");
         ref.removeAttribute("disabled");
         ref.setAttribute("required", "true");
         !items.parentElement.nextElementSibling &&
@@ -426,8 +460,10 @@ function itemtoAddEventListener() {
           e.target.removeAttribute("required");
           qntInput.removeAttribute("required");
           groupInput.removeAttribute("required");
+          wageInput.removeAttribute("required");
           qntInput.setAttribute("disabled", true);
           groupInput.setAttribute("disabled", true);
+          wageInput.setAttribute("disabled", true);
         }
       }
     }
@@ -498,10 +534,10 @@ function updateTaskList() {
   });
   displayAddBtn(taskList);
 }
-function addPayment() {
-  let start = form_payment.querySelector('input[type="date"].start'),
-    end = form_payment.querySelector('input[type="date"].end'),
-    payment = form_payment.querySelector('input[type="number"]');
+function addWorkerPayment() {
+  let start = form_worker_payment.querySelector('input[type="date"].start'),
+    end = form_worker_payment.querySelector('input[type="date"].end'),
+    payment = form_worker_payment.querySelector('input[type="number"]');
   if (payment.value > 0) {
     workers[person].paid.push({ date: start.value, paid: payment.value });
   } else {
@@ -527,8 +563,8 @@ function addPayment() {
   payment.value = "";
 }
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-function updatePaymentList() {
-  paymentList.innerHTML = "";
+function updateWorkerPayment() {
+  workerPayment.innerHTML = "";
   workers[person].paid.sort((a, b) =>
     new Date(a.date) < new Date(b.date) ? -1 : 1
   );
@@ -543,7 +579,7 @@ function updatePaymentList() {
       `${payment.date} date`
     );
     createTd(payment.paid, tr, "payment");
-    paymentList.appendChild(tr);
+    workerPayment.appendChild(tr);
   });
   if (workers[person].abs.length > 0) {
     workers[person].abs.sort((a, b) => (new Date(a) < new Date(b) ? -1 : 1));
@@ -569,9 +605,78 @@ function updatePaymentList() {
         "abs_date"
       );
     });
-    paymentList.appendChild(tr);
+    workerPayment.appendChild(tr);
   }
-  displayAddBtn(paymentList);
+  displayAddBtn(workerPayment);
+}
+function updatePayment() {
+  payment_fabric.innerHTML = "";
+  payment_wage.innerHTML = "";
+  const grandTotal = { production: 0, paid: 0 },
+    dates = Object.keys(production);
+  dates.sort((a, b) =>
+    new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
+  );
+  dates.forEach((date, i) => {
+    const [fabric, wage] = [
+      production[date].payments.fabric,
+      production[date].payments.wage,
+    ];
+    const dateFormatted = `${date.split(":")[0].split("-")[2]}-${
+      date.split(":")[0].split("-")[1]
+    }-${date.split(":")[0].split("-")[0].slice(-2)}`;
+    let totalQnt = 0,
+      totalProduct = 0;
+    production[date].product.forEach((item) => {
+      totalQnt += item.qnt;
+      totalProduct +=
+        section === "payments"
+          ? item.qnt * item.cost - item.wage * item.qnt
+          : item.wage * item.qnt;
+    });
+    grandTotal.production += totalProduct;
+    grandTotal.paid += section === "payments" ? fabric : wage;
+    const tr = document.createElement("tr");
+    createTd(dateFormatted, tr, `${date} date`);
+    createTd(production[date].ref, tr, `ref`);
+    createTd(totalQnt.toLocaleString("en-IN"), tr, `qnt`);
+    createTd(totalProduct.toLocaleString("en-IN"), tr, "total");
+    production[date].product.length > 0 && payment_fabric.appendChild(tr);
+    if (section === "payments" && fabric > 0) {
+      const tr = document.createElement("tr");
+      tr.classList.add("infoRow");
+      createTd(dateFormatted, tr, `${date} date`);
+      createTd(fabric.toLocaleString("en-IN"), tr, "payment_fabric");
+      payment_wage.appendChild(tr);
+    } else if (section === "wages" && wage > 0) {
+      const tr = document.createElement("tr");
+      tr.classList.add("infoRow");
+      createTd(dateFormatted, tr, `${date} date`);
+      createTd(wage.toLocaleString("en-IN"), tr, "payment_wage");
+      payment_wage.appendChild(tr);
+    }
+  });
+  const tr_production = document.createElement("tr");
+  tr_production.classList.add("production");
+  createTd(
+    grandTotal.production.toLocaleString("en-IN"),
+    tr_production,
+    "total"
+  );
+  const tr_recieved = document.createElement("tr");
+  tr_recieved.classList.add("recieved");
+  createTd("Recieved", tr_recieved);
+  createTd(grandTotal.paid.toLocaleString("en-IN"), tr_recieved);
+  const tr_due = document.createElement("tr");
+  tr_due.classList.add("due");
+  createTd("Due", tr_due);
+  createTd(
+    (grandTotal.production - grandTotal.paid).toLocaleString("en-IN"),
+    tr_due
+  );
+  payment_fabric.appendChild(tr_production);
+  payment_wage.appendChild(tr_recieved);
+  payment_wage.appendChild(tr_due);
 }
 
 function displayAddBtn(element) {
@@ -635,31 +740,36 @@ function createTask(date, tasks, i) {
 }
 function createProduction(date) {
   const tr = document.createElement("tr"),
-    products = production[date].product;
+    products = production[date].product || [];
   tr.classList.add("infoRow");
   tr.classList.add("product");
   let dateFormatted = `${date.split(":")[0].split("-")[2]}-${
     date.split(":")[0].split("-")[1]
   }-${date.split(":")[0].split("-")[0].slice(-2)}`;
-  createTd(`${dateFormatted}`, tr, `${date} date`, products.length);
-  createTd(`${production[date].ref}`, tr, `ref`, products.length);
-  products.length === 0 &&
-    (createTd("-", tr, "dressName"),
-    createTd("-", tr, "qnt"),
-    createTd("-", tr, "cost"));
+  createTd(`${dateFormatted}`, tr, `${date} date`, 0);
+  createTd(`${production[date].ref}`, tr, `ref`, 0);
+  let total = { qnt: 0, cost: 0 };
   products.forEach((product) => {
-    createTd(product.dress, tr, "dressName");
-    createTd(product.qnt.toLocaleString("en-IN"), tr, "qnt");
-    createTd(product.cost, tr, "cost");
-    createTd((product.qnt * product.cost).toLocaleString("en-IN"), tr, "total");
+    total.qnt += product.qnt;
+    total.cost += product.qnt * product.cost - product.qnt * product.wage;
   });
-  createTd(
-    production[date].paid.toLocaleString("en-IN"),
-    tr,
-    `paid`,
-    products.length
-  );
-  productionList.appendChild(tr);
+  if (products.length === 1) {
+    createTd(products[0].dress, tr, "dressName");
+    createTd(products[0].qnt.toLocaleString("en-IN"), tr, "qnt");
+    createTd(
+      (
+        products[0].qnt * products[0].cost -
+        products[0].qnt * products[0].wage
+      ).toLocaleString("en-IN"),
+      tr,
+      "total"
+    );
+  } else {
+    createTd("Multiple Items", tr, "dressName");
+    createTd(total.qnt.toLocaleString("en-IN"), tr, "qnt");
+    createTd(total.cost.toLocaleString("en-IN"), tr, "total");
+  }
+  products.length > 0 && productionList.appendChild(tr);
 }
 function createTd(textContent, parent, tdClass, span, data) {
   const td = document.createElement("td");
@@ -797,6 +907,9 @@ tableWrapper.addEventListener("mouseup", (e) => {
   if (duration <= 350) {
     section === "employees" && e.target.tagName !== "BUTTON" && showEmpTasks(e);
     section === "workers" && e.target.tagName !== "BUTTON" && showPayments(e);
+    section === "production" &&
+      e.target.tagName !== "BUTTON" &&
+      showProductionDetail(e);
   }
 });
 tableWrapper.addEventListener("mousemove", (e) => {
@@ -848,12 +961,12 @@ function showPayments(e) {
     person = e.target.classList.contains("name")
       ? e.target.textContent
       : e.target.parentElement.children[0].textContent;
-    section = "payments";
+    section = "workerPayments";
     tableWrapper.style.left = "-100%";
     window.history.pushState("index", "the title", `/${person}`);
-    updatePaymentList();
+    updateWorkerPayment();
     btnSidebar.classList.add("back");
-    chageNameTag();
+    changeNameTag(person);
   }
 }
 function showEmpTasks(e) {
@@ -870,21 +983,96 @@ function showEmpTasks(e) {
       window.history.pushState("index", "the title", `/${person}`);
       updateTaskList();
       btnSidebar.classList.add("back");
-      chageNameTag();
     }
   } else {
     section = "task";
     tableWrapper.style.left = "-100%";
     updateTaskList();
-    chageNameTag();
     btnSidebar.classList.add("back");
     window.history.pushState("index", "the title", `/${person}`);
   }
+  changeNameTag(person);
+}
+function showProductionDetail(e) {
+  if (
+    e.target.classList.contains("date") ||
+    e.target.parentElement.children[0].classList.contains("date")
+  ) {
+    let date = e.target.classList.contains("date")
+      ? e.target.className.split(" ")[0]
+      : e.target.parentElement.children[0].className.split(" ")[0];
+    section = "production_detail";
+    changeNameTag("Hossain garments");
+    tableWrapper.style.left = "-100%";
+    updateProductionDetail(date);
+    btnSidebar.classList.add("back");
+  }
+}
+function updateProductionDetail(date) {
+  productionDetail.innerHTML = "";
+  document.querySelector("#production_detail .banner .ref").textContent =
+    production[date].ref;
+  document
+    .querySelector("#production_detail a.ref")
+    .setAttribute("href", production[date].img);
+  document.querySelector(
+    "#production_detail .banner .date"
+  ).textContent = `Date: ${date.split(":")[0].split("-")[2]}-${
+    date.split(":")[0].split("-")[1]
+  }-${date.split(":")[0].split("-")[0].slice(-2)}`;
+  let totalProduct = 0,
+    totalDeduction = 0,
+    deductions = [];
+  production[date].product.forEach((item, i) => {
+    const tr = document.createElement("tr");
+    createTd(item.dress, tr, "dressName");
+    createTd(item.qnt, tr, "qnt");
+    createTd(item.cost.toLocaleString("en-IN"), tr, "cost");
+    createTd((item.qnt * item.cost).toLocaleString("en-IN"), tr, "total");
+    productionDetail.appendChild(tr);
+    totalProduct += item.qnt * item.cost;
+    deductions.push(item.qnt * item.wage);
+  });
+
+  if (production[date].product.length > 1) {
+    const hr = document.createElement("hr");
+    productionDetail.appendChild(hr);
+    const tl = document.createElement("tr");
+    productionDetail.appendChild(tl);
+    createTd(totalProduct.toLocaleString("en-IN"), tl, "total");
+  }
+
+  const hr1 = document.createElement("hr");
+  productionDetail.appendChild(hr1);
+
+  production[date].product.forEach((item, i) => {
+    const dd = document.createElement("tr");
+    createTd("Deduction", dd, "dressName deduction");
+    createTd(item.qnt, dd, "qnt");
+    createTd(item.wage.toLocaleString("en-IN"), dd, "cost");
+    createTd(
+      `- ${(item.qnt * item.wage).toLocaleString("en-IN")}`,
+      dd,
+      "total"
+    );
+    productionDetail.appendChild(dd);
+    totalDeduction += item.qnt * item.wage;
+  });
+  const hr2 = document.createElement("hr");
+  productionDetail.appendChild(hr2);
+  const gr = document.createElement("tr");
+  createTd(
+    (totalProduct - totalDeduction).toLocaleString("en-IN"),
+    gr,
+    "total"
+  );
+  productionDetail.appendChild(gr);
 }
 function showPopup(e) {
   section === "employees" ||
   section === "workers" ||
-  (section === "payments" && target.parentElement.classList.contains("abs"))
+  (section === "workerPayments" &&
+    target.parentElement.classList.contains("abs"))
     ? (popUp.children[0].children[0].style.display = "none")
     : popUp.children[0].children[0].removeAttribute("style");
   popUp.parentElement.classList.add("active");
@@ -957,20 +1145,17 @@ function popUp_edit() {
     let productsToEdit = production[target.className.split(" ")[0]].product,
       date = target.className.split(" ")[0].split(":")[0];
     itemsToAdd.innerHTML = "";
-    form_production.querySelector('input[name="date"]').value = date;
-    form_production.querySelector('input[name="ref"]').value =
+    form_bill.querySelector('input[name="date"]').value = date;
+    form_bill.querySelector('input[name="ref"]').value =
       production[target.className.split(" ")[0]].ref;
-    productsToEdit.length === 0 && addAddmore("-");
     productsToEdit.forEach((product) => {
-      addAddmore(product.dress, product.qnt, product.cost);
+      addAddmore(product.dress, product.qnt, product.cost, product.wage);
     });
-    form_production.querySelector('input[name="recieved"]').value =
-      production[target.className.split(" ")[0]].paid;
   } else {
     if (line.classList.contains("date") || line.classList.contains("payment")) {
-      form_payment.querySelector('input[type="number"]').value =
+      form_worker_payment.querySelector('input[type="number"]').value =
         target.nextElementSibling.textContent;
-      form_payment.querySelector(
+      form_worker_payment.querySelector(
         'input[type="date"]'
       ).value = target.className.split(" ")[0].split(":")[0];
     }
@@ -998,27 +1183,38 @@ function popUp_delete() {
     }
     updateTaskList();
   } else if (section === "production") {
+    let date = target.className.split(" ")[0];
     if (
-      production[target.className.split(" ")[0]].product.length <= 1 ||
-      line.classList.contains("infoRow") ||
-      line.classList.contains(".ref") ||
-      line.classList.contains("date") ||
-      line.classList.contains("paid")
+      production[date].payments.fabric === 0 &&
+      production[date].payments.wage === 0
     ) {
-      delete production[target.className.split(" ")[0]];
+      delete production[date];
     } else {
-      production[target.className.split(" ")[0]].product.splice(
-        getIndex(target, line),
-        1
-      );
+      production[date].product = [];
+      production[date].ref = 0;
+      production[date].img = "";
     }
     updateProduction();
+  } else if (section === "payments") {
+    let date = target.className.split(" ")[0];
+    production[date].product.length === 0 &&
+    production[date].payments.wage === 0
+      ? delete production[date]
+      : (production[date].payments.fabric = 0);
+    updatePayment();
+  } else if (section === "wages") {
+    let date = target.className.split(" ")[0];
+    production[date].product.length === 0 &&
+    production[date].payments.fabric === 0
+      ? delete production[date]
+      : (production[date].payments.wage = 0);
+    updatePayment();
   } else if (section === "workers") {
     delete_prompt.querySelector(
       "p"
     ).textContent = `Are you sure you want to delete ${target.textContent}?`;
     delete_prompt.classList.add("active");
-  } else if (section === "payments") {
+  } else if (section === "workerPayments") {
     if (line.classList.contains("date") || line.classList.contains("payment")) {
       if (!line.parentElement.classList.contains("abs")) {
         workers[person].paid.forEach((pay, i) => {
@@ -1045,7 +1241,7 @@ function popUp_delete() {
         });
       }
     }
-    updatePaymentList();
+    updateWorkerPayment();
   }
   btnSidebar.children[0].classList.add("unsaved");
   updateLS();
