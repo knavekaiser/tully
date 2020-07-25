@@ -830,6 +830,8 @@ function displayPaymentLedger(date) {
   const tr = document.createElement("tr"),
     fabric = production.payments[date].fabric,
     wage = production.payments[date].wage;
+  if ((section === "payments" && !fabric) || (section === "wages" && !wage))
+    return;
   tr.classList.add("infoRow");
   createTd(
     formatDate(date),
