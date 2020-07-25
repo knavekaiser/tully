@@ -137,6 +137,8 @@ function defaultDateValue() {
   return dateFormatted;
 }
 defaultDateValue();
+month = defaultDateValue().split("-")[1];
+monthFilter.value = month;
 form_worker_payment
   .querySelector('input[type="date"].start')
   .addEventListener("change", (e) => {
@@ -296,7 +298,14 @@ sections.addEventListener("click", (e) => {
     tableWrapper.querySelector("#payments").style.display = "grid";
     if (target.classList.contains("production_li")) {
       section = "payments";
+      document.querySelector(
+        "#payments .right thead td:nth-child(2)"
+      ).style.opacity = 1;
       section_li.textContent = "Production";
+      form_payment.querySelector("input[name='for']").style.display = "block";
+      form_payment
+        .querySelector("input[name='for']")
+        .setAttribute("required", true);
       form_payment.querySelector("input[name='fabric']").style.display =
         "block";
       form_payment
@@ -309,6 +318,9 @@ sections.addEventListener("click", (e) => {
       changeNameTag("Production");
     } else {
       section = "wages";
+      document.querySelector(
+        "#payments .right thead td:nth-child(2)"
+      ).style.opacity = 0;
       form_payment.querySelector("input[name='wage']").style.display = "block";
       form_payment
         .querySelector("input[name='wage']")
@@ -316,6 +328,10 @@ sections.addEventListener("click", (e) => {
       form_payment.querySelector("input[name='fabric']").style.display = "none";
       form_payment
         .querySelector("input[name='fabric']")
+        .removeAttribute("required");
+      form_payment.querySelector("input[name='for']").style.display = "none";
+      form_payment
+        .querySelector("input[name='for']")
         .removeAttribute("required");
       section_li.textContent = "Wages";
       changeNameTag("Wages");

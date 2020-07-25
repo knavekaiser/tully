@@ -109,6 +109,21 @@
               <div class="after"></div>
             </div>
           </div>
+          <select class="month_filter" name="">
+            <option value="all">All</option>
+            <option value="01">Jan</option>
+            <option value="02">Feb</option>
+            <option value="03">Mar</option>
+            <option value="04">Apr</option>
+            <option value="05">May</option>
+            <option value="06">Jun</option>
+            <option value="07">Jul</option>
+            <option value="08">Aug</option>
+            <option value="09">Sep</option>
+            <option value="10">Oct</option>
+            <option value="11">Nov</option>
+            <option value="12">Des</option>
+          </select>
         </header>
         <div class="table_container">
           <div class="table_wrapper">
@@ -233,7 +248,7 @@
               </div>
             </section>
             <section id="payments">
-              <div class="fabric">
+              <div class="left">
                 <div class="thead">
                   <table>
                     <thead>
@@ -252,12 +267,13 @@
                   </table>
                 </div>
               </div>
-              <div class="wage">
+              <div class="right">
                 <div class="thead">
                   <table>
                     <thead>
                       <tr>
                         <td>Date</td>
+                        <td>For</td>
                         <td>Taka</td>
                       </tr>
                     </thead>
@@ -389,6 +405,7 @@
       </form>
       <form id="form_payment" class="form hidden"  autocomplete="off">
         <input type="date" name="date" required />
+        <input type="text" name="for" value="Cash" placeholder="For" required>
         <input type="number" name="fabric" placeholder="Fabric" min="0" required />
         <input type="number" name="wage" placeholder="Wage" min="0" required />
         <button type="submit" name="button">
