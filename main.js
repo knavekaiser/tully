@@ -1307,21 +1307,31 @@ function popUp_delete() {
     updateProduction();
   } else if (section === "payments") {
     let date = target.className.split(" ")[0];
-    if (production.payments[date].wage === 0) {
-      production.payments[date].fabric.length === 1
-        ? delete production.payments[date]
-        : production.payments[date].fabric.splice(getIndex(target, line), 1);
+    if (production.payments[date].wage) {
+      if (production.payments[date].wage === 0) {
+        production.payments[date].fabric.length === 1
+          ? delete production.payments[date]
+          : production.payments[date].fabric.splice(getIndex(target, line), 1);
+      } else {
+        production.payments[date].fabric.length === 1
+          ? (production.payments[date].fabric = [])
+          : production.payments[date].fabric.splice(getIndex(target, line), 1);
+      }
     } else {
       production.payments[date].fabric.length === 1
-        ? (production.payments[date].fabric = [])
+        ? delete production.payments[date]
         : production.payments[date].fabric.splice(getIndex(target, line), 1);
     }
     updatePayment();
   } else if (section === "wages") {
     let date = target.className.split(" ")[0];
-    production.payments[date].fabric.length === 0
-      ? delete production.payments[date]
-      : (production.payments[date].wage = 0);
+    if (production.payments[date].fabric) {
+      production.payments[date].fabric.length === 0
+        ? delete production.payments[date]
+        : (production.payments[date].wage = 0);
+    } else {
+      delete production.payments[date];
+    }
     updatePayment();
   } else if (section === "workers") {
     delete_prompt.querySelector(
