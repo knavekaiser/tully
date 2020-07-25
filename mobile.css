@@ -23,7 +23,7 @@
 }
 #payments tr {
   padding: 0 0.25rem;
-  grid-template-columns: 0.2fr 0.25fr 0.2fr 0.3fr;
+  grid-template-columns: 0.15fr 0.3fr 0.2fr 0.35fr;
 }
 #payments .right tr {
   grid-template-columns: 0.5fr 0.5fr 0.5fr;
