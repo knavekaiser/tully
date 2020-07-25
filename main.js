@@ -801,18 +801,11 @@ function updatePayment() {
 }
 
 function displayProductLedger(date) {
-  const tr = document.createElement("tr");
-  createTd(
-    `${production[date].length <= 1 ? +production[date][0].ref : "++"}`,
-    tr,
-    "ref"
-  );
-  createTd(formatDate(date), tr, `date`);
-  let total = {
-    qnt: 0,
-    cost: 0,
-  };
-  production[date].forEach((bill) => {
+  production[date].forEach((bill, i) => {
+    const tr = document.createElement("tr");
+    createTd(production[date][i].ref, tr, "ref");
+    createTd(formatDate(date), tr, `date`);
+    let total = { qnt: 0, cost: 0 };
     bill.products.forEach((product) => {
       total.qnt += product.qnt;
       total.cost +=
@@ -820,11 +813,11 @@ function displayProductLedger(date) {
           ? product.qnt * product.cost - product.qnt * product.wage
           : product.qnt * product.wage;
     });
+    createTd(total.qnt.toLocaleString("en-IN"), tr, "qnt");
+    createTd(total.cost.toLocaleString("en-IN"), tr, "total");
+    grandTotal.production += total.cost;
+    payment_left.appendChild(tr);
   });
-  createTd(total.qnt.toLocaleString("en-IN"), tr, "qnt");
-  createTd(total.cost.toLocaleString("en-IN"), tr, "total");
-  grandTotal.production += total.cost;
-  payment_left.appendChild(tr);
 }
 function displayPaymentLedger(date) {
   const tr = document.createElement("tr"),
