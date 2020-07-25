@@ -444,7 +444,7 @@ a {
 }
 .month_filter {
   position: absolute;
-  right: 1.5rem;
+  left: 3.5rem;
   appearance: none;
   padding: 0.25rem;
   border-radius: 0.35rem;
