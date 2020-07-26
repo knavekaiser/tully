@@ -378,16 +378,8 @@ function updateProduction() {
     const regex = RegExp(/\d{4}-\d{2}-\d{2}:\d{4}-\d{2}/g);
     regex.test(item) && dates.push(item);
   });
-  dates.sort((a, b) =>
-    new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
-  );
-  dates.forEach((date) => {
-    if (fiscalYear === "All time") {
-      createProduction(date);
-    } else {
-      date.split(":")[1] === fiscalYear && createProduction(date);
-    }
-  });
+  sortDate(dates);
+  dates.forEach((date) => dateFilter(createProduction, date));
   displayAddBtn(productionList);
 }
 function createProduction(date) {
@@ -643,19 +635,17 @@ function addTask() {
 }
 function updateTaskList() {
   taskList.innerHTML = "";
-  const date = Object.keys(employees[person]),
+  const dates = Object.keys(employees[person]),
     tasks = [];
-  date.sort((a, b) =>
-    new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
-  );
-  date.forEach((day) => {
+  sortDate(dates);
+  dates.forEach((day) => {
     employees[person][day] && tasks.push(employees[person][day]);
   });
-  date.forEach((item, i) => {
+  dates.forEach((item, i) => {
     if (fiscalYear === "All time") {
-      createTask(date[i], tasks, i);
+      createTask(dates[i], tasks, i);
     } else {
-      date[i].split(":")[1] === fiscalYear && createTask(date[i], tasks, i);
+      dates[i].split(":")[1] === fiscalYear && createTask(dates[i], tasks, i);
     }
   });
   displayAddBtn(taskList);
@@ -742,11 +732,11 @@ function updatePayment() {
     regex.test(date) && dates.push(date);
   });
   sortDate(dates);
-  dates.forEach((date) => paymentDateFilter(displayProductLedger, date));
+  dates.forEach((date) => dateFilter(displayProductLedger, date));
 
   Object.keys(production.payments).forEach((date) => payDates.push(date));
   sortDate(payDates);
-  payDates.forEach((date) => paymentDateFilter(displayPaymentLedger, date));
+  payDates.forEach((date) => dateFilter(displayPaymentLedger, date));
 
   const tr_production = document.createElement("tr");
   tr_production.classList.add("production");
@@ -1207,9 +1197,8 @@ function popUp_edit() {
   } else if (section === "production") {
     let productsToEdit = production[date][index].products;
     itemsToAdd.innerHTML = "";
-    form_bill.querySelector('input[name="date"]').value = date.split(":")[0];
-    form_bill.querySelector('input[name="ref"]').value =
-      production[date][index].ref;
+    form_bill_date.value = date.split(":")[0];
+    form_bill_ref.value = production[date][index].ref;
     production[date][index].img.length > 0 &&
       uploadImg.setAttribute("data-url", production[date][index].img);
     productsToEdit.forEach((product) => {
@@ -1218,21 +1207,12 @@ function popUp_edit() {
   } else if (section === "payments") {
     const date = target.className.split(" ")[0];
     const itemToEdit = production.payments[date].fabric[index];
-    form_payment.querySelector(
-      'input[type="date"]'
-    ).value = target.className.split(" ")[0].split(":")[0];
-    form_payment.querySelector("input[name='for']").value = Object.keys(
-      itemToEdit
-    )[0];
-    form_payment.querySelector("input[name='fabric']").value = Object.values(
-      itemToEdit
-    )[0];
+    form_payment_date.value = date.split(":")[0];
+    form_payment_for.value = Object.keys(itemToEdit)[0];
+    form_payment_fabric.value = Object.values(itemToEdit)[0];
   } else if (section === "wages") {
-    form_payment.querySelector(
-      'input[type="date"]'
-    ).value = target.className.split(" ")[0].split(":")[0];
-    form_payment.querySelector("input[name='wage']").value =
-      production.payments[target.className.split(" ")[0]].wage;
+    form_payment_date.value = date.split(":")[0];
+    form_payment_wage.value = production.payments[date].wage;
   } else if (
     line.classList.contains("date") ||
     line.classList.contains("payment")
@@ -1374,6 +1354,7 @@ clearAll.addEventListener("mousedown", (e) => {
     localStorage.clear();
     employees = {};
     workers = {};
+    production = {};
     updateEmpList();
     updateCloud("emp", netlifyIdentity.currentUser());
     updateCloud("pro", netlifyIdentity.currentUser());
@@ -1735,7 +1716,7 @@ function sortDate(dates) {
     new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
   );
 }
-function paymentDateFilter(fun, date) {
+function dateFilter(fun, date) {
   const monthToShow = date.split(":")[0].split("-")[1],
     yearToShow = date.split(":")[1];
   if (fiscalYear === "All time") {

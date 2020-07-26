@@ -265,8 +265,11 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 const form_payment_for = form_payment.querySelector("input[name='for']"),
+  form_payment_date = form_payment.querySelector("input[name='date']"),
   form_payment_wage = form_payment.querySelector("input[name='wage']"),
   form_payment_fabric = form_payment.querySelector("input[name='fabric']"),
+  form_bill_date = form_bill.querySelector('input[name="date"]'),
+  form_bill_ref = form_bill.querySelector('input[name="ref"]'),
   thead_FOR = document.querySelector("#payments .right thead td:nth-child(2)");
 
 sections.addEventListener("click", (e) => {
