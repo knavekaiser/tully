@@ -24,9 +24,6 @@ const tableWrapper = document.querySelector(".table_wrapper"),
   btnSidebar = document.querySelector(".btn_sidebar"),
   section_li = document.querySelector(".section_li"),
   sections = document.querySelector(".sections"),
-  workers_li = document.querySelector(".workers_li"),
-  contractors_li = document.querySelector(".contractors_li"),
-  production_li = document.querySelector(".production_li"),
   fiscal_li = document.querySelector(".fiscal_li"),
   fiscalYears = document.querySelector(".fiscalYear"),
   monthFilter = document.querySelector("select.month_filter"),
@@ -65,6 +62,14 @@ function changeNameTag(name) {
   document.querySelector("header a div h1").classList.add("disabled");
   nameTag.classList.remove("disabled");
 }
+function restoreNameTag() {
+  nameTag.parentElement.style.transform = `translateX(-${
+    window.innerWidth >= 500 ? 50 : 100
+  }%) translateY(-25%)`;
+  nameTag.classList.add("disabled");
+  document.querySelector("header a div h1").classList.remove("disabled");
+}
+
 btnSidebar.addEventListener("click", () => {
   if (
     section === "employees" ||
@@ -93,11 +98,7 @@ btnSidebar.addEventListener("click", () => {
 });
 function showPrimaryList() {
   window.history.pushState("index", "the title", `/`);
-  nameTag.parentElement.style.transform = `translateX(-${
-    window.innerWidth >= 500 ? 50 : 100
-  }%) translateY(-25%)`;
-  nameTag.classList.add("disabled");
-  document.querySelector("header a div h1").classList.remove("disabled");
+  restoreNameTag();
   section === "task" && ((section = "employees"), updateEmpList());
   section === "workerPayments" && ((section = "workers"), updateWorkerList());
   section === "production_detail" && (section = "production");
@@ -690,32 +691,31 @@ function addWorkerPayment() {
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 function updateWorkerPayment() {
   workerPayment.innerHTML = "";
-  workers[person].paid.sort((a, b) =>
-    new Date(a.date) < new Date(b.date) ? -1 : 1
-  );
-  workers[person].paid.forEach((payment) => {
-    const tr = document.createElement("tr");
+  let paid = workers[person].paid,
+    abs = workers[person].abs;
+  paid.sort((a, b) => (new Date(a.date) < new Date(b.date) ? -1 : 1));
+  paid.forEach((payment) => {
+    const tr = document.createElement("tr"),
+      dateFormatted = `${payment.date.split("-")[2]}-${
+        payment.date.split("-")[1]
+      }-${payment.date.split("-")[0].slice(-2)}`;
     tr.classList.add("infoRow");
-    createTd(formatDate(date), tr, `${payment.date} date`);
+    createTd(dateFormatted, tr, `${payment.date} date`);
     createTd(payment.paid, tr, "payment");
     workerPayment.appendChild(tr);
   });
-  if (workers[person].abs.length > 0) {
-    workers[person].abs.sort((a, b) => (new Date(a) < new Date(b) ? -1 : 1));
+  if (abs.length > 0) {
+    abs.sort((a, b) => (new Date(a) < new Date(b) ? -1 : 1));
     const tr = document.createElement("tr");
     tr.classList.add("abs");
     tr.classList.add("infoRow");
     createTd(
-      `Absent ${
-        workers[person].abs.length > 1
-          ? "(" + workers[person].abs.length + " days)"
-          : ""
-      }`,
+      `Absent ${abs.length > 1 ? "(" + abs.length + " days)" : ""}`,
       tr,
       "absences",
-      workers[person].abs.length
+      abs.length
     );
-    workers[person].abs.forEach((day) => {
+    abs.forEach((day) => {
       createTd(
         `${days[new Date(day).getDay()]}, ${day.split("-")[2]}-${
           day.split("-")[1]
@@ -735,46 +735,19 @@ function updatePayment() {
   grandTotal.production = 0;
   grandTotal.paid = 0;
 
-  let dates = [];
+  let dates = [],
+    payDates = [];
   Object.keys(production).forEach((date) => {
     const regex = RegExp(/\d{4}-\d{2}-\d{2}:\d{4}-\d{2}/g);
     regex.test(date) && dates.push(date);
   });
-  dates.sort((a, b) =>
-    new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
-  );
+  sortDate(dates);
+  dates.forEach((date) => paymentDateFilter(displayProductLedger, date));
 
-  dates.forEach((date) => {
-    if (fiscalYear === "All time") {
-      if (month === "all") {
-        displayProductLedger(date);
-      } else if (date.split(":")[0].split("-")[1] === month) {
-        displayProductLedger(date);
-      }
-    } else if (date.split(":")[1] === fiscalYear) {
-      if (month === "all") {
-        displayProductLedger(date);
-      } else if (date.split(":")[0].split("-")[1] === month) {
-        displayProductLedger(date);
-      }
-    }
-  });
+  Object.keys(production.payments).forEach((date) => payDates.push(date));
+  sortDate(payDates);
+  payDates.forEach((date) => paymentDateFilter(displayPaymentLedger, date));
 
-  Object.keys(production.payments).forEach((date) => {
-    if (fiscalYear === "All time") {
-      if (month === "all") {
-        displayPaymentLedger(date);
-      } else if (date.split(":")[0].split("-")[1] === month) {
-        displayPaymentLedger(date);
-      }
-    } else if (date.split(":")[1] === fiscalYear) {
-      if (month === "all") {
-        displayPaymentLedger(date);
-      } else if (date.split(":")[0].split("-")[1] === month) {
-        displayPaymentLedger(date);
-      }
-    }
-  });
   const tr_production = document.createElement("tr");
   tr_production.classList.add("production");
   createTd(
@@ -782,10 +755,12 @@ function updatePayment() {
     tr_production,
     "total"
   );
+  payment_left.appendChild(tr_production);
   const tr_recieved = document.createElement("tr");
   tr_recieved.classList.add("recieved");
   createTd("Recieved", tr_recieved);
   createTd(grandTotal.paid.toLocaleString("en-IN"), tr_recieved, "total");
+  payment_right.appendChild(tr_recieved);
   const tr_due = document.createElement("tr");
   tr_due.classList.add("due");
   createTd("Due", tr_due);
@@ -794,8 +769,6 @@ function updatePayment() {
     tr_due,
     "total"
   );
-  payment_left.appendChild(tr_production);
-  payment_right.appendChild(tr_recieved);
   payment_right.appendChild(tr_due);
   displayAddBtn(payment_right);
 }
@@ -1219,11 +1192,12 @@ popUp.parentElement.addEventListener("click", (e) => {
 function popUp_edit() {
   edit = true;
   showForm();
+  let date = target.className.split(" ")[0],
+    index = getIndex(target, line);
   if (section === "task") {
-    let itemToEdit = employees[person][target.className.split(" ")[0]],
-      date = target.className.split(" ")[0].split(":")[0];
     itemsToAdd.innerHTML = "";
-    form_task.querySelector('input[name="date"]').value = date;
+    let itemToEdit = employees[person][target.className.split(" ")[0]];
+    form_task.querySelector('input[name="date"]').value = date.split(":")[0];
     itemToEdit.tasks.forEach((item) => {
       addAddmore(item.dress, item.qnt, item.group);
     });
@@ -1231,18 +1205,19 @@ function popUp_edit() {
       (form_task.querySelector('input[name="recieved"]').value =
         itemToEdit.paid);
   } else if (section === "production") {
-    const date = target.className.split(" ")[0];
-    let productsToEdit = production[date][getIndex(target, line)].products;
+    let productsToEdit = production[date][index].products;
     itemsToAdd.innerHTML = "";
     form_bill.querySelector('input[name="date"]').value = date.split(":")[0];
     form_bill.querySelector('input[name="ref"]').value =
-      production[date][getIndex(target, line)].ref;
+      production[date][index].ref;
+    production[date][index].img.length > 0 &&
+      uploadImg.setAttribute("data-url", production[date][index].img);
     productsToEdit.forEach((product) => {
       addAddmore(product.dress, product.qnt, product.cost, product.wage);
     });
   } else if (section === "payments") {
     const date = target.className.split(" ")[0];
-    const itemToEdit = production.payments[date].fabric[getIndex(target, line)];
+    const itemToEdit = production.payments[date].fabric[index];
     form_payment.querySelector(
       'input[type="date"]'
     ).value = target.className.split(" ")[0].split(":")[0];
@@ -1399,7 +1374,6 @@ clearAll.addEventListener("mousedown", (e) => {
     localStorage.clear();
     employees = {};
     workers = {};
-    section === "workers" && workers_li.click();
     updateEmpList();
     updateCloud("emp", netlifyIdentity.currentUser());
     updateCloud("pro", netlifyIdentity.currentUser());
@@ -1756,3 +1730,17 @@ monthFilter.addEventListener("change", (e) => {
   month = monthFilter.value;
   updatePayment();
 });
+function sortDate(dates) {
+  return dates.sort((a, b) =>
+    new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
+  );
+}
+function paymentDateFilter(fun, date) {
+  const monthToShow = date.split(":")[0].split("-")[1],
+    yearToShow = date.split(":")[1];
+  if (fiscalYear === "All time") {
+    month === "all" ? fun(date) : monthToShow === month && fun(date);
+  } else if (yearToShow === fiscalYear) {
+    month === "all" ? fun(date) : monthToShow === month && fun(date);
+  }
+}

@@ -218,7 +218,8 @@ form_login.addEventListener("submit", (e) => {
       }, 2000);
       document.querySelector(".popUp_wrapper").remove();
       document.querySelector(".forms").remove();
-      workers_li.remove();
+      sections.remove();
+      section_li.remove();
       lots_li.remove();
       dashboard_li.remove();
       backup.remove();
@@ -263,16 +264,17 @@ window.addEventListener("DOMContentLoaded", () => {
       "Management");
 });
 
+const form_payment_for = form_payment.querySelector("input[name='for']"),
+  form_payment_wage = form_payment.querySelector("input[name='wage']"),
+  form_payment_fabric = form_payment.querySelector("input[name='fabric']"),
+  thead_FOR = document.querySelector("#payments .right thead td:nth-child(2)");
+
 sections.addEventListener("click", (e) => {
   let target = e.target.tagName === "P" ? e.target.parentElement : e.target;
   tableWrapper.querySelectorAll("section").forEach((section) => {
     section.style.display = "none";
   });
-  nameTag.parentElement.style.transform = `translateX(-${
-    window.innerWidth >= 500 ? 50 : 100
-  }%) translateY(-25%)`;
-  nameTag.classList.add("disabled");
-  document.querySelector("header a div h1").classList.remove("disabled");
+  restoreNameTag();
   if (target.classList.contains("workers_li")) {
     tableWrapper.querySelector("#workers").style.display = "grid";
     tableWrapper.querySelector("#workers_payments").style.display = "grid";
@@ -289,7 +291,7 @@ sections.addEventListener("click", (e) => {
     tableWrapper.querySelector("#production").style.display = "grid";
     tableWrapper.querySelector("#production_detail").style.display = "grid";
     section = "production";
-    section_li.textContent = "Bill";
+    section_li.textContent = "Bills";
     updateProduction();
   } else if (
     target.classList.contains("production_li") ||
@@ -298,47 +300,30 @@ sections.addEventListener("click", (e) => {
     tableWrapper.querySelector("#payments").style.display = "grid";
     if (target.classList.contains("production_li")) {
       section = "payments";
-      document.querySelector(
-        "#payments .right thead td:nth-child(2)"
-      ).style.opacity = 1;
+      thead_FOR.style.opacity = 1;
       section_li.textContent = "Production";
-      form_payment.querySelector("input[name='for']").style.display = "block";
-      form_payment
-        .querySelector("input[name='for']")
-        .setAttribute("required", true);
-      form_payment.querySelector("input[name='fabric']").style.display =
-        "block";
-      form_payment
-        .querySelector("input[name='fabric']")
-        .setAttribute("required", true);
-      form_payment.querySelector("input[name='wage']").style.display = "none";
-      form_payment
-        .querySelector("input[name='wage']")
-        .removeAttribute("required");
+      form_payment_for.style.display = "block";
+      form_payment_for.setAttribute("required", true);
+      form_payment_fabric.style.display = "block";
+      form_payment_fabric.setAttribute("required", true);
+      form_payment_wage.style.display = "none";
+      form_payment_wage.removeAttribute("required");
       changeNameTag("Production");
     } else {
       section = "wages";
-      document.querySelector(
-        "#payments .right thead td:nth-child(2)"
-      ).style.opacity = 0;
-      form_payment.querySelector("input[name='wage']").style.display = "block";
-      form_payment
-        .querySelector("input[name='wage']")
-        .setAttribute("required", true);
-      form_payment.querySelector("input[name='fabric']").style.display = "none";
-      form_payment
-        .querySelector("input[name='fabric']")
-        .removeAttribute("required");
-      form_payment.querySelector("input[name='for']").style.display = "none";
-      form_payment
-        .querySelector("input[name='for']")
-        .removeAttribute("required");
+      thead_FOR.style.opacity = 0;
+      form_payment_wage.style.display = "block";
+      form_payment_wage.setAttribute("required", true);
+      form_payment_fabric.style.display = "none";
+      form_payment_fabric.removeAttribute("required");
+      form_payment_for.style.display = "none";
+      form_payment_for.removeAttribute("required");
       section_li.textContent = "Wages";
       changeNameTag("Wages");
     }
     updatePayment();
   }
-  document.querySelector(".sections").classList.remove("active");
+  sections.classList.remove("active");
   resizeWindow();
   toggleSidebar();
   itemsToAdd = document.querySelector(
