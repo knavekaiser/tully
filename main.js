@@ -105,10 +105,8 @@ function showPrimaryList() {
   tableWrapper.style.left = "0";
   btnSidebar.classList.remove("back");
   person = "";
-  form_task.querySelector('input[name="recieved"]').removeAttribute("hidden");
-  form_task
-    .querySelector('input[name="recieved"]')
-    .setAttribute("required", true);
+  form_task_recieved.removeAttribute("hidden");
+  form_task_recieved.setAttribute("required", true);
   form_task.classList.remove("lots");
   setTimeout(() => {
     document.querySelector("#tasks").classList.remove("lots");
@@ -270,7 +268,13 @@ function updateEmpList() {
       } else {
         createTd(0, tr, "lastPay");
       }
-      createTd(getTotal(days, "production").toLocaleString("en-IN"), tr);
+      createTd(
+        getTotal(days, "production").toLocaleString("en-IN"),
+        tr,
+        "product",
+        0,
+        `(${getTotal(days, "qnt").toLocaleString("en-IN")})`
+      );
       createTd(getTotal(days, "paid").toLocaleString("en-IN"), tr);
       createTd(
         (getTotal(days, "production") - getTotal(days, "paid")).toLocaleString(
@@ -373,11 +377,9 @@ function addWageLedger() {
 
 function updateProduction() {
   productionList.innerHTML = "";
-  const dates = [];
-  Object.keys(production).forEach((item, i) => {
-    const regex = RegExp(/\d{4}-\d{2}-\d{2}:\d{4}-\d{2}/g);
-    regex.test(item) && dates.push(item);
-  });
+  const dates = Object.keys(production).filter((date) =>
+    RegExp(/\d{4}-\d{2}-\d{2}:\d{4}-\d{2}/g).test(date)
+  );
   sortDate(dates);
   dates.forEach((date) => dateFilter(createProduction, date));
   displayAddBtn(productionList);
@@ -391,6 +393,7 @@ function createProduction(date) {
     createTd(`${bill.ref}`, tr, `ref`);
     const products = bill.products || [];
     let total = { qnt: 0, cost: 0 };
+    // TODO: have a look
     products.forEach((product) => {
       total.qnt += product.qnt;
       total.cost += product.qnt * product.cost - product.qnt * product.wage;
@@ -635,19 +638,9 @@ function addTask() {
 }
 function updateTaskList() {
   taskList.innerHTML = "";
-  const dates = Object.keys(employees[person]),
-    tasks = [];
+  const dates = Object.keys(employees[person]);
   sortDate(dates);
-  dates.forEach((day) => {
-    employees[person][day] && tasks.push(employees[person][day]);
-  });
-  dates.forEach((item, i) => {
-    if (fiscalYear === "All time") {
-      createTask(dates[i], tasks, i);
-    } else {
-      dates[i].split(":")[1] === fiscalYear && createTask(dates[i], tasks, i);
-    }
-  });
+  dates.forEach((day) => dateFilter(createTask, day));
   displayAddBtn(taskList);
 }
 function addWorkerPayment() {
@@ -680,6 +673,7 @@ function addWorkerPayment() {
 }
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 function updateWorkerPayment() {
+  //need some lookup
   workerPayment.innerHTML = "";
   let paid = workers[person].paid,
     abs = workers[person].abs;
@@ -836,16 +830,17 @@ function displayAddBtn(element) {
     </tr>
     `);
 }
-function createTask(date, tasks, i) {
+function createTask(date) {
   const tr = document.createElement("tr");
   tr.classList.add("infoRow");
-  let dateFormatted = formatDate(date);
-  createTd(`${dateFormatted}`, tr, `${date} date`, tasks[i].tasks.length);
-  tasks[i].tasks.forEach((task, j) => {
+  let dateFormatted = formatDate(date),
+    tasks = employees[person][date].tasks;
+  createTd(`${dateFormatted}`, tr, `${date} date`, tasks.length);
+  tasks.forEach((task) => {
     createTd(task.dress, tr, "dressName");
     createTd(task.qnt.toLocaleString("en-IN"), tr, "qnt");
     createTd(task.group, tr, "grp");
-    if (person !== "lots") {
+    person !== "lots" &&
       createTd(
         (task.qnt > 0 ? task.qnt * priceCheck(task.group) : 0).toLocaleString(
           "en-IN"
@@ -853,24 +848,18 @@ function createTask(date, tasks, i) {
         tr,
         "total"
       );
-    }
   });
   if (person !== "lots") {
     createTd(
-      tasks[i].paid.toLocaleString("en-IN"),
+      employees[person][date].paid.toLocaleString("en-IN"),
       tr,
       `paid`,
-      tasks[i].tasks.length
+      tasks.length
     );
   } else {
     let pcsInLot = 0;
-    tasks[i].tasks.forEach((item, i) => item.qnt > 0 && (pcsInLot += item.qnt));
-    createTd(
-      pcsInLot.toLocaleString("en-IN"),
-      tr,
-      `total`,
-      tasks[i].tasks.length
-    );
+    tasks.forEach((item, i) => item.qnt > 0 && (pcsInLot += item.qnt));
+    createTd(pcsInLot.toLocaleString("en-IN"), tr, `total`, tasks.length);
   }
   taskList.appendChild(tr);
 }
@@ -911,24 +900,19 @@ function getDaysInBetween(from, to) {
 }
 function getTotal(days, what) {
   let total = 0;
+  const test = () => {};
   days.forEach((day) => {
-    if (fiscalYear === "All time") {
+    if (dateFilter("", day[0])) {
       if (what === "production") {
         day[1].tasks.forEach((task) => {
           total += task.qnt > 0 ? task.qnt * priceCheck(task.group) : 0;
         });
+      } else if (what === "qnt") {
+        day[1].tasks.forEach((task) => {
+          total += task.qnt > 0 ? task.qnt : 0;
+        });
       } else {
         total += day[1].paid;
-      }
-    } else {
-      if (day[0].split(":")[1] === fiscalYear) {
-        if (what === "production") {
-          day[1].tasks.forEach((task) => {
-            total += task.qnt > 0 ? task.qnt * priceCheck(task.group) : 0;
-          });
-        } else {
-          total += day[1].paid;
-        }
       }
     }
   });
@@ -1187,16 +1171,14 @@ function popUp_edit() {
   if (section === "task") {
     itemsToAdd.innerHTML = "";
     let itemToEdit = employees[person][target.className.split(" ")[0]];
-    form_task.querySelector('input[name="date"]').value = date.split(":")[0];
+    form_task_date.value = date.split(":")[0];
     itemToEdit.tasks.forEach((item) => {
       addAddmore(item.dress, item.qnt, item.group);
     });
-    person !== "lots" &&
-      (form_task.querySelector('input[name="recieved"]').value =
-        itemToEdit.paid);
+    person !== "lots" && (form_task_recieved.value = itemToEdit.paid);
   } else if (section === "production") {
-    let productsToEdit = production[date][index].products;
     itemsToAdd.innerHTML = "";
+    let productsToEdit = production[date][index].products;
     form_bill_date.value = date.split(":")[0];
     form_bill_ref.value = production[date][index].ref;
     production[date][index].img.length > 0 &&
@@ -1219,12 +1201,13 @@ function popUp_edit() {
   ) {
     form_worker_payment.querySelector('input[type="number"]').value =
       target.nextElementSibling.textContent;
-    form_worker_payment.querySelector(
-      'input[type="date"]'
-    ).value = target.className.split(" ")[0].split(":")[0];
+    form_worker_payment.querySelector('input[type="date"]').value = date.split(
+      ":"
+    )[0];
   }
 }
 function popUp_delete() {
+  let date = target.className.split(" ")[0];
   if (section === "employees") {
     delete_prompt.querySelector(
       "p"
@@ -1232,21 +1215,17 @@ function popUp_delete() {
     delete_prompt.classList.add("active");
   } else if (section === "task") {
     if (
-      employees[person][target.className.split(" ")[0]].tasks.length === 1 ||
+      employees[person][date].tasks.length === 1 ||
       line.classList.contains("infoRow") ||
       line.classList.contains("date") ||
       line.classList.contains("paid")
     ) {
-      delete employees[person][target.className.split(" ")[0]];
+      delete employees[person][date];
     } else {
-      employees[person][target.className.split(" ")[0]].tasks.splice(
-        getIndex(target, line),
-        1
-      );
+      employees[person][date].tasks.splice(getIndex(target, line), 1);
     }
     updateTaskList();
   } else if (section === "production") {
-    let date = target.className.split(" ")[0];
     if (production[date].length === 1) {
       delete production[date];
     } else {
@@ -1254,27 +1233,28 @@ function popUp_delete() {
     }
     updateProduction();
   } else if (section === "payments") {
-    let date = target.className.split(" ")[0];
-    if (production.payments[date].wage) {
-      if (production.payments[date].wage === 0) {
-        production.payments[date].fabric.length === 1
+    let wage = production.payments[date].wage,
+      fabric = production.payments[date].fabric;
+    if (wage) {
+      if (wage === 0) {
+        fabric.length <= 1
           ? delete production.payments[date]
-          : production.payments[date].fabric.splice(getIndex(target, line), 1);
+          : fabric.splice(getIndex(target, line), 1);
       } else {
-        production.payments[date].fabric.length === 1
-          ? (production.payments[date].fabric = [])
-          : production.payments[date].fabric.splice(getIndex(target, line), 1);
+        fabric.length <= 1
+          ? (fabric = [])
+          : fabric.splice(getIndex(target, line), 1);
       }
     } else {
-      production.payments[date].fabric.length === 1
+      fabric.length <= 1
         ? delete production.payments[date]
-        : production.payments[date].fabric.splice(getIndex(target, line), 1);
+        : fabric.splice(getIndex(target, line), 1);
     }
     updatePayment();
   } else if (section === "wages") {
-    let date = target.className.split(" ")[0];
-    if (production.payments[date].fabric) {
-      production.payments[date].fabric.length === 0
+    let fabric = (fabric = production.payments[date].fabric);
+    if (fabric) {
+      fabric.length === 0
         ? delete production.payments[date]
         : (production.payments[date].wage = 0);
     } else {
@@ -1294,24 +1274,19 @@ function popUp_delete() {
             workers[person].paid.splice(i, 1);
         });
       }
-    } else if (
-      line.classList.contains("absences") ||
-      line.classList.contains("abs_date")
-    ) {
-      if (line.classList.contains("absences")) {
-        workers[person].abs = [];
-      } else if (line.classList.contains("abs_date")) {
-        workers[person].abs.forEach((day, i) => {
-          if (
-            day ===
-            `${line.textContent.split(" ")[1].split("-")[2]}-${
-              line.textContent.split(" ")[1].split("-")[1]
-            }-${line.textContent.split(" ")[1].split("-")[0]}`
-          ) {
-            workers[person].abs.splice(i, 1);
-          }
-        });
-      }
+    } else if (line.classList.contains("absences")) {
+      workers[person].abs = [];
+    } else if (line.classList.contains("abs_date")) {
+      workers[person].abs.forEach((day, i) => {
+        if (
+          day ===
+          `${line.textContent.split(" ")[1].split("-")[2]}-${
+            line.textContent.split(" ")[1].split("-")[1]
+          }-${line.textContent.split(" ")[1].split("-")[0]}`
+        ) {
+          workers[person].abs.splice(i, 1);
+        }
+      });
     }
     updateWorkerPayment();
   }
@@ -1560,9 +1535,7 @@ function updateDashboard() {
 
   //sorts dates
   Object.keys(data).forEach((days) => dates.push(days));
-  dates.sort((a, b) =>
-    new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
-  );
+  sortDate(dates);
   lastDay = dates[dates.length - 1];
   // Puts data in diffrent groups
   Object.keys(data).forEach((days, i) => {
@@ -1704,12 +1677,15 @@ fiscalYears.addEventListener("click", (e) => {
   fiscalYears.classList.remove("active");
   updateEmpList();
   updateProduction();
-  updatePayment();
+  (section === "payments" || section === "wages") && updatePayment();
 });
 fiscal_li.querySelector("p:last-child").textContent = "2020-21";
 monthFilter.addEventListener("change", (e) => {
   month = monthFilter.value;
-  updatePayment();
+  (section === "payments" || section === "wages") && updatePayment();
+  section === "employees" && updateEmpList();
+  section === "production" && updateProduction();
+  section === "task" && updateTaskList();
 });
 function sortDate(dates) {
   return dates.sort((a, b) =>
@@ -1717,11 +1693,14 @@ function sortDate(dates) {
   );
 }
 function dateFilter(fun, date) {
+  let run = false;
   const monthToShow = date.split(":")[0].split("-")[1],
     yearToShow = date.split(":")[1];
   if (fiscalYear === "All time") {
-    month === "all" ? fun(date) : monthToShow === month && fun(date);
+    month === "all" ? (run = !run) : monthToShow === month && (run = !run);
   } else if (yearToShow === fiscalYear) {
-    month === "all" ? fun(date) : monthToShow === month && fun(date);
+    month === "all" ? (run = !run) : monthToShow === month && (run = !run);
   }
+  run && fun && fun(date);
+  return run;
 }

@@ -2,7 +2,17 @@ const innerContainer = document.querySelector(".innerContainer"),
   sidebarSpan = document.querySelector(".sidebar_span"),
   welcomeScreen = document.querySelector(".welcomeScreen"),
   tableContainer = document.querySelector(".table_container"),
-  sidebar = document.querySelector(".sidebar");
+  sidebar = document.querySelector(".sidebar"),
+  form_task_date = form_task.querySelector("input[name='date']"),
+  form_task_recieved = form_task.querySelector("input[name='recieved']"),
+  form_payment_for = form_payment.querySelector("input[name='for']"),
+  form_payment_date = form_payment.querySelector("input[name='date']"),
+  form_payment_wage = form_payment.querySelector("input[name='wage']"),
+  form_payment_fabric = form_payment.querySelector("input[name='fabric']"),
+  form_bill_date = form_bill.querySelector('input[name="date"]'),
+  form_bill_ref = form_bill.querySelector('input[name="ref"]'),
+  thead_FOR = document.querySelector("#payments .right thead td:nth-child(2)");
+
 let sidebarOpen = false;
 
 function toggleSidebar() {
@@ -67,14 +77,16 @@ function showForm() {
     }, 500);
   } else if (section === "production") {
     setTimeout(() => form_bill.classList.toggle("hidden"), 0);
-    setTimeout(() => {
-      form_bill.querySelector('input[name="date"]').focus();
-    }, 500);
+    setTimeout(() => form_bill_ref.focus(), 500);
   } else if (section === "payments" || section === "wages") {
     setTimeout(() => form_payment.classList.toggle("hidden"), 0);
-    setTimeout(() => {
-      form_payment.querySelector('input[name="date"]').focus();
-    }, 500);
+    setTimeout(
+      () =>
+        section === "payments"
+          ? form_payment_fabric.focus()
+          : form_payment_wage.focus(),
+      500
+    );
   }
 
   itemsToAdd.children.length <= 1 &&
@@ -94,10 +106,6 @@ function hideForm() {
     form_emp.reset();
     form_worker.reset();
     document.querySelector(".forms").style.display = "none";
-    for (var i = [...itemsToAdd.children].length; i > 1; i--) {
-      [...itemsToAdd.children][i - 1].children[0].value.length === "" &&
-        [...itemsToAdd.children][i - 1].remove();
-    }
   }, 500);
 }
 
@@ -124,7 +132,7 @@ function defaultDateValue() {
     dateFormatted = `${date.getFullYear()}-${
       date.getMonth() < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1
     }-${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}`;
-  form_task.querySelector('input[type="date"]').value = dateFormatted;
+  form_task_date.value = dateFormatted;
   form_worker.querySelector('input[type="date"]').value = dateFormatted;
   form_worker_payment.querySelector(
     'input[type="date"].start'
@@ -132,8 +140,8 @@ function defaultDateValue() {
   form_worker_payment.querySelector(
     'input[type="date"].end'
   ).value = dateFormatted;
-  form_bill.querySelector('input[type="date"]').value = dateFormatted;
-  form_payment.querySelector('input[type="date"]').value = dateFormatted;
+  form_bill_date.value = dateFormatted;
+  form_payment_date.value = dateFormatted;
   return dateFormatted;
 }
 defaultDateValue();
@@ -210,6 +218,7 @@ form_login.addEventListener("submit", (e) => {
       employees[login_user.value] = data;
       login_user.classList.add("currect");
       login_pass.classList.add("currect");
+      month = "all";
       updateEmpList();
       welcomeScreen.classList.add("done");
       setTimeout(() => {
@@ -218,6 +227,7 @@ form_login.addEventListener("submit", (e) => {
       }, 2000);
       document.querySelector(".popUp_wrapper").remove();
       document.querySelector(".forms").remove();
+      monthFilter.remove();
       sections.remove();
       section_li.remove();
       lots_li.remove();
@@ -263,14 +273,6 @@ window.addEventListener("DOMContentLoaded", () => {
     (document.querySelector(".netlify-identity-login").textContent =
       "Management");
 });
-
-const form_payment_for = form_payment.querySelector("input[name='for']"),
-  form_payment_date = form_payment.querySelector("input[name='date']"),
-  form_payment_wage = form_payment.querySelector("input[name='wage']"),
-  form_payment_fabric = form_payment.querySelector("input[name='fabric']"),
-  form_bill_date = form_bill.querySelector('input[name="date"]'),
-  form_bill_ref = form_bill.querySelector('input[name="ref"]'),
-  thead_FOR = document.querySelector("#payments .right thead td:nth-child(2)");
 
 sections.addEventListener("click", (e) => {
   let target = e.target.tagName === "P" ? e.target.parentElement : e.target;

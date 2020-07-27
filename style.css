@@ -501,7 +501,7 @@ table {
 #payments tr {
   display: grid;
   padding: 0rem 1rem;
-  grid-template-columns: 0.6fr 0.5fr 0.4fr 0.5fr 0.5fr;
+  grid-template-columns: 0.5fr 0.3fr 0.45fr 0.5fr 0.5fr;
 }
 #workers tr {
   grid-template-columns: 0.7fr 0.4fr 0.5fr 0.5fr;
@@ -512,6 +512,21 @@ table {
 }
 #workers_payments .thead {
   white-space: nowrap;
+}
+#employee tr {
+  grid-template-areas: "nm lp pr py du";
+}
+#employee .name {
+  grid-area: nm;
+}
+.lastPay {
+  grid-area: lp;
+}
+#employee .product::after {
+  content: attr(data-content);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: #888;
 }
 #tasks tr {
   justify-content: center;
