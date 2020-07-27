@@ -821,7 +821,11 @@ function displayAddBtn(element) {
               ? `${
                   section === "payments" || section === "wages"
                     ? "Add payment."
-                    : "Add more tasks..."
+                    : `${
+                        section === "production"
+                          ? "Add more bills"
+                          : "Add more tasks..."
+                      }`
                 }`
               : "Add more lots..."
           }</p></div>`
