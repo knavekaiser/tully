@@ -128,12 +128,13 @@ document.addEventListener("keyup", (e) => {
     }
   }
 });
+
 form_emp.addEventListener("submit", (e) => {
   e.preventDefault();
   !(form_emp.querySelector('input[name="employee"]').value in employees)
     ? (addEmp(), updateEmpList(), hideForm())
     : alert("Add a diffrent name!");
-  btnSidebar.children[0].classList.add("unsaved");
+  updateLS();
 });
 form_task.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -141,7 +142,7 @@ form_task.addEventListener("submit", (e) => {
   updateTaskList();
   hideForm();
   edit = false;
-  btnSidebar.children[0].classList.add("unsaved");
+  updateLS();
 });
 form_worker.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -149,7 +150,7 @@ form_worker.addEventListener("submit", (e) => {
   updateWorkerList();
   hideForm();
   edit = false;
-  btnSidebar.children[0].classList.add("unsaved");
+  updateLS();
 });
 form_worker_payment.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -157,7 +158,7 @@ form_worker_payment.addEventListener("submit", (e) => {
   updateWorkerPayment();
   hideForm();
   edit = false;
-  btnSidebar.children[0].classList.add("unsaved");
+  updateLS();
 });
 form_bill.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -165,7 +166,7 @@ form_bill.addEventListener("submit", (e) => {
   updateProduction();
   hideForm();
   edit = false;
-  btnSidebar.children[0].classList.add("unsaved");
+  updateLS();
 });
 form_payment.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -175,7 +176,6 @@ form_payment.addEventListener("submit", (e) => {
   updatePayment();
   hideForm();
   edit = false;
-  btnSidebar.children[0].classList.add("unsaved");
 });
 lots_li.addEventListener("click", (e) => {
   document.querySelector(".contractors_li").click();
@@ -236,13 +236,11 @@ function addWorker() {
     paid: [],
     abs: [],
   };
-  updateLS();
   form_worker.querySelector("input[type='text']").value = "";
   form_worker.querySelector("input[type='number']").value = "";
 }
 function addEmp() {
   employees[form_emp.querySelector("input").value] = {};
-  updateLS();
   form_emp.reset();
 }
 function updateEmpList() {
@@ -336,8 +334,9 @@ function addProduct() {
   let date =
     form_bill.querySelector('input[name="date"]').value + ":" + fiscalYear;
   !(date in production) && (production[date] = []);
+  edit && production[date].splice(getIndex(target, line), 1);
   let itemToAdd = [...itemsToAdd.children],
-    index = production[date].length === 0 ? 0 : production[date].length;
+    index = production[date].length;
   production[date].push({
     ref: +form_bill.querySelector('input[name="ref"]').value || 0,
     img: uploadImg.dataset.url || "",
@@ -354,7 +353,6 @@ function addProduct() {
       });
     }
   });
-  updateLS();
   form_bill.querySelector('input[name="ref"]').value = "";
   itemsToAdd.innerHTML = "";
   addAddmore("", "", "", "");
@@ -632,7 +630,6 @@ function addTask() {
   } else {
     delete employees[person][date].paid;
   }
-  updateLS();
   for (var i = [...itemsToAdd.children].length; i > 1; i--) {
     [...itemsToAdd.children][i - 1].remove();
   }
@@ -671,7 +668,6 @@ function addWorkerPayment() {
         );
     }
   }
-  updateLS();
   end.value = "";
   payment.value = "";
 }
@@ -960,9 +956,16 @@ function formatDate(date) {
 }
 
 function updateLS() {
-  localStorage.setItem("employees", JSON.stringify(employees));
-  localStorage.setItem("workers", JSON.stringify(workers));
-  localStorage.setItem("production", JSON.stringify(production));
+  if (
+    JSON.stringify(employees) !== localStorage.getItem("employees") ||
+    JSON.stringify(workers) !== localStorage.getItem("workers") ||
+    JSON.stringify(production) !== localStorage.getItem("production")
+  ) {
+    localStorage.setItem("employees", JSON.stringify(employees));
+    localStorage.setItem("workers", JSON.stringify(workers));
+    localStorage.setItem("production", JSON.stringify(production));
+    btnSidebar.children[0].classList.add("unsaved");
+  }
 }
 
 let clearTaskTimer,
@@ -1298,20 +1301,15 @@ function popUp_delete() {
     }
     updateWorkerPayment();
   }
-  btnSidebar.children[0].classList.add("unsaved");
   updateLS();
 }
 delete_prompt.addEventListener("click", (e) => {
-  if (section === "employees") {
-    if (e.target.textContent === "YES") {
-      btnSidebar.children[0].classList.add("unsaved");
+  if (e.target.textContent === "YES") {
+    if (section === "employees") {
       delete employees[target.textContent];
       updateEmpList();
       updateLS();
-    }
-  } else if (section === "workers") {
-    if (e.target.textContent === "YES") {
-      btnSidebar.children[0].classList.add("unsaved");
+    } else if (section === "workers") {
       delete workers[target.textContent];
       updateWorkerList();
       updateLS();
@@ -1392,7 +1390,6 @@ fileInput.addEventListener("change", (e) => {
           }
         }
         updateLS();
-        btnSidebar.children[0].classList.add("unsaved");
         toggleSidebar();
       } else {
         alert("PLease Select a valid file.");
