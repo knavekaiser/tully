@@ -144,7 +144,7 @@ function defaultDateValue() {
   return dateFormatted;
 }
 defaultDateValue();
-month = defaultDateValue().split("-")[1];
+
 monthFilter.value = month;
 form_worker_payment
   .querySelector('input[type="date"].start')
@@ -217,7 +217,6 @@ form_login.addEventListener("submit", (e) => {
       employees[login_user.value] = data;
       login_user.classList.add("currect");
       login_pass.classList.add("currect");
-      month = "all";
       updateEmpList();
       welcomeScreen.classList.add("done");
       setTimeout(() => {
