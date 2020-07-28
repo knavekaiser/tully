@@ -48,7 +48,7 @@ const tableWrapper = document.querySelector(".table_wrapper"),
 let section = "employees",
   person,
   fiscalYear = "2020-21",
-  month = "",
+  month = "all",
   edit = false,
   itemsToAdd = document.querySelector(
     `${section === "production" ? "#form_bill" : "#form_task"} .itemsToAdd`
@@ -85,7 +85,11 @@ btnSidebar.addEventListener("click", () => {
           updateCloud("emp", netlifyIdentity.currentUser());
         } else if (section === "workers" || section === "workerPayments") {
           updateCloud("wor", netlifyIdentity.currentUser());
-        } else if (section === "production") {
+        } else if (
+          section === "production" ||
+          section === "wages" ||
+          section === "payments"
+        ) {
           updateCloud("pro", netlifyIdentity.currentUser());
         }
       }
