@@ -112,7 +112,6 @@ function hideForm() {
 window.oncontextmenu = function () {
   return false;
 };
-
 const about = document.querySelector(".about p"),
   portrait = document.querySelector(".portrait"),
   root = document.documentElement;
