@@ -628,6 +628,7 @@ table {
   transform: translateY(-6px);
   position: relative;
   content: attr(data-date);
+  white-space: nowrap;
 }
 #payments {
   height: 100%;
