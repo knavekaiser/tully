@@ -467,7 +467,9 @@ option {
 #workers,
 #workers_payments,
 #production,
-#production_detail {
+#production_detail,
+#cost,
+#cost_detail {
   height: 100%;
   width: 50%;
   display: grid;
@@ -498,7 +500,9 @@ table {
 #workers_payments tr,
 #production tr,
 #production_detail tr,
-#payments tr {
+#payments tr,
+#cost tr,
+#cost_detail tr {
   display: grid;
   padding: 0rem 1rem;
   grid-template-columns: 0.5fr 0.3fr 0.45fr 0.5fr 0.5fr;
@@ -545,6 +549,14 @@ table {
   grid-template-columns: 0.5fr 0.3fr 0.25fr 0.3fr;
   grid-template-areas: "dr qt co tl";
 }
+#cost tr {
+  grid-template-columns: 0.06fr 0.3fr 0.3fr 0.2fr 0.2fr;
+  grid-template-areas: "lt dl dt ls tl";
+}
+#cost_detail tr {
+  grid-template-columns: 0.4fr 0.2fr 0.2fr 0.2fr;
+  grid-template-areas: "dt qt co tl";
+}
 #tasks.lots tr {
   grid-template-columns: 0.7fr 0.8fr 0.45fr 0.4fr 0.5fr;
   grid-template-areas: "dt dr qt gr tl";
@@ -572,11 +584,17 @@ table {
 #production .thead td:nth-child(2),
 #production .thead td:nth-child(3),
 #payments .left .thead td:nth-child(2),
-#payments .right .thead td:nth-child(2) {
+#payments .right .thead td:nth-child(2),
+#cost td:nth-child(2),
+#cost td:nth-child(3) {
   text-align: left !important;
 }
 #production .thead td:nth-child(4) {
   text-align: center;
+}
+.perUnit {
+  grid-column: 2 /4;
+  text-align: right;
 }
 .date {
   grid-area: dt;
@@ -872,6 +890,16 @@ form {
   grid-template-columns: 0.25fr 0.25fr 0.25fr 0.25fr;
   grid-template-areas: "dt dt rf im" "it it it it" "bt bt bt bt";
 }
+#form_cost {
+  grid-template-columns: 0.25fr 0.46fr 0.29fr;
+  grid-template-areas: "ln dt im" "dr dr ls" "it it it" "dl dl dl" "bt bt bt";
+}
+form .dress {
+  grid-area: dr;
+}
+input[name="delivery"] {
+  grid-area: dl;
+}
 #form_payment {
   grid-template-columns: 1fr;
   grid-auto-rows: 1fr;
@@ -929,6 +957,9 @@ form input[name="date"] {
 #form_bill .itemToAdd {
   grid-template-columns: 0.8fr 0.35fr 0.35fr 0.3fr;
 }
+#form_cost .itemToAdd {
+  grid-template-columns: 0.5fr 0.25fr 0.25fr;
+}
 .itemToAdd.semi {
   opacity: 0.7;
 }
@@ -980,13 +1011,13 @@ form input[name="recieved"] {
   grid-area: bt;
   height: 2.4rem;
 }
-#form_bill button.uploadImg {
+form button.uploadImg {
   grid-area: im;
   font-size: 1.3rem;
   position: relative;
   z-index: 10;
 }
-#form_bill button.uploadImg::before {
+form button.uploadImg::before {
   content: "";
   display: block;
   position: absolute;
@@ -996,23 +1027,23 @@ form input[name="recieved"] {
   width: 100%;
   border-radius: inherit;
 }
-#form_bill button.uploading {
+form button.uploading {
   background: orange;
 }
-#form_bill button.uploading::before {
+form button.uploading::before {
   animation: uploading 1s ease-in-out infinite;
 }
-#form_bill button.uploaded {
+form button.uploaded {
   background: #05fe67;
 }
-#form_bill button.uploaded::before {
+form button.uploaded::before {
   transform: scale(0.92, 0.85);
   animation: uploaded 4s ease-in-out forwards;
 }
-#form_bill button.uploadFailed {
+form button.uploadFailed {
   background: red;
 }
-#form_bill button.uploadFailed::before {
+form button.uploadFailed::before {
   transform: scale(0.92, 0.85);
 }
 @keyframes uploaded {

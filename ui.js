@@ -1,8 +1,8 @@
-const innerContainer = document.querySelector(".innerContainer"),
-  sidebarSpan = document.querySelector(".sidebar_span"),
-  welcomeScreen = document.querySelector(".welcomeScreen"),
-  tableContainer = document.querySelector(".table_container"),
-  sidebar = document.querySelector(".sidebar"),
+const innerContainer = $(".innerContainer"),
+  sidebarSpan = $(".sidebar_span"),
+  welcomeScreen = $(".welcomeScreen"),
+  tableContainer = $(".table_container"),
+  sidebar = $(".sidebar"),
   form_task_date = form_task.querySelector("input[name='date']"),
   form_task_recieved = form_task.querySelector("input[name='recieved']"),
   form_payment_for = form_payment.querySelector("input[name='for']"),
@@ -11,7 +11,9 @@ const innerContainer = document.querySelector(".innerContainer"),
   form_payment_fabric = form_payment.querySelector("input[name='fabric']"),
   form_bill_date = form_bill.querySelector('input[name="date"]'),
   form_bill_ref = form_bill.querySelector('input[name="ref"]'),
-  thead_FOR = document.querySelector("#payments .right thead td:nth-child(2)");
+  form_cost_dress = form_cost.querySelector('input[name="dress_name"]'),
+  form_cost_date = form_cost.querySelector('input[type="date"]'),
+  thead_FOR = $("#payments .right thead td:nth-child(2)");
 
 let sidebarOpen = false;
 
@@ -48,13 +50,11 @@ function resizeWindow() {
 window.addEventListener("resize", () => resizeWindow());
 resizeWindow();
 
-formsSpan.addEventListener("click", () => {
-  hideForm();
-});
+formsSpan.addEventListener("click", () => hideForm());
 function showForm() {
   clearTimeout(formClearTimeout);
   formsSpan.classList.add("active");
-  document.querySelector(".forms").style.display = "block";
+  $(".forms").style.display = "block";
   if (section === "employees") {
     setTimeout(() => form_emp.classList.toggle("hidden"), 0);
     setTimeout(() => {
@@ -78,6 +78,9 @@ function showForm() {
   } else if (section === "production") {
     setTimeout(() => form_bill.classList.toggle("hidden"), 0);
     setTimeout(() => form_bill_ref.focus(), 500);
+  } else if (section === "cost") {
+    setTimeout(() => form_cost.classList.toggle("hidden"), 0);
+    // setTimeout(() => form_cost_dress.focus(), 500);
   } else if (section === "payments" || section === "wages") {
     setTimeout(() => form_payment.classList.toggle("hidden"), 0);
     setTimeout(
@@ -100,20 +103,21 @@ function hideForm() {
   form_worker.classList.add("hidden");
   form_worker_payment.classList.add("hidden");
   form_bill.classList.add("hidden");
+  form_cost.classList.add("hidden");
   form_payment.classList.add("hidden");
   formsSpan.classList.remove("active");
   formClearTimeout = setTimeout(() => {
     form_emp.reset();
     form_worker.reset();
-    document.querySelector(".forms").style.display = "none";
+    form_cost.reset();
+    defaultDateValue();
+    $(".forms").style.display = "none";
   }, 500);
 }
 
-window.oncontextmenu = function () {
-  return false;
-};
-const about = document.querySelector(".about p"),
-  portrait = document.querySelector(".portrait"),
+window.oncontextmenu = () => false;
+const about = $(".about p"),
+  portrait = $(".portrait"),
   root = document.documentElement;
 portrait.addEventListener("click", () => {
   portrait.classList.add("forward");
@@ -122,9 +126,7 @@ portrait.addEventListener("click", () => {
 
 root.style.setProperty("--portrait-height", `${portrait.clientWidth * 1.71}px`);
 
-about.addEventListener("click", () => {
-  portrait.classList.toggle("active");
-});
+about.addEventListener("click", () => portrait.classList.toggle("active"));
 
 function defaultDateValue() {
   let date = new Date(),
@@ -141,6 +143,7 @@ function defaultDateValue() {
   ).value = dateFormatted;
   form_bill_date.value = dateFormatted;
   form_payment_date.value = dateFormatted;
+  form_cost_date.value = dateFormatted;
   return dateFormatted;
 }
 defaultDateValue();
@@ -156,7 +159,7 @@ form_worker_payment
     ).value;
   });
 
-const loginForm = document.querySelector("#loginForm"),
+const loginForm = $("#loginForm"),
   username = loginForm.querySelector('input[name="username"]'),
   password = loginForm.querySelector('input[name="password"]');
 
@@ -181,6 +184,7 @@ netlifyIdentity.on("login", (user) => {
   netlifyIdentity.close();
   getFromCloud("emp", netlifyIdentity.currentUser());
   getFromCloud("pro", netlifyIdentity.currentUser());
+  getFromCloud("cos", netlifyIdentity.currentUser());
   getFromCloud("wor", netlifyIdentity.currentUser());
   welcomeScreen.classList.add("done");
   setTimeout(() => {
@@ -223,18 +227,19 @@ form_login.addEventListener("submit", (e) => {
         welcomeScreen.remove();
         portrait.classList.remove("forward");
       }, 2000);
-      document.querySelector(".popUp_wrapper").remove();
-      document.querySelector(".forms").remove();
+      $(".popUp_wrapper").remove();
+      $(".forms").remove();
       monthFilter.remove();
       sections.remove();
       section_li.remove();
       lots_li.remove();
       dashboard_li.remove();
+      cost_li.remove();
       backup.remove();
       backupOptions.remove();
       upload_li.remove();
       clearAll.remove();
-      document.querySelector("h3.nameTag").addEventListener("click", (e) => {
+      $("h3.nameTag").addEventListener("click", (e) => {
         e.preventDefault();
         tableWrapper.style.left = "0";
         showPrimaryList();
@@ -267,9 +272,8 @@ showPass.addEventListener("click", () => {
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-  document.querySelector(".netlify-identity-login") &&
-    (document.querySelector(".netlify-identity-login").textContent =
-      "Management");
+  $(".netlify-identity-login") &&
+    ($(".netlify-identity-login").textContent = "Management");
 });
 
 sections.addEventListener("click", (e) => {
@@ -289,13 +293,22 @@ sections.addEventListener("click", (e) => {
     tableWrapper.querySelector("#tasks").style.display = "grid";
     section = "employees";
     section_li.textContent = "Contractors";
+    itemsToAdd = $("#form_task .itemsToAdd");
     updateEmpList();
   } else if (target.classList.contains("bill_li")) {
     tableWrapper.querySelector("#production").style.display = "grid";
     tableWrapper.querySelector("#production_detail").style.display = "grid";
     section = "production";
     section_li.textContent = "Bills";
+    itemsToAdd = $("#form_bill .itemsToAdd");
     updateProduction();
+  } else if (target.classList.contains("cost_li")) {
+    tableWrapper.querySelector("#cost").style.display = "grid";
+    tableWrapper.querySelector("#cost_detail").style.display = "grid";
+    section = "cost";
+    section_li.textContent = "Cost";
+    itemsToAdd = $("#form_cost .itemsToAdd");
+    updateCost();
   } else if (
     target.classList.contains("production_li") ||
     target.classList.contains("wages_li")
@@ -329,22 +342,17 @@ sections.addEventListener("click", (e) => {
   sections.classList.remove("active");
   resizeWindow();
   toggleSidebar();
-  itemsToAdd = document.querySelector(
-    `${
-      section === "employees" || section === "task"
-        ? "#form_task"
-        : "#form_bill"
-    } .itemsToAdd`
-  );
   itemtoAddEventListener();
 });
 
-const uploadImg = document.querySelector("#uploadImg");
-const uploadImgBtn = document.querySelector("#form_bill button.uploadImg");
-document
-  .querySelector(".uploadImg")
-  .addEventListener("click", () => uploadImg.click());
-uploadImg.addEventListener("change", (e) => {
+document.querySelectorAll("form input[type='file']").forEach((element) => {
+  const uploadImgBtn = element.nextElementSibling;
+  uploadImgBtn.addEventListener("click", () => element.click());
+  element.addEventListener("change", () =>
+    handleImgUplaod(element, uploadImgBtn)
+  );
+});
+function handleImgUplaod(uploadImg, uploadImgBtn) {
   if (uploadImg.files) {
     const formdata = new FormData();
     formdata.append("image", uploadImg.files[0]);
@@ -382,4 +390,4 @@ uploadImg.addEventListener("change", (e) => {
           .removeAttribute("disabled");
       });
   }
-});
+}

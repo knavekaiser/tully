@@ -1,65 +1,99 @@
 "use strict";
+const $ = (selector) => document.querySelector(selector);
 let employees = {};
 let workers = {};
 let production = {};
-const tableWrapper = document.querySelector(".table_wrapper"),
-  nameTag = document.querySelector(".nameTag"),
-  empList = document.querySelector("#employee .tbody tbody"),
-  taskList = document.querySelector("#tasks .tbody tbody"),
-  workerList = document.querySelector("#workers .tbody tbody"),
-  workerPayment = document.querySelector("#workers_payments .tbody tbody"),
-  payment_right = document.querySelector("#payments .right .tbody tbody"),
-  payment_left = document.querySelector("#payments .left .tbody tbody"),
-  productionList = document.querySelector("#production .tbody tbody"),
-  productionDetail = document.querySelector("#production_detail .tbody tbody"),
-  form_login = document.querySelector("#loginForm"),
-  form_emp = document.querySelector("#form_employee"),
-  form_task = document.querySelector("#form_task"),
-  form_worker = document.querySelector("#form_worker"),
-  form_worker_payment = document.querySelector("#form_worker_payment"),
-  form_bill = document.querySelector("#form_bill"),
-  form_payment = document.querySelector("#form_payment"),
-  showPass = document.querySelector(".passDiv ion-icon"),
-  formsSpan = document.querySelector(".forms span"),
-  btnSidebar = document.querySelector(".btn_sidebar"),
-  section_li = document.querySelector(".section_li"),
-  sections = document.querySelector(".sections"),
-  fiscal_li = document.querySelector(".fiscal_li"),
-  fiscalYears = document.querySelector(".fiscalYear"),
-  monthFilter = document.querySelector("select.month_filter"),
-  lots_li = document.querySelector(".lots_li"),
-  dashboard_li = document.querySelector(".dashboard_li"),
-  backup = document.querySelector(".backup_li"),
-  backupOptions = document.querySelector(".backup_options"),
-  upload_li = document.querySelector(".upload_li"),
-  fileInput = document.querySelector("input.upload"),
-  clearAll = document.querySelector(".clear"),
-  logout = document.querySelector(".logout"),
-  cls_dashboard = document.querySelector(".cls_dashboard"),
-  dashboard = document.querySelector(".dashboard"),
-  weekProduction = document.querySelector(".thisWeek .production"),
-  weekPaid = document.querySelector(".thisWeek .paid"),
-  weekLot = document.querySelector(".thisWeek .lot"),
-  yearProduction = document.querySelector(".thisYear .production"),
-  yearPaid = document.querySelector(".thisYear .paid"),
-  yearValue = document.querySelector(".thisYear .value"),
-  popUp = document.querySelector(".popUp"),
-  delete_prompt = document.querySelector(".delete_prompt");
+let costs = [
+  {
+    id: "asdgasdg",
+    lotNo: 41,
+    img: "",
+    date: "2020-07-16:2020-21",
+    dress: "linen bockless",
+    lotSize: 512,
+    materials: [
+      { mat: "linen", qnt: 200, cost: 95 },
+      { mat: "button", qnt: 512, cost: 1.25 },
+      { mat: "tarcel", qnt: 60, cost: 2.5 },
+      { mat: "bockless", qnt: 72, cost: 4 },
+    ],
+    delivery: "12-01-20 (150)",
+  },
+  {
+    id: "asdgasdgasdgas",
+    lotNo: 42,
+    img: "",
+    date: "2020-04-16:2020-21",
+    dress: "cotton tarcel",
+    lotSize: 420,
+    materials: [
+      { mat: "cotton", qnt: 180, cost: 110 },
+      { mat: "button", qnt: 400, cost: 0.5 },
+      { mat: "tarcel", qnt: 80, cost: 2.5 },
+      { mat: "bockless", qnt: 72, cost: 4 },
+    ],
+    delivery: "12-01-20 (150)",
+  },
+];
+const tableWrapper = $(".table_wrapper"),
+  nameTag = $(".nameTag"),
+  empList = $("#employee .tbody tbody"),
+  taskList = $("#tasks .tbody tbody"),
+  workerList = $("#workers .tbody tbody"),
+  workerPayment = $("#workers_payments .tbody tbody"),
+  productionList = $("#production .tbody tbody"),
+  productionDetail = $("#production_detail .tbody tbody"),
+  costList = $("#cost .tbody tbody"),
+  costDetail = $("#cost_detail .tbody tbody"),
+  payment_right = $("#payments .right .tbody tbody"),
+  payment_left = $("#payments .left .tbody tbody"),
+  form_login = $("#loginForm"),
+  form_emp = $("#form_employee"),
+  form_task = $("#form_task"),
+  form_worker = $("#form_worker"),
+  form_worker_payment = $("#form_worker_payment"),
+  form_bill = $("#form_bill"),
+  form_cost = $("#form_cost"),
+  form_payment = $("#form_payment"),
+  showPass = $(".passDiv ion-icon"),
+  formsSpan = $(".forms span"),
+  btnSidebar = $(".btn_sidebar"),
+  section_li = $(".section_li"),
+  sections = $(".sections"),
+  fiscal_li = $(".fiscal_li"),
+  fiscalYears = $(".fiscalYear"),
+  monthFilter = $("select.month_filter"),
+  lots_li = $(".lots_li"),
+  dashboard_li = $(".dashboard_li"),
+  backup = $(".backup_li"),
+  backupOptions = $(".backup_options"),
+  upload_li = $(".upload_li"),
+  fileInput = $("input.upload"),
+  clearAll = $(".clear"),
+  logout = $(".logout"),
+  cls_dashboard = $(".cls_dashboard"),
+  dashboard = $(".dashboard"),
+  weekProduction = $(".thisWeek .production"),
+  weekPaid = $(".thisWeek .paid"),
+  weekLot = $(".thisWeek .lot"),
+  yearProduction = $(".thisYear .production"),
+  yearPaid = $(".thisYear .paid"),
+  yearValue = $(".thisYear .value"),
+  popUp = $(".popUp"),
+  delete_prompt = $(".delete_prompt");
 let section = "employees",
   person,
   fiscalYear = "2020-21",
   month = "all",
   edit = false,
-  itemsToAdd = document.querySelector(
-    `${section === "production" ? "#form_bill" : "#form_task"} .itemsToAdd`
-  );
+  itemsToAdd = $("#form_task .itemsToAdd");
 
 function changeNameTag(name) {
   nameTag.textContent = name.toUpperCase();
   nameTag.parentElement.style.transform = `translateX(-${
     window.innerWidth >= 500 ? 50 : 100
   }%) translateY(-75%)`;
-  document.querySelector("header a div h1").classList.add("disabled");
+  $("header a div h1").classList.add("disabled");
   nameTag.classList.remove("disabled");
 }
 function restoreNameTag() {
@@ -67,13 +101,14 @@ function restoreNameTag() {
     window.innerWidth >= 500 ? 50 : 100
   }%) translateY(-25%)`;
   nameTag.classList.add("disabled");
-  document.querySelector("header a div h1").classList.remove("disabled");
+  $("header a div h1").classList.remove("disabled");
 }
 
 btnSidebar.addEventListener("click", () => {
   if (
     section === "employees" ||
     section === "workers" ||
+    section === "cost" ||
     section === "production" ||
     section === "payments" ||
     section === "wages"
@@ -106,6 +141,7 @@ function showPrimaryList() {
   section === "task" && ((section = "employees"), updateEmpList());
   section === "workerPayments" && ((section = "workers"), updateWorkerList());
   section === "production_detail" && (section = "production");
+  section == "costDetail" && (section = "cost");
   tableWrapper.style.left = "0";
   btnSidebar.classList.remove("back");
   person = "";
@@ -113,7 +149,7 @@ function showPrimaryList() {
   form_task_recieved.setAttribute("required", true);
   form_task.classList.remove("lots");
   setTimeout(() => {
-    document.querySelector("#tasks").classList.remove("lots");
+    $("#tasks").classList.remove("lots");
   }, 450);
 }
 document.addEventListener("keyup", (e) => {
@@ -168,6 +204,14 @@ form_bill.addEventListener("submit", (e) => {
   edit = false;
   updateLS();
 });
+form_cost.addEventListener("submit", (e) => {
+  e.preventDefault();
+  addCost();
+  updateCost();
+  hideForm();
+  edit = false;
+  updateLS();
+});
 form_payment.addEventListener("submit", (e) => {
   e.preventDefault();
   section === "wages" && addWageLedger();
@@ -178,7 +222,7 @@ form_payment.addEventListener("submit", (e) => {
   edit = false;
 });
 lots_li.addEventListener("click", (e) => {
-  document.querySelector(".contractors_li").click();
+  $(".contractors_li").click();
   person = "lots";
   showEmpTasks(e);
   toggleSidebar();
@@ -188,9 +232,10 @@ lots_li.addEventListener("click", (e) => {
   form_task
     .querySelector('input[name="recieved"]')
     .setAttribute("hidden", true);
-  document.querySelector("#tasks").classList.add("lots");
+  $("#tasks").classList.add("lots");
 });
 
+let lastDay = "";
 form_task
   .querySelector('input[name="dress_name"]')
   .addEventListener("keyup", (e) => {
@@ -206,26 +251,6 @@ form_task
       form_task
         .querySelector('select[name="group"]')
         .removeAttribute("disabled");
-    }
-  });
-let lastDay = "";
-form_bill
-  .querySelector('input[name="dress_name"]')
-  .addEventListener("keyup", (e) => {
-    if (form_bill.querySelector('input[name="dress_name"]').value === "-") {
-      form_bill
-        .querySelector('input[name="qnt"]')
-        .setAttribute("disabled", true);
-      form_bill
-        .querySelector('input[name="cost"]')
-        .setAttribute("disabled", true);
-      form_bill
-        .querySelector('input[name="ref"]')
-        .setAttribute("disabled", true);
-    } else {
-      form_bill.querySelector('input[name="qnt"]').removeAttribute("disabled");
-      form_bill.querySelector('input[name="cost"]').removeAttribute("disabled");
-      form_bill.querySelector('input[name="ref"]').removeAttribute("disabled");
     }
   });
 function addWorker() {
@@ -331,15 +356,16 @@ function updateWorkerList() {
 }
 
 function addProduct() {
-  let date =
-    form_bill.querySelector('input[name="date"]').value + ":" + fiscalYear;
+  let date = form_bill_date.value + ":" + fiscalYear;
   !(date in production) && (production[date] = []);
   edit && production[date].splice(getIndex(target, line), 1);
   let itemToAdd = [...itemsToAdd.children],
     index = production[date].length;
   production[date].push({
-    ref: +form_bill.querySelector('input[name="ref"]').value || 0,
-    img: uploadImg.dataset.url || "",
+    ref: +form_bill_ref.value || 0,
+    img:
+      form_bill.querySelector("input[type='file']").getAttribute("data-url") ||
+      "",
     products: [],
   });
 
@@ -356,6 +382,7 @@ function addProduct() {
   form_bill.querySelector('input[name="ref"]').value = "";
   itemsToAdd.innerHTML = "";
   addAddmore("", "", "", "");
+  form_bill.querySelector("input[type='file']").removeAttribute("data-url");
 }
 function addPaymentLedger() {
   let date =
@@ -435,14 +462,13 @@ function showProductionDetail(e) {
 }
 function updateProductionDetail(bill) {
   productionDetail.innerHTML = "";
-  document.querySelector("#production_detail .banner .ref").textContent =
-    bill.ref;
+  $("#production_detail .banner .ref").textContent = bill.ref;
   document
     .querySelector("#production_detail a.ref")
     .setAttribute("href", bill.img);
-  document.querySelector(
-    "#production_detail .banner .date"
-  ).textContent = `Date: ${target.textContent.split(":")[0].split("-")[2]}-${
+  $("#production_detail .banner .date").textContent = `Date: ${
+    target.textContent.split(":")[0].split("-")[2]
+  }-${
     target.textContent.split(":")[0].split("-")[1]
   }-${target.textContent.split(":")[0].split("-")[0].slice(-2)}`;
   let totalProduct = 0,
@@ -494,6 +520,92 @@ function updateProductionDetail(bill) {
   productionDetail.appendChild(gr);
 }
 
+function addCost() {
+  const newCost = {
+    lotNo: +form_cost.querySelector("input[name='lotNo']").value,
+    id: `${new Date().getTime()}`,
+    img:
+      form_cost.querySelector("input[type='file']").getAttribute("data-url") ||
+      "",
+    date: form_cost_date.value + ":" + fiscalYear,
+    dress: form_cost_dress.value,
+    lotSize: +form_cost.querySelector('input[name="lotSize"]').value,
+    materials: [],
+    delivery: form_cost.querySelector("input[name='delivery']").value,
+  };
+  form_cost.querySelectorAll(".itemToAdd").forEach((item) => {
+    if (item.querySelector('input[name="material"]').value.length > 0) {
+      newCost.materials.push({
+        mat: item.querySelector('input[name="material"]').value,
+        qnt: +item.querySelector('input[name="qnt"]').value,
+        cost: +item.querySelector('input[name="cost"]').value,
+      });
+    }
+  });
+  itemsToAdd.innerHTML = "";
+  addAddmore("", "", "", "");
+  edit &&
+    (costs = costs.filter(
+      (item) => item.id !== target.parentElement.getAttribute("data-id")
+    ));
+  costs.push(newCost);
+  form_cost.querySelector("input[type='file']").removeAttribute("data-url");
+}
+function showCostDetail(e) {
+  if (e.target.parentElement.classList.contains("infoRow")) {
+    section = "costDetail";
+    const id = e.target.parentElement.getAttribute("data-id");
+    updateCostDetail(costs.filter((item) => item.id === id)[0]);
+    tableWrapper.style.left = "-100%";
+    btnSidebar.classList.add("back");
+  }
+}
+function calculateCost(item) {
+  return Math.ceil(
+    item.materials.reduce((a, c) => a + c.cost * c.qnt, 0) / item.lotSize
+  );
+}
+function updateCost() {
+  costList.innerHTML = "";
+  costs.forEach((item, i) => {
+    const tr = document.createElement("tr");
+    tr.classList.add("infoRow");
+    tr.setAttribute("data-id", item.id);
+    createTd(item.lotNo, tr, "lot");
+    createTd(item.delivery, tr, "delivery");
+    createTd(item.dress, tr, "name");
+    createTd(item.lotSize, tr, "lotSize");
+    createTd(calculateCost(item), tr, "total");
+    costList.appendChild(tr);
+  });
+  displayAddBtn(costList);
+}
+function updateCostDetail(item) {
+  costDetail.innerHTML = "";
+  let total = 0;
+  item.materials.forEach((item) => {
+    const tr = document.createElement("tr");
+    createTd(item.mat, tr, "mat");
+    createTd(item.qnt, tr, "qnt");
+    createTd(item.cost, tr, "cost");
+    createTd((item.qnt * item.cost).toLocaleString("en-IN"), tr, "total");
+    total += item.qnt * item.cost;
+    costDetail.appendChild(tr);
+  });
+  const totalMaterialCost = document.createElement("tr");
+  createTd("Total material cost", totalMaterialCost, "perUnit");
+  createTd(total.toLocaleString("en-IN"), totalMaterialCost, "total");
+  costDetail.appendChild(totalMaterialCost);
+  const lotSize = document.createElement("tr");
+  createTd(`Per unit (${item.lotSize})`, lotSize, "perUnit");
+  createTd(
+    `৳ ${Math.ceil(total / item.lotSize).toLocaleString("en-IN")}`,
+    lotSize,
+    "total"
+  );
+  costDetail.appendChild(lotSize);
+}
+
 function addAddmore(dressName = "", qnt = "", group = "", className = "") {
   const itemToAdd = document.createElement("div");
   itemToAdd.classList.add("itemToAdd");
@@ -519,6 +631,16 @@ ${
 }
 </select>
 `;
+  } else if (section === "cost") {
+    itemToAdd.innerHTML = `
+<input type="text" name="material" maxlength="25" placeholder="Material" value="${dressName}"/>
+<input type="number" name="qnt" placeholder="Qnt" step="0.01" min="0" value="${qnt}" ${
+      dressName.length === 0 && "disabled"
+    }/>
+<input type="number" name="cost" placeholder="Price" step="0.01" min="0" value="${group}" required ${
+      dressName.length === 0 && "disabled"
+    }/>
+`;
   } else {
     itemToAdd.innerHTML = `
 <input type="text" name="dress_name" maxlength="25" placeholder="Item" value="${dressName}"/>
@@ -536,7 +658,7 @@ ${
   itemsToAdd.appendChild(itemToAdd);
   itemsToAdd
     .querySelector(".itemToAdd:last-child")
-    .querySelector("input[name='dress_name']")
+    .querySelector("input:first-child")
     .addEventListener("focus", (e) => {
       className && e.target.parentElement.classList.remove(className);
     });
@@ -545,7 +667,7 @@ ${
 function itemtoAddEventListener() {
   let items = itemsToAdd
     .querySelector(".itemToAdd:last-child")
-    .querySelector("input[name='dress_name']");
+    .querySelector("input:first-child");
   items.addEventListener("keyup", (e) => {
     const [qntInput, groupInput, wageInput, ref] = [
       e.target.parentElement.children[1],
@@ -578,8 +700,7 @@ function itemtoAddEventListener() {
         !items.parentElement.nextElementSibling &&
           addAddmore("", "", "", "semi");
       } else {
-        document.querySelector(".semi") &&
-          document.querySelector(".semi").remove();
+        $(".semi") && $(".semi").remove();
         if ([...e.target.parentElement.parentElement.children].length > 1) {
           e.target.removeAttribute("required");
           qntInput.removeAttribute("required");
@@ -807,9 +928,9 @@ function displayPaymentLedger(date) {
 }
 
 function displayAddBtn(element) {
-  netlifyIdentity.currentUser() !== null &&
-    fiscalYear !== "All time" &&
-    (element.innerHTML += `
+  // netlifyIdentity.currentUser() !== null &&
+  //   fiscalYear !== "All time" &&
+  element.innerHTML += `
     <tr id="btn_tr">
     <td class="btn_row add">
     <button id="td_btn" type="submit" onClick="showForm()" name="button">
@@ -817,23 +938,31 @@ function displayAddBtn(element) {
     ${
       section === "employees"
         ? `<div class="label"><ion-icon name="person-add-outline"></ion-icon><p>Add more people...</p></div>`
-        : `<div class="label"> <ion-icon name="add-outline"></ion-icon> <p>${
-            person !== "lots"
-              ? `${
-                  section === "payments" || section === "wages"
-                    ? "Add payment."
-                    : `${
-                        section === "production"
-                          ? "Add more bills"
-                          : "Add more tasks..."
-                      }`
-                }`
-              : "Add more lots..."
-          }</p></div>`
+        : ""
+    }
+    ${
+      section === "task"
+        ? `<div class="label"> <ion-icon name="add-outline"></ion-icon> <p>Add more tasks...</p>`
+        : ""
+    }
+    ${
+      section === "payments" || section === "wages"
+        ? `<div class="label"> <ion-icon name="add-outline"></ion-icon> <p>Add payment</p>`
+        : ""
+    }
+    ${
+      section === "production"
+        ? `<div class="label"> <ion-icon name="add-outline"></ion-icon> <p>Add production</p>`
+        : ""
+    }
+    ${
+      section === "cost"
+        ? `<div class="label"> <ion-icon name="add-outline"></ion-icon> <p>Add Item</p>`
+        : ""
     }
     </td>
     </tr>
-    `);
+    `;
 }
 function createTask(date) {
   const tr = document.createElement("tr");
@@ -957,16 +1086,11 @@ function formatDate(date) {
 }
 
 function updateLS() {
-  if (
-    JSON.stringify(employees) !== localStorage.getItem("employees") ||
-    JSON.stringify(workers) !== localStorage.getItem("workers") ||
-    JSON.stringify(production) !== localStorage.getItem("production")
-  ) {
-    localStorage.setItem("employees", JSON.stringify(employees));
-    localStorage.setItem("workers", JSON.stringify(workers));
-    localStorage.setItem("production", JSON.stringify(production));
-    btnSidebar.children[0].classList.add("unsaved");
-  }
+  localStorage.setItem("employees", JSON.stringify(employees));
+  localStorage.setItem("workers", JSON.stringify(workers));
+  localStorage.setItem("production", JSON.stringify(production));
+  localStorage.setItem("costs", JSON.stringify(costs));
+  btnSidebar.children[0].classList.add("unsaved");
 }
 
 let clearTaskTimer,
@@ -1019,11 +1143,12 @@ tableWrapper.addEventListener("mouseup", (e) => {
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
   if (duration <= 350) {
-    section === "employees" && e.target.tagName !== "BUTTON" && showEmpTasks(e);
-    section === "workers" && e.target.tagName !== "BUTTON" && showPayments(e);
-    section === "production" &&
-      e.target.tagName !== "BUTTON" &&
-      showProductionDetail(e);
+    if (e.target.tagName !== "BUTTON") {
+      section === "employees" && showEmpTasks(e);
+      section === "workers" && showPayments(e);
+      section === "production" && showProductionDetail(e);
+      section === "cost" && showCostDetail(e);
+    }
   }
 });
 tableWrapper.addEventListener("mousemove", (e) => {
@@ -1068,11 +1193,12 @@ tableWrapper.addEventListener("touchend", (e) => {
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
   if (duration <= 350) {
-    section === "employees" && e.target.tagName !== "BUTTON" && showEmpTasks(e);
-    section === "workers" && e.target.tagName !== "BUTTON" && showPayments(e);
-    section === "production" &&
-      e.target.tagName !== "BUTTON" &&
-      showProductionDetail(e);
+    if (e.target.tagName !== "BUTTON") {
+      section === "employees" && showEmpTasks(e);
+      section === "workers" && showPayments(e);
+      section === "production" && showProductionDetail(e);
+      section === "cost" && showCostDetail(e);
+    }
   }
 });
 
@@ -1198,6 +1324,17 @@ function popUp_edit() {
     productsToEdit.forEach((product) => {
       addAddmore(product.dress, product.qnt, product.cost, product.wage);
     });
+  } else if (section === "cost") {
+    itemsToAdd.innerHTML = "";
+    const costId = target.parentElement.getAttribute("data-id");
+    const costToEdit = costs.filter((item) => item.id === costId)[0];
+    form_cost_date.value = costToEdit.date.split(":")[0];
+    form_cost_dress.value = costToEdit.dress;
+    form_cost.querySelector("input[name='lotSize']").value = costToEdit.lotSize;
+    costToEdit.materials.forEach((item) => {
+      addAddmore(item.mat, item.qnt, item.cost);
+    });
+    console.log(costToEdit);
   } else if (section === "payments") {
     const date = target.className.split(" ")[0];
     const itemToEdit = production.payments[date].fabric[index];
@@ -1244,6 +1381,11 @@ function popUp_delete() {
       production[date].splice(getIndex(target, line), 1);
     }
     updateProduction();
+  } else if (section === "cost") {
+    costs = costs.filter(
+      (item) => item.id !== target.parentElement.getAttribute("data-id")
+    );
+    updateCost();
   } else if (section === "payments") {
     let wage = production.payments[date].wage,
       fabric = production.payments[date].fabric;
@@ -1434,6 +1576,9 @@ function updateCloud(dir, userStatus) {
     case "pro":
       body = production;
       break;
+    case "cos":
+      body = costs;
+      break;
     case "wor":
       body = workers;
   }
@@ -1465,6 +1610,10 @@ function getFromCloud(dir, userStatus) {
       localStorage.setItem("production", JSON.stringify(data.record));
       production = JSON.parse(localStorage.getItem("production"));
       updateProduction();
+    } else if (dir === "cos") {
+      localStorage.setItem("costs", JSON.stringify(data.record));
+      costs = JSON.parse(localStorage.getItem("costs"));
+      updateCost();
     } else {
       localStorage.setItem("workers", JSON.stringify(data.record));
       workers = JSON.parse(localStorage.getItem("workers"));
