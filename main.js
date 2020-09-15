@@ -1477,9 +1477,7 @@ clearAll.addEventListener("touchend", (e) => {
   clearAll.querySelector("span").classList.remove("active");
 });
 
-upload_li.addEventListener("click", (e) => {
-  fileInput.click();
-});
+upload_li.addEventListener("click", (e) => fileInput.click());
 fileInput.addEventListener("change", (e) => {
   let file = fileInput.files[0];
   if (file) {
@@ -1501,6 +1499,17 @@ fileInput.addEventListener("change", (e) => {
               production = JSON.parse(raw.replace("let production = ", ""));
               updateProduction();
               break;
+            case "payments":
+              production = JSON.parse(raw.replace("let production = ", ""));
+              updateProduction();
+              break;
+            case "wages":
+              production = JSON.parse(raw.replace("let production = ", ""));
+              updateProduction();
+              break;
+            case "cost":
+              production = JSON.parse(raw.replace("let costs = ", ""));
+              updateCost();
           }
         }
         updateLS();
@@ -1512,15 +1521,17 @@ fileInput.addEventListener("change", (e) => {
     fr.readAsText(file);
   }
 });
-backup.addEventListener("click", () => {
-  backupOptions.classList.toggle("active");
-});
+backup.addEventListener("click", () =>
+  backupOptions.classList.toggle("active")
+);
 backupOptions.addEventListener("click", (e) => {
   let raw = `${
     e.target.textContent === "App Backup" ? `let ${section} = ` : ""
   }${section === "employees" ? JSON.stringify(employees) : ""}${
     section === "workers" ? JSON.stringify(workers) : ""
-  }${section === "production" ? JSON.stringify(production) : ""}`;
+  }${section === "production" ? JSON.stringify(production) : ""}${
+    section === "cost" ? JSON.stringify(costs) : ""
+  }`;
   let blob = new Blob([raw], { type: "application/json" });
   let uri = URL.createObjectURL(blob);
   download(uri, e.target.textContent);
