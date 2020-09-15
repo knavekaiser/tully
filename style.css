@@ -484,7 +484,9 @@ option {
 #workers_payments,
 #production,
 #production_detail,
-#payments {
+#payments,
+#cost,
+#cost_detail {
   display: none;
 }
 table {
