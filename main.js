@@ -1508,7 +1508,7 @@ fileInput.addEventListener("change", (e) => {
               updateProduction();
               break;
             case "cost":
-              production = JSON.parse(raw.replace("let cost = ", ""));
+              costs = JSON.parse(raw.replace("let cost = ", ""));
               updateCost();
           }
         }
