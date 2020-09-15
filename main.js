@@ -1484,7 +1484,9 @@ fileInput.addEventListener("change", (e) => {
     let fr = new FileReader();
     fr.onload = function () {
       let raw = fr.result;
-      if (raw.search(`let ${section} = {`) >= 0) {
+      if (
+        raw.search(`let ${section}${section === "cost" ? "s" : ""} = {`) >= 0
+      ) {
         if (netlifyIdentity.currentUser() !== null) {
           switch (section) {
             case "employees":
