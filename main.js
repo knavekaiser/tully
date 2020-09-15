@@ -1484,9 +1484,7 @@ fileInput.addEventListener("change", (e) => {
     let fr = new FileReader();
     fr.onload = function () {
       let raw = fr.result;
-      if (
-        raw.search(`let ${section} = ${section === "cost" ? "[" : ""}{`) >= 0
-      ) {
+      if (raw.search(`let ${section} = `) >= 0) {
         if (netlifyIdentity.currentUser() !== null) {
           switch (section) {
             case "employees":
@@ -1510,7 +1508,7 @@ fileInput.addEventListener("change", (e) => {
               updateProduction();
               break;
             case "cost":
-              production = JSON.parse(raw.replace("let costs = ", ""));
+              production = JSON.parse(raw.replace("let cost = ", ""));
               updateCost();
           }
         }
