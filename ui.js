@@ -234,7 +234,7 @@ form_login.addEventListener("submit", (e) => {
       section_li.remove();
       lots_li.remove();
       dashboard_li.remove();
-      cost_li.remove();
+      $(".cost_li").remove();
       backup.remove();
       backupOptions.remove();
       upload_li.remove();

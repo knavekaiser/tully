@@ -3,38 +3,7 @@ const $ = (selector) => document.querySelector(selector);
 let employees = {};
 let workers = {};
 let production = {};
-let costs = [
-  {
-    id: "asdgasdg",
-    lotNo: 41,
-    img: "",
-    date: "2020-07-16:2020-21",
-    dress: "linen bockless",
-    lotSize: 512,
-    materials: [
-      { mat: "linen", qnt: 200, cost: 95 },
-      { mat: "button", qnt: 512, cost: 1.25 },
-      { mat: "tarcel", qnt: 60, cost: 2.5 },
-      { mat: "bockless", qnt: 72, cost: 4 },
-    ],
-    delivery: "12-01-20 (150)",
-  },
-  {
-    id: "asdgasdgasdgas",
-    lotNo: 42,
-    img: "",
-    date: "2020-04-16:2020-21",
-    dress: "cotton tarcel",
-    lotSize: 420,
-    materials: [
-      { mat: "cotton", qnt: 180, cost: 110 },
-      { mat: "button", qnt: 400, cost: 0.5 },
-      { mat: "tarcel", qnt: 80, cost: 2.5 },
-      { mat: "bockless", qnt: 72, cost: 4 },
-    ],
-    delivery: "12-01-20 (150)",
-  },
-];
+let costs = [];
 const tableWrapper = $(".table_wrapper"),
   nameTag = $(".nameTag"),
   empList = $("#employee .tbody tbody"),
