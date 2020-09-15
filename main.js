@@ -899,9 +899,9 @@ function displayPaymentLedger(date) {
 }
 
 function displayAddBtn(element) {
-  // netlifyIdentity.currentUser() !== null &&
-  //   fiscalYear !== "All time" &&
-  element.innerHTML += `
+  netlifyIdentity.currentUser() !== null &&
+    fiscalYear !== "All time" &&
+    (element.innerHTML += `
     <tr id="btn_tr">
     <td class="btn_row add">
     <button id="td_btn" type="submit" onClick="showForm()" name="button">
@@ -933,7 +933,7 @@ function displayAddBtn(element) {
     }
     </td>
     </tr>
-    `;
+    `);
 }
 function createTask(date) {
   const tr = document.createElement("tr");
