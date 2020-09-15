@@ -120,6 +120,8 @@ btnSidebar.addEventListener("click", () => {
           updateCloud("emp", netlifyIdentity.currentUser());
         } else if (section === "workers" || section === "workerPayments") {
           updateCloud("wor", netlifyIdentity.currentUser());
+        } else if (section === "cost" || section === "costDetail") {
+          updateCloud("cos", netlifyIdentity.currentUser());
         } else if (
           section === "production" ||
           section === "wages" ||
