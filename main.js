@@ -1116,7 +1116,8 @@ tableWrapper.addEventListener("mouseup", (e) => {
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
   if (duration <= 350) {
-    if (e.target.tagName !== "BUTTON") {
+    if (e.target.parentElement.classList.contains("infoRow")) {
+      console.log(e.target);
       section === "employees" && showEmpTasks(e);
       section === "workers" && showPayments(e);
       section === "production" && showProductionDetail(e);
@@ -1166,7 +1167,7 @@ tableWrapper.addEventListener("touchend", (e) => {
   duration += new Date().getTime() - startTime;
   clearTimeout(popUpTimer);
   if (duration <= 350) {
-    if (e.target.tagName !== "BUTTON") {
+    if (e.target.parentElement.classList.contains("infoRow")) {
       section === "employees" && showEmpTasks(e);
       section === "workers" && showPayments(e);
       section === "production" && showProductionDetail(e);
