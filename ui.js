@@ -91,7 +91,6 @@ function showForm() {
       500
     );
   }
-
   itemsToAdd.children.length <= 1 &&
     ((itemsToAdd.innerHTML = ""), addAddmore("", "", "", ""));
 }
@@ -229,6 +228,15 @@ form_login.addEventListener("submit", (e) => {
       }, 2000);
       $(".popUp_wrapper").remove();
       $(".forms").remove();
+      $(".dashboard").remove();
+      $(".delete_prompt").remove();
+      $("#workers").remove();
+      $("#workers_payments").remove();
+      $("#production").remove();
+      $("#production_detail").remove();
+      $("#cost").remove();
+      $("#cost_detail").remove();
+      $("#payments").remove();
       monthFilter.remove();
       sections.remove();
       section_li.remove();
@@ -281,6 +289,7 @@ sections.addEventListener("click", (e) => {
     section.style.display = "none";
   });
   restoreNameTag();
+  $(".year_filter").style.display = "none";
   if (target.classList.contains("workers_li")) {
     tableWrapper.querySelector("#workers").style.display = "grid";
     tableWrapper.querySelector("#workers_payments").style.display = "grid";
@@ -337,6 +346,9 @@ sections.addEventListener("click", (e) => {
       changeNameTag("Wages");
     }
     updatePayment();
+  } else if (target.classList.contains("summery_li")) {
+    tableWrapper.querySelector("#summery").style.display = "grid";
+    $(".year_filter").style.display = "block";
   }
   sections.classList.remove("active");
   resizeWindow();

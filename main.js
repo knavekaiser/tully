@@ -1,5 +1,6 @@
 "use strict";
 const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => document.querySelectorAll(selector);
 let employees = {};
 let workers = {};
 let production = {};
@@ -14,6 +15,7 @@ const tableWrapper = $(".table_wrapper"),
   productionDetail = $("#production_detail .tbody tbody"),
   costList = $("#cost .tbody tbody"),
   costDetail = $("#cost_detail .tbody tbody"),
+  summery = $("#summery .tbody tbody"),
   payment_right = $("#payments .right .tbody tbody"),
   payment_left = $("#payments .left .tbody tbody"),
   form_login = $("#loginForm"),
@@ -1305,7 +1307,6 @@ function popUp_edit() {
     costToEdit.materials.forEach((item) => {
       addAddmore(item.mat, item.qnt, item.cost);
     });
-    console.log(costToEdit);
   } else if (section === "payments") {
     const date = target.className.split(" ")[0];
     const itemToEdit = production.payments[date].fabric[index];
@@ -1377,7 +1378,7 @@ function popUp_delete() {
     }
     updatePayment();
   } else if (section === "wages") {
-    let fabric = (fabric = production.payments[date].fabric);
+    let fabric = production.payments[date].fabric;
     if (fabric) {
       fabric.length === 0
         ? delete production.payments[date]
@@ -1443,17 +1444,25 @@ function getIndex(target, line) {
   }
 }
 let clearAllTimer;
+function clearAllData() {
+  localStorage.clear();
+  employees = {};
+  workers = {};
+  production = {};
+  costs = {};
+  updateCloud("emp", netlifyIdentity.currentUser());
+  updateCloud("pro", netlifyIdentity.currentUser());
+  updateCloud("wor", netlifyIdentity.currentUser());
+  updateCloud("cos", netlifyIdentity.currentUser());
+  section === "employees" && updateEmpList();
+  section === "workers" && updateWorkerList();
+  section === "production" && updateProduction();
+  section === "payments" || (section === "wages" && updatePayment());
+}
 clearAll.addEventListener("mousedown", (e) => {
   e.preventDefault();
   clearAllTimer = setTimeout(() => {
-    localStorage.clear();
-    employees = {};
-    workers = {};
-    production = {};
-    updateEmpList();
-    updateCloud("emp", netlifyIdentity.currentUser());
-    updateCloud("pro", netlifyIdentity.currentUser());
-    updateCloud("wor", netlifyIdentity.currentUser());
+    clearAllData();
     clearAll.querySelector("span").classList.remove("active");
   }, 2000);
   clearAll.querySelector("span").classList.add("active");
@@ -1465,9 +1474,7 @@ clearAll.addEventListener("mouseup", (e) => {
 clearAll.addEventListener("touchstart", (e) => {
   e.preventDefault();
   clearAllTimer = setTimeout(() => {
-    localStorage.clear();
-    employees = {};
-    updateEmpList();
+    clearAllData();
     clearAll.querySelector("span").classList.remove("active");
   }, 2000);
   clearAll.querySelector("span").classList.add("active");
@@ -1800,6 +1807,84 @@ function updateDashboard() {
     group1.total * priceCheck("1") -
     allPayments.reduce((a, c) => a + c, 0)
   ).toLocaleString("en-IN");
+}
+const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+const previous = -3223207;
+let currents = [];
+function getSummery(i, previous) {
+  const days = Object.entries(production).filter((item) => {
+    return +item[0].split(":")[0].split("-")[1] - 1 === i;
+  });
+  const payDays = Object.entries(production.payments).filter((item) => {
+    return +item[0].split(":")[0].split("-")[1] - 1 === i;
+  });
+  console.log(days);
+  let product = 0;
+  let wage = 0;
+  let fabricPayment = 0;
+  let wagePayment = 0;
+  let current = 0;
+  days.forEach((day) => {
+    day[1].forEach((bill) => {
+      bill.products.forEach((item) => {
+        product += item.qnt * item.cost - item.qnt * item.wage;
+        wage += item.qnt * item.wage;
+      });
+    });
+  });
+  payDays.forEach((payDay) => {
+    if (payDay[1].fabric) {
+      payDay[1].fabric.forEach(
+        (pay) => (fabricPayment += +Object.values(pay)[0])
+      );
+    }
+    payDay[1].wage && (wagePayment += payDay[1].wage);
+  });
+  current = previous + product + wage - (fabricPayment + wagePayment);
+  return {
+    product: product,
+    wage: wage,
+    fabricPayment: fabricPayment,
+    wagePayment: wagePayment,
+    current: current,
+  };
+}
+function updateSummery() {
+  let current_month = previous;
+  const currentYear = defaultDateValue().split("-")[0];
+  $$(".year_filter option").forEach((item) => {
+    if (item.textContent === currentYear) {
+      item.setAttribute("selected", "true");
+    }
+  });
+  summery.innerHTML = "";
+  for (var i = 0; i < months.length; i++) {
+    const data = getSummery(i, current_month);
+    const tr = document.createElement("tr");
+    data.current > current_month && tr.classList.add("decrease");
+    data.current < current_month && tr.classList.add("increase");
+    createTd(months[i], tr, "month");
+    createTd(data.product.toLocaleString("en-IN"), tr);
+    createTd(data.wage.toLocaleString("en-IN"), tr);
+    createTd(data.fabricPayment.toLocaleString("en-IN"), tr);
+    createTd(data.wagePayment.toLocaleString("en-IN"), tr);
+    createTd(data.current.toLocaleString("en-IN"), tr);
+    summery.appendChild(tr);
+    current_month = data.current;
+  }
 }
 
 section_li.addEventListener("click", (e) => {

@@ -241,7 +241,7 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 .sidebar .sections.active {
-  height: 225px;
+  height: 315px;
 }
 .sidebar .fiscalYear.active {
   height: 135px;
@@ -442,7 +442,8 @@ a {
   right: 85%;
   transform: rotate(-45deg);
 }
-.month_filter {
+.month_filter,
+.year_filter {
   position: absolute;
   left: 3.5rem;
   appearance: none;
@@ -450,6 +451,9 @@ a {
   border-radius: 0.35rem;
   border: 1px solid #00f260;
   outline: none;
+}
+.year_filter {
+  /* display: none; */
 }
 option {
   padding: 1rem 0;
@@ -462,17 +466,9 @@ option {
   transition: left 0.5s;
   left: 0;
 }
-#employee,
-#tasks,
-#workers,
-#workers_payments,
-#production,
-#production_detail,
-#cost,
-#cost_detail {
+.table_wrapper section {
   height: 100%;
   width: 50%;
-  display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 2.5rem calc(100% - 2.5rem);
   max-height: 100%;
@@ -480,14 +476,11 @@ option {
 #production_detail {
   grid-template-rows: 2.5rem 2.5rem calc(100% - 2.5rem);
 }
-#workers,
-#workers_payments,
-#production,
-#production_detail,
-#payments,
-#cost,
-#cost_detail {
+.table_wrapper section {
   display: none;
+}
+#employee {
+  display: grid;
 }
 table {
   width: 100%;
@@ -497,14 +490,7 @@ table {
   border-bottom: 1px dotted #999;
   height: 2.4rem;
 }
-#employee tr,
-#workers tr,
-#workers_payments tr,
-#production tr,
-#production_detail tr,
-#payments tr,
-#cost tr,
-#cost_detail tr {
+.table_wrapper section tr {
   display: grid;
   padding: 0rem 1rem;
   grid-template-columns: 0.5fr 0.3fr 0.45fr 0.5fr 0.5fr;
@@ -567,6 +553,27 @@ table {
   padding: 0 0.5rem;
   grid-template-columns: 0.2fr 0.3fr 0.2fr 0.35fr;
   grid-template-areas: "rf dt qt tl";
+}
+#summery tr {
+  grid-template-columns: 0.06fr 0.188fr 0.188fr 0.188fr 0.188fr 0.188fr;
+  grid-template-areas: "mn dt rf dr qt tl";
+}
+#summery thead tr {
+  grid-template-columns: 0.1fr 0.18fr 0.18fr 0.18fr 0.188fr 0.18fr;
+}
+.decrease {
+  background: linear-gradient(
+    350deg,
+    rgba(0, 240, 27, 0.1) 0%,
+    rgba(182, 1, 1, 0) 100%
+  );
+}
+.increase {
+  background: linear-gradient(
+    350deg,
+    rgba(240, 0, 27, 0.15) 0%,
+    rgba(182, 1, 1, 0) 100%
+  );
 }
 #payments .right tr {
   grid-template-columns: 0.5fr 0.5fr 0.5fr;
