@@ -559,6 +559,9 @@ table {
   grid-template-columns: 0.06fr 0.188fr 0.188fr 0.188fr 0.188fr 0.188fr;
   grid-template-areas: "mn dt rf dr qt tl";
 }
+.prev {
+  grid-template-columns: 1fr;
+}
 #summery thead tr {
   grid-template-columns: 0.1fr 0.18fr 0.18fr 0.18fr 0.188fr 0.18fr;
 }
@@ -569,7 +572,8 @@ table {
     rgba(182, 1, 1, 0) 100%
   );
 }
-.increase {
+.increase,
+.prev {
   background: linear-gradient(
     350deg,
     rgba(240, 0, 27, 0.15) 0%,

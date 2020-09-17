@@ -1873,16 +1873,22 @@ function updateSummery() {
   summery.innerHTML = "";
   for (var i = 0; i < months.length; i++) {
     const data = getSummery(i, current_month);
-    const tr = document.createElement("tr");
-    data.current > current_month && tr.classList.add("decrease");
-    data.current < current_month && tr.classList.add("increase");
-    createTd(months[i], tr, "month");
-    createTd(data.product.toLocaleString("en-IN"), tr);
-    createTd(data.wage.toLocaleString("en-IN"), tr);
-    createTd(data.fabricPayment.toLocaleString("en-IN"), tr);
-    createTd(data.wagePayment.toLocaleString("en-IN"), tr);
-    createTd(data.current.toLocaleString("en-IN"), tr);
-    summery.appendChild(tr);
+    const prev = document.createElement("tr");
+    prev.classList.add("prev");
+    createTd(previous.toLocaleString("en-IN"), prev);
+    summery.appendChild(prev);
+    if (data.current !== current_month) {
+      const tr = document.createElement("tr");
+      data.current > current_month && tr.classList.add("decrease");
+      data.current < current_month && tr.classList.add("increase");
+      createTd(months[i], tr, "month");
+      createTd(data.product.toLocaleString("en-IN"), tr);
+      createTd(data.wage.toLocaleString("en-IN"), tr);
+      createTd(data.fabricPayment.toLocaleString("en-IN"), tr);
+      createTd(data.wagePayment.toLocaleString("en-IN"), tr);
+      createTd(data.current.toLocaleString("en-IN"), tr);
+      summery.appendChild(tr);
+    }
     current_month = data.current;
   }
 }
