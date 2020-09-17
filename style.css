@@ -453,7 +453,7 @@ a {
   outline: none;
 }
 .year_filter {
-  /* display: none; */
+  display: none;
 }
 option {
   padding: 1rem 0;
