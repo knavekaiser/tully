@@ -564,7 +564,7 @@ table {
   text-align: right;
 }
 #summery thead tr {
-  grid-template-columns: 0.1fr 0.18fr 0.18fr 0.18fr 0.188fr 0.18fr;
+  grid-template-columns: 0.07fr 0.188fr 0.188fr 0.188fr 0.188fr 0.188fr;
 }
 .decrease {
   background: linear-gradient(
