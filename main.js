@@ -1871,12 +1871,12 @@ function updateSummery() {
     }
   });
   summery.innerHTML = "";
+  const prev = document.createElement("tr");
+  prev.classList.add("prev");
+  createTd(previous.toLocaleString("en-IN"), prev);
+  summery.appendChild(prev);
   for (var i = 0; i < months.length; i++) {
     const data = getSummery(i, current_month);
-    const prev = document.createElement("tr");
-    prev.classList.add("prev");
-    createTd(previous.toLocaleString("en-IN"), prev);
-    summery.appendChild(prev);
     if (data.current !== current_month) {
       const tr = document.createElement("tr");
       data.current > current_month && tr.classList.add("decrease");

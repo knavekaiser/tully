@@ -560,7 +560,7 @@ table {
   grid-template-areas: "mn dt rf dr qt tl";
 }
 .prev {
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr !important;
 }
 #summery thead tr {
   grid-template-columns: 0.1fr 0.18fr 0.18fr 0.18fr 0.188fr 0.18fr;
