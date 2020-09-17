@@ -480,7 +480,7 @@ option {
   display: none;
 }
 #employee,
-#task {
+#tasks {
   display: grid;
 }
 table {

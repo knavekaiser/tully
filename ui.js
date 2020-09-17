@@ -351,6 +351,7 @@ sections.addEventListener("click", (e) => {
   } else if (target.classList.contains("summery_li")) {
     tableWrapper.querySelector("#summery").style.display = "grid";
     $(".year_filter").style.display = "block";
+    updateSummery();
   }
   sections.classList.remove("active");
   resizeWindow();
