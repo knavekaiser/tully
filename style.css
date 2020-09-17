@@ -479,7 +479,8 @@ option {
 .table_wrapper section {
   display: none;
 }
-#employee {
+#employee,
+#task {
   display: grid;
 }
 table {
