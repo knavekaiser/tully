@@ -561,6 +561,7 @@ table {
 }
 .prev {
   grid-template-columns: 1fr !important;
+  text-align: right;
 }
 #summery thead tr {
   grid-template-columns: 0.1fr 0.18fr 0.18fr 0.18fr 0.188fr 0.18fr;
