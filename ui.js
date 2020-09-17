@@ -237,6 +237,7 @@ form_login.addEventListener("submit", (e) => {
       $("#cost").remove();
       $("#cost_detail").remove();
       $("#payments").remove();
+      $("#summery").remove();
       monthFilter.remove();
       $(".year_filter").remove();
       sections.remove();
