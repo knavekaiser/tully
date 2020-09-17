@@ -1831,7 +1831,6 @@ function getSummery(i, previous) {
   const payDays = Object.entries(production.payments).filter((item) => {
     return +item[0].split(":")[0].split("-")[1] - 1 === i;
   });
-  console.log(days);
   let product = 0;
   let wage = 0;
   let fabricPayment = 0;
