@@ -81,7 +81,7 @@ function showForm() {
     setTimeout(() => form_bill_ref.focus(), 500);
   } else if (section === "cost") {
     setTimeout(() => form_cost.classList.toggle("hidden"), 0);
-    // setTimeout(() => form_cost_dress.focus(), 500);
+    setTimeout(() => form_cost_dress.focus(), 500);
   } else if (section === "payments" || section === "wages") {
     setTimeout(() => form_payment.classList.toggle("hidden"), 0);
     setTimeout(
@@ -131,7 +131,9 @@ about.addEventListener("click", () => portrait.classList.toggle("active"));
 function defaultDateValue() {
   let date = new Date(),
     dateFormatted = `${date.getFullYear()}-${
-      date.getMonth() < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1
+      date.getMonth() + 1 < 10
+        ? "0" + (date.getMonth() + 1)
+        : date.getMonth() + 1
     }-${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}`;
   form_task_date.value = dateFormatted;
   form_worker.querySelector('input[type="date"]').value = dateFormatted;
