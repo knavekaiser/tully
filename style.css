@@ -515,7 +515,8 @@ table {
 .lastPay {
   grid-area: lp;
 }
-#employee .product::after {
+#employee .product::after,
+#employee .lastPay::after {
   content: attr(data-content);
   font-size: 0.65rem;
   letter-spacing: 0.1em;

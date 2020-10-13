@@ -250,20 +250,24 @@ function updateEmpList() {
       tr.classList.add("infoRow");
       employee[0] === "iron" && tr.classList.add("iron");
       lastDay &&
-        document
-          .querySelector("#employee .thead thead td:nth-child(2)")
-          .setAttribute(
-            "data-date",
-            `${lastDay.split(":")[0].split("-")[2]}-${
-              lastDay.split(":")[0].split("-")[1]
-            }`
-          );
+        $("#employee .thead thead td:nth-child(2)").setAttribute(
+          "data-date",
+          `${lastDay.split(":")[0].split("-")[2]}-${
+            lastDay.split(":")[0].split("-")[1]
+          }`
+        );
+      const lastWeek = employees[employee[0]][lastDay];
+      const lastWeekProduction = lastWeek
+        ? lastWeek.tasks.reduce((a, c) => a + c.qnt, 0).toLocaleString("en-IN")
+        : "";
       createTd(employee[0], tr, "name");
-      if (employees[employee[0]][lastDay]) {
+      if (lastWeek) {
         createTd(
-          employees[employee[0]][lastDay].paid.toLocaleString("en-IN"),
+          lastWeek.paid.toLocaleString("en-IN"),
           tr,
-          "lastPay"
+          "lastPay",
+          0,
+          `(${lastWeekProduction})`
         );
       } else {
         createTd(0, tr, "lastPay");
@@ -1302,6 +1306,7 @@ function popUp_edit() {
     itemsToAdd.innerHTML = "";
     const costId = target.parentElement.getAttribute("data-id");
     const costToEdit = costs.filter((item) => item.id === costId)[0];
+    form_cost_lotNo.value = costToEdit.lotNo;
     form_cost_date.value = costToEdit.date.split(":")[0];
     form_cost_dress.value = costToEdit.dress;
     form_cost.querySelector("input[name='lotSize']").value = costToEdit.lotSize;

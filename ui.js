@@ -11,6 +11,7 @@ const innerContainer = $(".innerContainer"),
   form_payment_fabric = form_payment.querySelector("input[name='fabric']"),
   form_bill_date = form_bill.querySelector('input[name="date"]'),
   form_bill_ref = form_bill.querySelector('input[name="ref"]'),
+  form_cost_lotNo = form_cost.querySelector('input[name="lotNo"]'),
   form_cost_dress = form_cost.querySelector('input[name="dress_name"]'),
   form_cost_date = form_cost.querySelector('input[type="date"]'),
   thead_FOR = $("#payments .right thead td:nth-child(2)");
