@@ -877,6 +877,12 @@ form {
   width: 100%;
   max-width: 25rem;
   z-index: 10;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+form::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar {
+  width: 0 !important;
 }
 #form_task {
   grid-template-areas:

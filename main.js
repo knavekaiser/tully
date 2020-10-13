@@ -1121,7 +1121,6 @@ tableWrapper.addEventListener("mouseup", (e) => {
   clearTimeout(popUpTimer);
   if (duration <= 350) {
     if (e.target.parentElement.classList.contains("infoRow")) {
-      console.log(e.target);
       section === "employees" && showEmpTasks(e);
       section === "workers" && showPayments(e);
       section === "production" && showProductionDetail(e);
