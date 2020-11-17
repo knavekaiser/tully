@@ -95,6 +95,15 @@ function showForm() {
   itemsToAdd.children.length <= 1 &&
     ((itemsToAdd.innerHTML = ""), addAddmore("", "", "", ""));
 }
+function showDateFilterForm() {
+  clearTimeout(formClearTimeout);
+  formsSpan.classList.add("active");
+  $(".forms").style.display = "block";
+  setTimeout(() => form_date_filter.classList.toggle("hidden"), 0);
+  // setTimeout(() => {
+  //   form_date_filter.querySelector('input[name="employee"]').focus();
+  // }, 500);
+}
 let formClearTimeout;
 function hideForm() {
   edit = false;
@@ -105,6 +114,7 @@ function hideForm() {
   form_bill.classList.add("hidden");
   form_cost.classList.add("hidden");
   form_payment.classList.add("hidden");
+  form_date_filter.classList.add("hidden");
   formsSpan.classList.remove("active");
   formClearTimeout = setTimeout(() => {
     form_emp.reset();
@@ -150,7 +160,7 @@ function defaultDateValue() {
 }
 defaultDateValue();
 
-monthFilter.value = month;
+// monthFilter.value = month;
 form_worker_payment
   .querySelector('input[type="date"].start')
   .addEventListener("change", (e) => {
@@ -408,3 +418,10 @@ function handleImgUplaod(uploadImg, uploadImgBtn) {
       });
   }
 }
+
+// window.addEventListener("DOMContentLoaded", (e) => {
+//   welcomeScreen.remove();
+//   employees = JSON.parse(localStorage.getItem("employees"));
+//   updateDashboard();
+//   updateEmpList();
+// });

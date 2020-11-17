@@ -26,6 +26,7 @@ const tableWrapper = $(".table_wrapper"),
   form_bill = $("#form_bill"),
   form_cost = $("#form_cost"),
   form_payment = $("#form_payment"),
+  form_date_filter = $("#form_date_filter"),
   showPass = $(".passDiv ion-icon"),
   formsSpan = $(".forms span"),
   btnSidebar = $(".btn_sidebar"),
@@ -55,7 +56,10 @@ const tableWrapper = $(".table_wrapper"),
 let section = "employees",
   person,
   fiscalYear = "2020-21",
-  month = "all",
+  dateRange = {
+    from: new Date(),
+    to: new Date("2000-01-01"),
+  },
   edit = false,
   itemsToAdd = $("#form_task .itemsToAdd");
 
@@ -193,6 +197,18 @@ form_payment.addEventListener("submit", (e) => {
   updatePayment();
   hideForm();
   edit = false;
+});
+form_date_filter.addEventListener("submit", (e) => {
+  e.preventDefault();
+  let start = form_date_filter.querySelector('input[type="date"].start').value,
+    end = form_date_filter.querySelector('input[type="date"].end').value;
+  dateRange.from = new Date(start);
+  dateRange.to = new Date(end);
+  (section === "payments" || section === "wages") && updatePayment();
+  section === "employees" && updateEmpList();
+  section === "production" && updateProduction();
+  section === "task" && updateTaskList();
+  hideForm();
 });
 lots_li.addEventListener("click", (e) => {
   $(".contractors_li").click();
@@ -1654,11 +1670,36 @@ function updateDashboard() {
     },
     dates = [],
     production = [],
-    pcsInLot = [];
+    lastWeekLot = { s: 0, l: 0, f: 0, one: 0 };
   // Crunches main data!
   for (const name in employees) {
     if (name !== "lots" && name !== "iron") {
       for (const day in employees[name]) {
+        const today = day.split(":")[0];
+        if (dateRange.from > new Date(today)) {
+          dateRange.from = new Date(today);
+          form_date_filter
+            .querySelector('input[type="date"].start')
+            .setAttribute("min", today);
+          form_date_filter
+            .querySelector('input[type="date"].end')
+            .setAttribute("min", today);
+        }
+        if (dateRange.to < new Date(today)) {
+          dateRange.to = new Date(today);
+          form_date_filter
+            .querySelector('input[type="date"].start')
+            .setAttribute("max", today);
+          form_date_filter
+            .querySelector('input[type="date"].end')
+            .setAttribute("max", today);
+          form_date_filter.querySelector(
+            'input[type="date"].start'
+          ).value = today;
+          form_date_filter.querySelector(
+            'input[type="date"].end'
+          ).value = today;
+        }
         if (fiscalYear === "All time") {
           !([day] in data) && (data[day] = { tasks: [], paid: 0 });
           Object.keys(employees[name][day]).forEach((task, k) => {
@@ -1718,9 +1759,19 @@ function updateDashboard() {
   let selectedDate = dates[dates.length - 1];
   for (const date in employees.lots) {
     if (date === selectedDate) {
-      employees.lots[selectedDate].tasks.forEach(
-        (item) => item.qnt > 0 && pcsInLot.push(item)
-      );
+      employees.lots[selectedDate].tasks.forEach((item) => {
+        if (item.qnt > 0) {
+          if (item.group === "S") {
+            lastWeekLot.s += item.qnt;
+          } else if (item.group === "L") {
+            lastWeekLot.l += item.qnt;
+          } else if (item.group === "1") {
+            lastWeek.one += item.qnt;
+          } else if (item.group === "F") {
+            lastWeekLot.f += item.qnt;
+          }
+        }
+      });
     }
   }
   var ctx = document.getElementById("chart").getContext("2d");
@@ -1775,23 +1826,47 @@ function updateDashboard() {
     },
   });
 
-  const thisWeek = { production: 0, paid: 0, deu: 0 };
+  const thisWeek = {
+    production: { s: 0, l: 0, f: 0, one: 0 },
+    paid: 0,
+    deu: 0,
+  };
   data[selectedDate].tasks.forEach((task, i) => {
-    thisWeek.production += task.qnt !== "-" && task.qnt;
+    if (task.qnt !== "-") {
+      if (task.group === "S") {
+        thisWeek.production.s += task.qnt;
+      } else if (task.group === "L") {
+        thisWeek.production.l += task.qnt;
+      } else if (task.group === "1") {
+        thisWeek.production.one += task.qnt;
+      } else if (task.group === "F") {
+        thisWeek.production.f += task.qnt;
+      }
+    }
     thisWeek.paid = data[dates[dates.length - 1]].paid;
+  });
+  let thisWeekProductionTotal = 0;
+  let thisWeekProductionDetail = "";
+  Object.entries(thisWeek.production).forEach((task, i) => {
+    thisWeekProductionTotal += task[1];
+    task[1] > 0 &&
+      (thisWeekProductionDetail += `${task[0].toUpperCase()} - ${task[1]}, `);
+    i + 1 === Object.keys(thisWeek.production).length &&
+      (thisWeekProductionDetail += "\nProduction");
   });
   weekProduction.querySelector(
     "h3"
-  ).textContent = thisWeek.production.toLocaleString("en-IN");
+  ).textContent = thisWeekProductionTotal.toLocaleString("en-IN");
+  weekProduction.querySelector("p").textContent = thisWeekProductionDetail;
   weekPaid.querySelector("h3").textContent = thisWeek.paid.toLocaleString(
     "en-IN"
   );
   let totalInLot = 0;
   let totalLots = "";
-  pcsInLot.forEach((lot) => {
-    totalInLot += lot.qnt;
-    totalLots += lot.group + "-";
-    totalLots += lot.qnt + ",  ";
+  Object.entries(lastWeekLot).forEach((size, i) => {
+    totalInLot += size[1];
+    size[1] > 0 && (totalLots += `${size[0].toUpperCase()} - ${size[1]}, `);
+    i + 1 === Object.keys(lastWeekLot).length && (totalLots += "\nLots");
   });
   weekLot.querySelector("h3").textContent = totalInLot.toLocaleString();
   weekLot.querySelector("p").textContent = totalLots;
@@ -1913,12 +1988,28 @@ fiscalYears.addEventListener("click", (e) => {
 });
 fiscal_li.querySelector("p:last-child").textContent = "2020-21";
 monthFilter.addEventListener("change", (e) => {
-  month = monthFilter.value;
+  // month = monthFilter.value;
+  if (monthFilter.value === "all") {
+    dateRange.from = new Date(`1800-01-01`);
+    dateRange.to = new Date("2200-12-31");
+  } else if (monthFilter.value === "custom") {
+    showDateFilterForm();
+  } else {
+    dateRange.from = new Date(`1800-${monthFilter.value}-01`);
+    dateRange.to = new Date(
+      `2200-${monthFilter.value}-${new Date(
+        2001,
+        dateRange.from.getMonth() + 1,
+        0
+      ).getDate()}`
+    );
+  }
   (section === "payments" || section === "wages") && updatePayment();
   section === "employees" && updateEmpList();
   section === "production" && updateProduction();
   section === "task" && updateTaskList();
 });
+
 function sortDate(dates) {
   return dates.sort((a, b) =>
     new Date(a.split(":")[0]) < new Date(b.split(":")[0]) ? -1 : 1
@@ -1926,12 +2017,18 @@ function sortDate(dates) {
 }
 function dateFilter(fun, date) {
   let run = false;
-  const monthToShow = date.split(":")[0].split("-")[1],
-    yearToShow = date.split(":")[1];
-  if (fiscalYear === "All time") {
-    month === "all" ? (run = !run) : monthToShow === month && (run = !run);
-  } else if (yearToShow === fiscalYear) {
-    month === "all" ? (run = !run) : monthToShow === month && (run = !run);
+  const from = new Date(dateRange.from),
+    to = new Date(dateRange.to),
+    yearToShow = date.split(":")[1],
+    dateToShow = new Date(date.split(":")[0]);
+  to.setFullYear(dateToShow.getFullYear());
+  from.setFullYear(dateToShow.getFullYear());
+  if (dateToShow >= from && dateToShow <= to) {
+    if (fiscalYear === "All time") {
+      run = true;
+    } else if (fiscalYear === yearToShow) {
+      run = true;
+    }
   }
   run && fun && fun(date);
   return run;

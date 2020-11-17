@@ -117,6 +117,7 @@
           </div>
           <select class="month_filter" name="">
             <option value="all">All</option>
+            <option value="custom">Custom</option>
             <option value="01">Jan</option>
             <option value="02">Feb</option>
             <option value="03">Mar</option>
@@ -502,6 +503,13 @@
         </div>
         <button type="submit" name="button">
           <ion-icon name="add-outline"></ion-icon>
+        </button>
+      </form>
+      <form id="form_date_filter" class="form hidden" autocomplete="off">
+        <input type="date" name="date" class="start" required placeholder="from"/>
+        <input type="date" name="date" class="end" required placeholder="to"/>
+        <button type="submit" name="button">
+          <ion-icon name="checkmark-outline"></ion-icon>
         </button>
       </form>
     </div>
