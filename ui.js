@@ -160,7 +160,6 @@ function defaultDateValue() {
 }
 defaultDateValue();
 
-// monthFilter.value = month;
 form_worker_payment
   .querySelector('input[type="date"].start')
   .addEventListener("change", (e) => {

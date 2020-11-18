@@ -57,8 +57,8 @@ let section = "employees",
   person,
   fiscalYear = "2020-21",
   dateRange = {
-    from: new Date(),
-    to: new Date("2000-01-01"),
+    from: new Date(`1800-01-01`),
+    to: new Date("2200-12-31"),
   },
   edit = false,
   itemsToAdd = $("#form_task .itemsToAdd");
@@ -1677,7 +1677,6 @@ function updateDashboard() {
       for (const day in employees[name]) {
         const today = day.split(":")[0];
         if (dateRange.from > new Date(today)) {
-          dateRange.from = new Date(today);
           form_date_filter
             .querySelector('input[type="date"].start')
             .setAttribute("min", today);
@@ -1686,7 +1685,6 @@ function updateDashboard() {
             .setAttribute("min", today);
         }
         if (dateRange.to < new Date(today)) {
-          dateRange.to = new Date(today);
           form_date_filter
             .querySelector('input[type="date"].start')
             .setAttribute("max", today);
@@ -1988,7 +1986,6 @@ fiscalYears.addEventListener("click", (e) => {
 });
 fiscal_li.querySelector("p:last-child").textContent = "2020-21";
 monthFilter.addEventListener("change", (e) => {
-  // month = monthFilter.value;
   if (monthFilter.value === "all") {
     dateRange.from = new Date(`1800-01-01`);
     dateRange.to = new Date("2200-12-31");
@@ -2008,6 +2005,9 @@ monthFilter.addEventListener("change", (e) => {
   section === "employees" && updateEmpList();
   section === "production" && updateProduction();
   section === "task" && updateTaskList();
+});
+monthFilter.addEventListener("click", (e) => {
+  console.log(e.target);
 });
 
 function sortDate(dates) {
