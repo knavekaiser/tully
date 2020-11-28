@@ -599,6 +599,18 @@ function updateCostDetail(item) {
     "total"
   );
   costDetail.appendChild(lotSize);
+  if (item.img) {
+    const img = document.createElement("tr");
+    const td = document.createElement("td");
+    const a = document.createElement("a");
+    a.setAttribute("href", item.img);
+    a.textContent = "img";
+    td.appendChild(a);
+    td.style.gridColumnEnd = "-1";
+    td.style.textAlign = "right";
+    img.appendChild(td);
+    costDetail.appendChild(img);
+  }
 }
 
 function addAddmore(dressName = "", qnt = "", group = "", className = "") {
@@ -1394,6 +1406,7 @@ function popUp_delete() {
     );
     updateCost();
   } else if (section === "payments") {
+    //needs work
     let wage = production.payments[date].wage,
       fabric = production.payments[date].fabric;
     if (wage) {
