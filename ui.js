@@ -13,8 +13,7 @@ const innerContainer = $(".innerContainer"),
   form_bill_ref = form_bill.querySelector('input[name="ref"]'),
   form_cost_lotNo = form_cost.querySelector('input[name="lotNo"]'),
   form_cost_dress = form_cost.querySelector('input[name="dress_name"]'),
-  form_cost_date = form_cost.querySelector('input[type="date"]'),
-  thead_FOR = $("#payments .right thead td:nth-child(2)");
+  form_cost_date = form_cost.querySelector('input[type="date"]');
 
 let sidebarOpen = false;
 
@@ -323,6 +322,7 @@ sections.addEventListener("click", (e) => {
     section = "production";
     section_li.textContent = "Bills";
     itemsToAdd = $("#form_bill .itemsToAdd");
+    changeNameTag("Bills");
     updateProduction();
   } else if (target.classList.contains("cost_li")) {
     tableWrapper.querySelector("#cost").style.display = "grid";
@@ -330,6 +330,7 @@ sections.addEventListener("click", (e) => {
     section = "cost";
     section_li.textContent = "Cost";
     itemsToAdd = $("#form_cost .itemsToAdd");
+    changeNameTag("Costs");
     updateCost();
   } else if (
     target.classList.contains("production_li") ||
@@ -338,7 +339,6 @@ sections.addEventListener("click", (e) => {
     tableWrapper.querySelector("#payments").style.display = "grid";
     if (target.classList.contains("production_li")) {
       section = "payments";
-      thead_FOR.style.opacity = 1;
       section_li.textContent = "Production";
       form_payment_for.style.display = "block";
       form_payment_for.setAttribute("required", true);
@@ -349,7 +349,6 @@ sections.addEventListener("click", (e) => {
       changeNameTag("Production");
     } else {
       section = "wages";
-      thead_FOR.style.opacity = 0;
       form_payment_wage.style.display = "block";
       form_payment_wage.setAttribute("required", true);
       form_payment_fabric.style.display = "none";
@@ -363,6 +362,7 @@ sections.addEventListener("click", (e) => {
   } else if (target.classList.contains("summery_li")) {
     tableWrapper.querySelector("#summery").style.display = "grid";
     $(".year_filter").style.display = "block";
+    changeNameTag("Summery");
     updateSummery();
   }
   sections.classList.remove("active");
@@ -417,10 +417,3 @@ function handleImgUplaod(uploadImg, uploadImgBtn) {
       });
   }
 }
-
-// window.addEventListener("DOMContentLoaded", (e) => {
-//   welcomeScreen.remove();
-//   employees = JSON.parse(localStorage.getItem("employees"));
-//   updateDashboard();
-//   updateEmpList();
-// });

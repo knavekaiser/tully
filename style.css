@@ -68,6 +68,7 @@ body {
   transition: left 0.5s cubic-bezier(0.12, 0.1, 0.11, 1.03);
 }
 .welcomeScreen {
+  z-index: 10;
   position: absolute;
   height: 100%;
   width: calc(100% - 10rem);
@@ -183,7 +184,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  z-index: 3;
+  z-index: 10;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -205,7 +206,7 @@ body {
   background: rgba(0, 0, 0, 0);
   pointer-events: none;
   transition: background 0.5s;
-  z-index: 3;
+  z-index: 8;
 }
 .sidebar_span.active {
   pointer-events: all;
@@ -444,6 +445,7 @@ a {
 }
 .month_filter,
 .year_filter {
+  z-index: 5;
   position: absolute;
   left: 3.5rem;
   appearance: none;
@@ -553,8 +555,8 @@ table {
 }
 #payments tr {
   padding: 0 0.5rem;
-  grid-template-columns: 0.2fr 0.3fr 0.2fr 0.35fr;
-  grid-template-areas: "rf dt qt tl";
+  grid-template-columns: 0.5fr 0.5fr;
+  grid-template-areas: "dt tl";
 }
 #summery tr {
   grid-template-columns: 0.06fr 0.188fr 0.188fr 0.188fr 0.188fr 0.188fr;
@@ -583,8 +585,8 @@ table {
   );
 }
 #payments .right tr {
-  grid-template-columns: 0.5fr 0.5fr 0.5fr;
-  grid-template-areas: "dt fr tl";
+  grid-template-columns: 0.5fr 0.5fr;
+  grid-template-areas: "dt tl";
 }
 #tasks.lots .thead {
   background: radial-gradient(
@@ -599,8 +601,6 @@ table {
 }
 #production .thead td:nth-child(2),
 #production .thead td:nth-child(3),
-#payments .left .thead td:nth-child(2),
-#payments .right .thead td:nth-child(2),
 #cost td:nth-child(2),
 #cost td:nth-child(3) {
   text-align: left !important;
@@ -667,10 +667,23 @@ table {
 #payments {
   height: 100%;
   width: 50%;
-  grid-template-columns: 0.55fr 0.45fr;
+  grid-template-columns: 0.5fr 0.5fr;
 }
-#payments .left {
+#payments .left .thead,
+#payments .left .tbody {
   border-right: 1px solid gray;
+}
+#payments .left .date {
+  position: relative;
+}
+#payments .left .date::before,
+#payments .left .total::before,
+#payments .right .total::before {
+  position: relative;
+  content: attr(data-content);
+  display: block;
+  font-size: 0.75rem;
+  color: #777;
 }
 #payments .production,
 #payments .recieved {

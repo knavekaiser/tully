@@ -57,8 +57,8 @@ let section = "employees",
   person,
   fiscalYear = "2020-21",
   dateRange = {
-    from: new Date(`1800-01-01`),
-    to: new Date("2200-12-31"),
+    from: new Date(`1800-01-01:00:00`),
+    to: new Date("2200-12-31:00:00"),
   },
   edit = false,
   itemsToAdd = $("#form_task .itemsToAdd");
@@ -835,7 +835,6 @@ function updatePayment() {
   payment_left.innerHTML = "";
   grandTotal.production = 0;
   grandTotal.paid = 0;
-
   let dates = [],
     payDates = [];
   Object.keys(production).forEach((date) => {
@@ -877,8 +876,7 @@ function updatePayment() {
 function displayProductLedger(date) {
   production[date].forEach((bill, i) => {
     const tr = document.createElement("tr");
-    createTd(production[date][i].ref, tr, "ref");
-    createTd(formatDate(date), tr, `date`);
+    createTd(formatDate(date), tr, `date`, "", production[date][i].ref);
     let total = { qnt: 0, cost: 0 };
     bill.products.forEach((product) => {
       total.qnt += product.qnt;
@@ -887,8 +885,13 @@ function displayProductLedger(date) {
           ? product.qnt * product.cost - product.qnt * product.wage
           : product.qnt * product.wage;
     });
-    createTd(total.qnt.toLocaleString("en-IN"), tr, "qnt");
-    createTd(total.cost.toLocaleString("en-IN"), tr, "total");
+    createTd(
+      total.cost.toLocaleString("en-IN"),
+      tr,
+      "total",
+      "",
+      total.qnt.toLocaleString("en-IN")
+    );
     grandTotal.production += total.cost;
     payment_left.appendChild(tr);
   });
@@ -908,12 +911,21 @@ function displayPaymentLedger(date) {
   );
   if (section === "payments") {
     fabric.forEach((payment) => {
-      createTd(Object.keys(payment), tr, "for");
-      createTd(Object.values(payment).toLocaleString("en-IN"), tr, "total");
+      createTd(
+        Object.values(payment).toLocaleString("en-IN"),
+        tr,
+        "total",
+        "",
+        Object.keys(payment)
+      );
       grandTotal.paid += Object.values(payment)[0];
     });
   } else {
-    createTd(wage.toLocaleString("en-IN"), tr, "total");
+    createTd(
+      wage.toLocaleString("en-IN"),
+      tr,
+      section === "payments" ? "total" : "taka"
+    );
     grandTotal.paid += wage;
   }
   (section === "payments" && fabric.length > 0) ||
@@ -1390,9 +1402,7 @@ function popUp_delete() {
           ? delete production.payments[date]
           : fabric.splice(getIndex(target, line), 1);
       } else {
-        fabric.length <= 1
-          ? (fabric = [])
-          : fabric.splice(getIndex(target, line), 1);
+        fabric.splice(getIndex(target, line), 1);
       }
     } else {
       fabric.length <= 1
@@ -1989,27 +1999,24 @@ fiscalYears.addEventListener("click", (e) => {
 fiscal_li.querySelector("p:last-child").textContent = "2020-21";
 monthFilter.addEventListener("change", (e) => {
   if (monthFilter.value === "all") {
-    dateRange.from = new Date(`1800-01-01`);
-    dateRange.to = new Date("2200-12-31");
+    dateRange.from = new Date(`1800-01-01:00:00`);
+    dateRange.to = new Date("2200-12-31:00:00");
   } else if (monthFilter.value === "custom") {
     showDateFilterForm();
   } else {
-    dateRange.from = new Date(`1800-${monthFilter.value}-01`);
+    dateRange.from = new Date(`1800-${monthFilter.value}-01:00:00`);
     dateRange.to = new Date(
       `2200-${monthFilter.value}-${new Date(
         2001,
         dateRange.from.getMonth() + 1,
         0
-      ).getDate()}`
+      ).getDate()}:00:00`
     );
   }
   (section === "payments" || section === "wages") && updatePayment();
   section === "employees" && updateEmpList();
   section === "production" && updateProduction();
   section === "task" && updateTaskList();
-});
-monthFilter.addEventListener("click", (e) => {
-  console.log(e.target);
 });
 
 function sortDate(dates) {
