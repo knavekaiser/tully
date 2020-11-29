@@ -380,9 +380,9 @@ function addProduct() {
 function addPaymentLedger() {
   let date =
     form_payment.querySelector('input[name="date"]').value + ":" + fiscalYear;
-  if (!date in production.payments) {
+  if (!(date in production.payments)) {
     production.payments[date] = { fabric: [] };
-  } else if (!"fabric" in production.payments[date]) {
+  } else if (!("fabric" in production.payments[date])) {
     production.payments[date].fabric = [];
   }
   let account = form_payment.querySelector('input[name="for"]').value,
