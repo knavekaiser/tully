@@ -842,6 +842,11 @@ function updateWorkerPayment() {
   displayAddBtn(workerPayment);
 }
 const grandTotal = { production: 0, paid: 0 };
+
+function addHr(element) {
+  const hr = document.createElement("hr");
+  element.appendChild(hr);
+}
 function updatePayment() {
   payment_right.innerHTML = "";
   payment_left.innerHTML = "";
@@ -868,11 +873,13 @@ function updatePayment() {
     "total"
   );
   payment_left.appendChild(tr_production);
+
   const tr_recieved = document.createElement("tr");
   tr_recieved.classList.add("recieved");
   createTd("Recieved", tr_recieved);
   createTd(grandTotal.paid.toLocaleString("en-IN"), tr_recieved, "total");
   payment_right.appendChild(tr_recieved);
+
   const tr_due = document.createElement("tr");
   tr_due.classList.add("due");
   createTd("Due", tr_due);
@@ -882,7 +889,60 @@ function updatePayment() {
     "total"
   );
   payment_right.appendChild(tr_due);
+
   displayAddBtn(payment_right);
+
+  addHr(payment_right);
+  addHr(payment_right);
+
+  const previousTr = document.createElement("tr");
+  createTd("Previous", previousTr, "previous");
+  createTd(Math.abs(previous).toLocaleString("en-IN"), previousTr, "previous");
+  payment_right.appendChild(previousTr);
+
+  const recieved_production = document.createElement("tr");
+  createTd("Recieved", recieved_production, "recieved");
+  createTd(
+    "+ " + grandTotal.paid.toLocaleString("en-IN"),
+    recieved_production,
+    "previous"
+  );
+  payment_right.appendChild(recieved_production);
+
+  addHr(payment_right);
+
+  const total = document.createElement("tr");
+  createTd("Total", total, "recieved");
+  createTd(
+    (Math.abs(previous) + grandTotal.paid).toLocaleString("en-IN"),
+    total,
+    "total"
+  );
+  payment_right.appendChild(total);
+
+  const totalProduction = document.createElement("tr");
+  createTd("Total production", totalProduction, "production");
+  createTd(
+    "- " + grandTotal.production.toLocaleString("en-IN"),
+    totalProduction,
+    "total"
+  );
+  payment_right.appendChild(totalProduction);
+
+  addHr(payment_right);
+
+  const totalToDate = document.createElement("tr");
+  createTd("Todate", totalToDate, "production");
+  createTd(
+    (
+      Math.abs(previous) +
+      grandTotal.paid -
+      grandTotal.production
+    ).toLocaleString("en-IN"),
+    totalToDate,
+    "total"
+  );
+  payment_right.appendChild(totalToDate);
 }
 
 function displayProductLedger(date) {
@@ -1925,7 +1985,8 @@ const months = [
   "Nov",
   "Dec",
 ];
-const previous = -3223207;
+//-3223207
+const previous = -3437231;
 let currents = [];
 function getSummery(i, previous) {
   const days = Object.entries(production).filter((item) => {
@@ -2045,7 +2106,7 @@ function dateFilter(fun, date) {
     dateToShow = new Date(date.split(":")[0]);
   to.setFullYear(dateToShow.getFullYear());
   from.setFullYear(dateToShow.getFullYear());
-  if (dateToShow >= from && dateToShow <= to) {
+  if (dateToShow >= from && dateToShow <= to.setDate(to.getDate() + 1)) {
     if (fiscalYear === "All time") {
       run = true;
     } else if (fiscalYear === yearToShow) {
