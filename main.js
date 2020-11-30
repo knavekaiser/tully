@@ -853,31 +853,55 @@ function updatePayment() {
   grandTotal.production = 0;
   grandTotal.paid = 0;
   let dates = [],
-    payDates = [];
+    payDates = [],
+    previousWage = 0,
+    previousWagePayments = 0;
   Object.keys(production).forEach((date) => {
     const regex = RegExp(/\d{4}-\d{2}-\d{2}:\d{4}-\d{2}/g);
     regex.test(date) && dates.push(date);
   });
   sortDate(dates);
-  dates.forEach((date) => dateFilter(displayProductLedger, date));
+  dates.forEach((date) => {
+    dateFilter(displayProductLedger, date);
+    if (section === "wages" && monthFilter.value !== "all") {
+      if (
+        new Date(date.split(":")[0] + ":00:00") <
+        dateRange.from.setFullYear(new Date(date.split(":")[0]).getFullYear())
+      ) {
+        const bills = production[date];
+        bills.forEach((bill) => {
+          bill.products.forEach((product) => {
+            previousWage += product.qnt * product.wage;
+          });
+        });
+      }
+    }
+  });
 
-  Object.keys(production.payments).forEach((date) => payDates.push(date));
+  Object.keys(production.payments).forEach((date) => {
+    payDates.push(date);
+    if (section === "wages" && monthFilter.value !== "all") {
+      if (new Date(date.split(":")[0] + ":00:00") < dateRange.from) {
+        if (production.payments[date].wage) {
+          previousWagePayments += production.payments[date].wage;
+        }
+      }
+    }
+  });
+
   sortDate(payDates);
   payDates.forEach((date) => dateFilter(displayPaymentLedger, date));
 
   const tr_production = document.createElement("tr");
   tr_production.classList.add("production");
-  createTd(
-    grandTotal.production.toLocaleString("en-IN"),
-    tr_production,
-    "total"
-  );
+  createTd("", tr_production);
+  createTd(grandTotal.production.toLocaleString("en-IN"), tr_production);
   payment_left.appendChild(tr_production);
 
   const tr_recieved = document.createElement("tr");
   tr_recieved.classList.add("recieved");
   createTd("Recieved", tr_recieved);
-  createTd(grandTotal.paid.toLocaleString("en-IN"), tr_recieved, "total");
+  createTd(grandTotal.paid.toLocaleString("en-IN"), tr_recieved);
   payment_right.appendChild(tr_recieved);
 
   const tr_due = document.createElement("tr");
@@ -885,64 +909,113 @@ function updatePayment() {
   createTd("Due", tr_due);
   createTd(
     (grandTotal.production - grandTotal.paid).toLocaleString("en-IN"),
-    tr_due,
-    "total"
+    tr_due
   );
   payment_right.appendChild(tr_due);
 
   displayAddBtn(payment_right);
+  if (section === "payments") {
+    addHr(payment_right);
+    addHr(payment_right);
 
-  addHr(payment_right);
-  addHr(payment_right);
+    const previousTr = document.createElement("tr");
+    createTd("Previous", previousTr, "previous");
+    createTd(
+      Math.abs(previous).toLocaleString("en-IN"),
+      previousTr,
+      "previous"
+    );
+    payment_right.appendChild(previousTr);
 
-  const previousTr = document.createElement("tr");
-  createTd("Previous", previousTr, "previous");
-  createTd(Math.abs(previous).toLocaleString("en-IN"), previousTr, "previous");
-  payment_right.appendChild(previousTr);
+    const recieved_production = document.createElement("tr");
+    createTd("Recieved", recieved_production, "recieved");
+    createTd(
+      "+ " + grandTotal.paid.toLocaleString("en-IN"),
+      recieved_production,
+      "previous"
+    );
+    payment_right.appendChild(recieved_production);
 
-  const recieved_production = document.createElement("tr");
-  createTd("Recieved", recieved_production, "recieved");
-  createTd(
-    "+ " + grandTotal.paid.toLocaleString("en-IN"),
-    recieved_production,
-    "previous"
-  );
-  payment_right.appendChild(recieved_production);
+    addHr(payment_right);
 
-  addHr(payment_right);
+    const total = document.createElement("tr");
+    createTd("Total", total, "recieved");
+    createTd(
+      (Math.abs(previous) + grandTotal.paid).toLocaleString("en-IN"),
+      total,
+      "total"
+    );
+    payment_right.appendChild(total);
 
-  const total = document.createElement("tr");
-  createTd("Total", total, "recieved");
-  createTd(
-    (Math.abs(previous) + grandTotal.paid).toLocaleString("en-IN"),
-    total,
-    "total"
-  );
-  payment_right.appendChild(total);
+    const totalProduction = document.createElement("tr");
+    createTd("Total production", totalProduction, "production");
+    createTd(
+      "- " + grandTotal.production.toLocaleString("en-IN"),
+      totalProduction,
+      "total"
+    );
+    payment_right.appendChild(totalProduction);
 
-  const totalProduction = document.createElement("tr");
-  createTd("Total production", totalProduction, "production");
-  createTd(
-    "- " + grandTotal.production.toLocaleString("en-IN"),
-    totalProduction,
-    "total"
-  );
-  payment_right.appendChild(totalProduction);
+    addHr(payment_right);
 
-  addHr(payment_right);
+    const totalToDate = document.createElement("tr");
+    createTd("Todate", totalToDate, "production");
+    createTd(
+      (
+        Math.abs(previous) +
+        grandTotal.paid -
+        grandTotal.production
+      ).toLocaleString("en-IN"),
+      totalToDate,
+      "total"
+    );
+    payment_right.appendChild(totalToDate);
+  } else {
+    if (monthFilter.value !== "all") {
+      const wageTodate = document.createElement("tr");
+      createTd("Previous wage", wageTodate);
+      createTd(
+        "+ " + (previousWage - previousWagePayments).toLocaleString("en-IN"),
+        wageTodate
+      );
+      payment_left.appendChild(wageTodate);
 
-  const totalToDate = document.createElement("tr");
-  createTd("Todate", totalToDate, "production");
-  createTd(
-    (
-      Math.abs(previous) +
-      grandTotal.paid -
-      grandTotal.production
-    ).toLocaleString("en-IN"),
-    totalToDate,
-    "total"
-  );
-  payment_right.appendChild(totalToDate);
+      addHr(payment_left);
+
+      const totalWage = document.createElement("tr");
+      createTd("Total", totalWage);
+      createTd(
+        (
+          previousWage -
+          previousWagePayments +
+          grandTotal.production
+        ).toLocaleString("en-IN"),
+        totalWage
+      );
+      payment_left.appendChild(totalWage);
+
+      const thisMonthWage = document.createElement("tr");
+      createTd("This month", thisMonthWage);
+      createTd(grandTotal.paid.toLocaleString("en-IN"), thisMonthWage);
+      payment_left.appendChild(thisMonthWage);
+
+      addHr(payment_left);
+
+      const current = document.createElement("tr");
+      current.classList.add("recieved");
+      createTd("Current", current);
+      createTd(
+        (
+          previousWage -
+          previousWagePayments +
+          grandTotal.production -
+          grandTotal.paid
+        ).toLocaleString("en-IN"),
+        current
+      );
+      payment_left.appendChild(current);
+    }
+  }
 }
 
 function displayProductLedger(date) {
@@ -1987,6 +2060,7 @@ const months = [
 ];
 //-3223207
 const previous = -3437231;
+const previousWage = 217345;
 let currents = [];
 function getSummery(i, previous) {
   const days = Object.entries(production).filter((item) => {
