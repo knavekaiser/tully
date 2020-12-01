@@ -917,10 +917,26 @@ function updatePayment() {
   const tr_due = document.createElement("tr");
   tr_due.classList.add("due");
   createTd("Due", tr_due);
-  createTd(
-    (grandTotal.production - grandTotal.paid).toLocaleString("en-IN"),
-    tr_due
-  );
+  if (section === "payments") {
+    createTd(
+      (grandTotal.production - grandTotal.paid).toLocaleString("en-IN"),
+      tr_due
+    );
+  } else {
+    if (monthFilter.value === "all") {
+      createTd(
+        (grandTotal.production + previousWage - grandTotal.paid).toLocaleString(
+          "en-IN"
+        ),
+        tr_due
+      );
+    } else {
+      createTd(
+        (grandTotal.production - grandTotal.paid).toLocaleString("en-IN"),
+        tr_due
+      );
+    }
+  }
   payment_right.appendChild(tr_due);
 
   displayAddBtn(payment_right);
@@ -2106,8 +2122,7 @@ function getSummery(i, previous) {
     }
     payDay[1].wage && (wagePayment += payDay[1].wage);
   });
-  current =
-    -Math.abs(previous) + product + wage - (fabricPayment + wagePayment);
+  current = previous + fabricPayment + wagePayment - (product + wage);
   return {
     product: product,
     wage: wage,
@@ -2117,7 +2132,7 @@ function getSummery(i, previous) {
   };
 }
 function updateSummery() {
-  let current_month = -Math.abs(previous);
+  let current_month = -Math.abs(previous + previousWageConst);
   const currentYear = defaultDateValue().split("-")[0];
   $$(".year_filter option").forEach((item) => {
     if (item.textContent === currentYear) {
@@ -2127,7 +2142,7 @@ function updateSummery() {
   summery.innerHTML = "";
   const prev = document.createElement("tr");
   prev.classList.add("prev");
-  createTd(-Math.abs(previous).toLocaleString("en-IN"), prev);
+  createTd((-Math.abs(previous)).toLocaleString("en-IN"), prev);
   summery.appendChild(prev);
   for (var i = 0; i < months.length; i++) {
     const data = getSummery(i, current_month);
