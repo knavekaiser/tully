@@ -854,8 +854,10 @@ function updatePayment() {
   grandTotal.paid = 0;
   let dates = [],
     payDates = [],
-    previousWage = 0,
-    previousWagePayments = 0;
+    previousWage = previousWageConst,
+    previousWagePayments = 0,
+    previousProduction = 0,
+    previousProductionPayments = 0;
   Object.keys(production).forEach((date) => {
     const regex = RegExp(/\d{4}-\d{2}-\d{2}:\d{4}-\d{2}/g);
     regex.test(date) && dates.push(date);
@@ -863,7 +865,7 @@ function updatePayment() {
   sortDate(dates);
   dates.forEach((date) => {
     dateFilter(displayProductLedger, date);
-    if (section === "wages" && monthFilter.value !== "all") {
+    if (monthFilter.value !== "all") {
       if (
         new Date(date.split(":")[0] + ":00:00") <
         dateRange.from.setFullYear(new Date(date.split(":")[0]).getFullYear())
@@ -872,6 +874,8 @@ function updatePayment() {
         bills.forEach((bill) => {
           bill.products.forEach((product) => {
             previousWage += product.qnt * product.wage;
+            previousProduction +=
+              product.qnt * product.cost - product.qnt * product.wage;
           });
         });
       }
@@ -880,10 +884,16 @@ function updatePayment() {
 
   Object.keys(production.payments).forEach((date) => {
     payDates.push(date);
-    if (section === "wages" && monthFilter.value !== "all") {
+    if (monthFilter.value !== "all") {
       if (new Date(date.split(":")[0] + ":00:00") < dateRange.from) {
         if (production.payments[date].wage) {
           previousWagePayments += production.payments[date].wage;
+        }
+        if (production.payments[date].fabric) {
+          previousProductionPayments += production.payments[date].fabric.reduce(
+            (a, c) => a + +Object.values(c),
+            0
+          );
         }
       }
     }
@@ -921,12 +931,15 @@ function updatePayment() {
     const previousTr = document.createElement("tr");
     createTd("Previous", previousTr, "previous");
     createTd(
-      Math.abs(previous).toLocaleString("en-IN"),
+      (
+        previous +
+        previousProductionPayments -
+        previousProduction
+      ).toLocaleString("en-IN"),
       previousTr,
       "previous"
     );
     payment_right.appendChild(previousTr);
-
     const recieved_production = document.createElement("tr");
     createTd("Recieved", recieved_production, "recieved");
     createTd(
@@ -939,20 +952,22 @@ function updatePayment() {
     addHr(payment_right);
 
     const total = document.createElement("tr");
-    createTd("Total", total, "recieved");
+    createTd("Total", total);
     createTd(
-      (Math.abs(previous) + grandTotal.paid).toLocaleString("en-IN"),
-      total,
-      "total"
+      (
+        previous +
+        previousProductionPayments -
+        previousProduction +
+        grandTotal.paid
+      ).toLocaleString("en-IN"),
+      total
     );
     payment_right.appendChild(total);
-
     const totalProduction = document.createElement("tr");
     createTd("Total production", totalProduction, "production");
     createTd(
       "- " + grandTotal.production.toLocaleString("en-IN"),
-      totalProduction,
-      "total"
+      totalProduction
     );
     payment_right.appendChild(totalProduction);
 
@@ -962,12 +977,13 @@ function updatePayment() {
     createTd("Todate", totalToDate, "production");
     createTd(
       (
-        Math.abs(previous) +
+        previous +
+        previousProductionPayments -
+        previousProduction +
         grandTotal.paid -
         grandTotal.production
       ).toLocaleString("en-IN"),
-      totalToDate,
-      "total"
+      totalToDate
     );
     payment_right.appendChild(totalToDate);
   } else {
@@ -2059,8 +2075,8 @@ const months = [
   "Dec",
 ];
 //-3223207
-const previous = -3437231;
-const previousWage = 217345;
+const previous = 3437231;
+const previousWageConst = 217345;
 let currents = [];
 function getSummery(i, previous) {
   const days = Object.entries(production).filter((item) => {
@@ -2090,7 +2106,8 @@ function getSummery(i, previous) {
     }
     payDay[1].wage && (wagePayment += payDay[1].wage);
   });
-  current = previous + product + wage - (fabricPayment + wagePayment);
+  current =
+    -Math.abs(previous) + product + wage - (fabricPayment + wagePayment);
   return {
     product: product,
     wage: wage,
@@ -2100,7 +2117,7 @@ function getSummery(i, previous) {
   };
 }
 function updateSummery() {
-  let current_month = previous;
+  let current_month = -Math.abs(previous);
   const currentYear = defaultDateValue().split("-")[0];
   $$(".year_filter option").forEach((item) => {
     if (item.textContent === currentYear) {
@@ -2110,7 +2127,7 @@ function updateSummery() {
   summery.innerHTML = "";
   const prev = document.createElement("tr");
   prev.classList.add("prev");
-  createTd(previous.toLocaleString("en-IN"), prev);
+  createTd(-Math.abs(previous).toLocaleString("en-IN"), prev);
   summery.appendChild(prev);
   for (var i = 0; i < months.length; i++) {
     const data = getSummery(i, current_month);
