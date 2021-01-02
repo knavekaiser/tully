@@ -865,12 +865,11 @@ function updatePayment() {
   sortDate(dates);
   dates.forEach((date) => {
     dateFilter(displayProductLedger, date);
-    const dRange = { ...dateRange };
-    console.log();
+    const year = dateRange.from.getFullYear();
     if (monthFilter.value !== "all") {
       if (
         new Date(date.split(":")[0] + ":00:00") <
-        dRange.from.setFullYear(new Date(date.split(":")[0]).getFullYear())
+        dateRange.from.setFullYear(new Date(date.split(":")[0]).getFullYear())
       ) {
         const bills = production[date];
         bills.forEach((bill) => {
@@ -881,7 +880,7 @@ function updatePayment() {
           });
         });
       }
-      dRange.from.setFullYear(1800);
+      dateRange.from.setFullYear(year);
     }
   });
 
