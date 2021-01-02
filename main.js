@@ -865,11 +865,11 @@ function updatePayment() {
   sortDate(dates);
   dates.forEach((date) => {
     dateFilter(displayProductLedger, date);
-    const year = dateRange.from.getFullYear();
+    const from = new Date(dateRange.from);
     if (monthFilter.value !== "all") {
       if (
         new Date(date.split(":")[0] + ":00:00") <
-        dateRange.from.setFullYear(new Date(date.split(":")[0]).getFullYear())
+        from.setFullYear(new Date(date.split(":")[0]).getFullYear())
       ) {
         const bills = production[date];
         bills.forEach((bill) => {
@@ -880,7 +880,6 @@ function updatePayment() {
           });
         });
       }
-      dateRange.from.setFullYear(year);
     }
   });
 
@@ -2186,17 +2185,14 @@ monthFilter.addEventListener("change", (e) => {
   } else if (monthFilter.value === "custom") {
     showDateFilterForm();
   } else {
-    dateRange = {
-      from: new Date(`1800-${monthFilter.value}-01:00:00`),
-      to: new Date(
-        `2200-${monthFilter.value}-${new Date(
-          2001,
-          dateRange.from.getMonth() + 1,
-          0
-        ).getDate()}:00:00`
-      ),
-    };
-    console.log(dateRange);
+    dateRange.from = new Date(`1800-${monthFilter.value}-01:00:00`);
+    dateRange.to = new Date(
+      `2200-${monthFilter.value}-${new Date(
+        2001,
+        dateRange.from.getMonth() + 1,
+        0
+      ).getDate()}:00:00`
+    );
   }
   (section === "payments" || section === "wages") && updatePayment();
   section === "employees" && updateEmpList();
@@ -2214,10 +2210,10 @@ function dateFilter(fun, date) {
   const from = new Date(dateRange.from),
     to = new Date(dateRange.to),
     yearToShow = date.split(":")[1],
-    dateToShow = new Date(date.split(":")[0]);
+    dateToShow = new Date(date.split(":")[0] + ":00:00");
   to.setFullYear(dateToShow.getFullYear());
   from.setFullYear(dateToShow.getFullYear());
-  if (dateToShow >= from && dateToShow <= to.setDate(to.getDate() + 1)) {
+  if (dateToShow >= from && dateToShow <= to) {
     if (fiscalYear === "All time") {
       run = true;
     } else if (fiscalYear === yearToShow) {
