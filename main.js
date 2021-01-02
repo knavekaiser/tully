@@ -865,10 +865,12 @@ function updatePayment() {
   sortDate(dates);
   dates.forEach((date) => {
     dateFilter(displayProductLedger, date);
+    const dRange = { ...dateRange };
+    console.log();
     if (monthFilter.value !== "all") {
       if (
         new Date(date.split(":")[0] + ":00:00") <
-        dateRange.from.setFullYear(new Date(date.split(":")[0]).getFullYear())
+        dRange.from.setFullYear(new Date(date.split(":")[0]).getFullYear())
       ) {
         const bills = production[date];
         bills.forEach((bill) => {
@@ -879,6 +881,7 @@ function updatePayment() {
           });
         });
       }
+      dRange.from.setFullYear(1800);
     }
   });
 
@@ -2184,14 +2187,17 @@ monthFilter.addEventListener("change", (e) => {
   } else if (monthFilter.value === "custom") {
     showDateFilterForm();
   } else {
-    dateRange.from = new Date(`1800-${monthFilter.value}-01:00:00`);
-    dateRange.to = new Date(
-      `2200-${monthFilter.value}-${new Date(
-        2001,
-        dateRange.from.getMonth() + 1,
-        0
-      ).getDate()}:00:00`
-    );
+    dateRange = {
+      from: new Date(`1800-${monthFilter.value}-01:00:00`),
+      to: new Date(
+        `2200-${monthFilter.value}-${new Date(
+          2001,
+          dateRange.from.getMonth() + 1,
+          0
+        ).getDate()}:00:00`
+      ),
+    };
+    console.log(dateRange);
   }
   (section === "payments" || section === "wages") && updatePayment();
   section === "employees" && updateEmpList();

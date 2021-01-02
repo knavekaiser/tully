@@ -417,3 +417,14 @@ function handleImgUplaod(uploadImg, uploadImgBtn) {
       });
   }
 }
+
+// window.addEventListener("DOMContentLoaded", (e) => {
+//   welcomeScreen.remove();
+//   production = JSON.parse(localStorage.getItem("production"));
+//   employees = JSON.parse(localStorage.getItem("employees"));
+//   updateEmpList();
+//   updateProduction();
+//   updateCost();
+//   $(".production_li").click();
+//   btnSidebar.click();
+// });
