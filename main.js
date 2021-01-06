@@ -1821,6 +1821,7 @@ function getFromCloud(dir, userStatus) {
       workers = JSON.parse(localStorage.getItem("workers"));
       updateEmpList();
     }
+    updateDashboard();
   });
 }
 
