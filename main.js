@@ -3,7 +3,7 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 let employees = {};
 let workers = {};
-let production = {};
+let production = { payments: {} };
 let costs = [];
 const tableWrapper = $(".table_wrapper"),
   nameTag = $(".nameTag"),
@@ -1806,7 +1806,6 @@ function getFromCloud(dir, userStatus) {
     if (dir === "emp") {
       localStorage.setItem("employees", JSON.stringify(data.record));
       employees = JSON.parse(localStorage.getItem("employees"));
-      updateDashboard();
       updateEmpList();
     } else if (dir === "pro") {
       localStorage.setItem("production", JSON.stringify(data.record));
