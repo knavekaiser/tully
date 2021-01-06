@@ -866,11 +866,11 @@ function updatePayment() {
   dates.forEach((date) => {
     dateFilter(displayProductLedger, date);
     const from = new Date(dateRange.from);
+    // from.setFullYear(new Date(date.split(":")[0]).getFullYear());
     if (monthFilter.value !== "all") {
-      if (
-        new Date(date.split(":")[0] + ":00:00") <
-        from.setFullYear(new Date(date.split(":")[0]).getFullYear())
-      ) {
+      // console.log(new Date(date.split(":")[0] + ":00:00"), from);
+      if (new Date(date.split(":")[0] + ":00:00") < from) {
+        // console.log(new Date(date.split(":")[0] + ":00:00"), from);
         const bills = production[date];
         bills.forEach((bill) => {
           bill.products.forEach((product) => {
@@ -887,6 +887,7 @@ function updatePayment() {
     payDates.push(date);
     if (monthFilter.value !== "all") {
       if (new Date(date.split(":")[0] + ":00:00") < dateRange.from) {
+        console.log("this also ran");
         if (production.payments[date].wage) {
           previousWagePayments += production.payments[date].wage;
         }
@@ -1860,7 +1861,7 @@ function updateDashboard() {
       total: 0,
     },
     dates = [],
-    production = [],
+    contractorProduction = [],
     lastWeekLot = { s: 0, l: 0, f: 0, one: 0 };
   // Crunches main data!
   for (const name in employees) {
@@ -1917,7 +1918,10 @@ function updateDashboard() {
   sortDate(dates);
   lastDay = dates[dates.length - 1];
   // Puts data in diffrent groups
+  const monthFilterValues = [];
   Object.keys(data).forEach((days, i) => {
+    !monthFilterValues.includes(days.slice(0, 7)) &&
+      monthFilterValues.push(days.slice(0, 7));
     let arr = data[dates[i]].tasks;
     allPayments.push(data[dates[i]].paid);
     let dailyProd = 0;
@@ -1942,7 +1946,35 @@ function updateDashboard() {
       dailyProd +=
         parseInt(task.qnt) > 0 ? task.qnt * priceCheck(task.group) : 0;
     });
-    production.push(dailyProd);
+    contractorProduction.push(dailyProd);
+  });
+  const productionFlattened = { ...production, ...production.payments };
+  delete productionFlattened.payments;
+  Object.keys(production).forEach((day, i) => {
+    if (day !== "payments") {
+      !monthFilterValues.includes(day.slice(0, 7)) &&
+        monthFilterValues.push(day.slice(0, 7));
+    }
+  });
+  Object.keys(production.payments).forEach((day, i) => {
+    !monthFilterValues.includes(day.slice(0, 7)) &&
+      monthFilterValues.push(day.slice(0, 7));
+  });
+
+  monthFilter.innerHTML = "";
+  const optionAll = document.createElement("option");
+  optionAll.textContent = "All";
+  optionAll.value = "all";
+  monthFilter.appendChild(optionAll);
+  const optionCustom = document.createElement("option");
+  optionCustom.textContent = "Custom";
+  optionCustom.value = "custom";
+  monthFilter.appendChild(optionCustom);
+  monthFilterValues.forEach((item) => {
+    const option = document.createElement("option");
+    option.value = item;
+    option.textContent = `${months[+item.slice(5, 7) - 1]} ${item.slice(0, 4)}`;
+    monthFilter.appendChild(option);
   });
 
   let selectedDate = dates[dates.length - 1];
@@ -1988,7 +2020,7 @@ function updateDashboard() {
         {
           fill: false,
           label: "Production, " + fiscalYear,
-          data: [...production],
+          data: [...contractorProduction],
           borderWidth: 3,
           borderColor: ["rgba(90, 165, 227, 1)"],
         },
@@ -2175,6 +2207,7 @@ fiscalYears.addEventListener("click", (e) => {
   fiscalYears.classList.remove("active");
   updateEmpList();
   updateProduction();
+  updateDashboard();
   (section === "payments" || section === "wages") && updatePayment();
 });
 fiscal_li.querySelector("p:last-child").textContent = "2020-21";
@@ -2185,9 +2218,9 @@ monthFilter.addEventListener("change", (e) => {
   } else if (monthFilter.value === "custom") {
     showDateFilterForm();
   } else {
-    dateRange.from = new Date(`1800-${monthFilter.value}-01:00:00`);
+    dateRange.from = new Date(`${monthFilter.value}-01:00:00`);
     dateRange.to = new Date(
-      `2200-${monthFilter.value}-${new Date(
+      `${monthFilter.value}-${new Date(
         2001,
         dateRange.from.getMonth() + 1,
         0

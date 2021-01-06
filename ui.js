@@ -422,9 +422,10 @@ function handleImgUplaod(uploadImg, uploadImgBtn) {
 //   welcomeScreen.remove();
 //   production = JSON.parse(localStorage.getItem("production"));
 //   employees = JSON.parse(localStorage.getItem("employees"));
-//   updateEmpList();
+//   // updateEmpList();
 //   updateProduction();
-//   updateCost();
+//   updateDashboard();
+//   // updateCost();
 //   $(".production_li").click();
 //   btnSidebar.click();
 // });
