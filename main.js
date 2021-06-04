@@ -55,7 +55,7 @@ const tableWrapper = $(".table_wrapper"),
   delete_prompt = $(".delete_prompt");
 let section = "employees",
   person,
-  fiscalYear = "2020-21",
+  fiscalYear = "2021-22",
   dateRange = {
     from: new Date(`1800-01-01:00:00`),
     to: new Date("2200-12-31:00:00"),
