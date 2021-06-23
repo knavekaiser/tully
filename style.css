@@ -509,7 +509,8 @@ table {
   white-space: nowrap;
 }
 #employee tr {
-  grid-template-areas: "nm lp pr py du";
+  grid-template-areas: "nm lp pr py";
+  grid-template-columns: 0.5fr 70px 0.5fr 0.5fr;
 }
 #employee .name {
   grid-area: nm;
@@ -518,11 +519,15 @@ table {
   grid-area: lp;
 }
 #employee .product::after,
-#employee .lastPay::after {
+#employee .lastPay::after,
+#employee .payment::after {
   content: attr(data-content);
   font-size: 0.65rem;
   letter-spacing: 0.1em;
   color: #888;
+}
+#employee .payment::after {
+  color: red;
 }
 #tasks tr {
   justify-content: center;
@@ -1330,6 +1335,27 @@ form button.uploadFailed::before {
 .thisYear .production {
   grid-area: p;
 }
+.thisWeek .lot h3 {
+  position: relative;
+}
+.thisWeek .lot h3::after {
+  content: attr(data-diff);
+  display: block;
+  font-size: 1.25rem;
+  position: absolute;
+  top: 0;
+  left: -2.4rem;
+}
+h3.green::after {
+  color: green;
+}
+h3.red::after {
+  color: red;
+}
+h3.none::after {
+  display: none;
+}
+
 .thisWeek .paid,
 .thisYear .paid {
   grid-area: d;

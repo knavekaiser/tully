@@ -273,17 +273,14 @@ function updateEmpList() {
           }`
         );
       const lastWeek = employees[employee[0]][lastDay];
-      const lastWeekProduction = lastWeek
-        ? lastWeek.tasks.reduce((a, c) => a + c.qnt, 0).toLocaleString("en-IN")
-        : "";
       createTd(employee[0], tr, "name");
       if (lastWeek) {
         createTd(
           lastWeek.paid.toLocaleString("en-IN"),
           tr,
           "lastPay",
-          0,
-          `(${lastWeekProduction})`
+          null,
+          lastWeek?.tasks.map((item) => `${item.group} ${item.qnt}`)
         );
       } else {
         createTd(0, tr, "lastPay");
@@ -292,15 +289,17 @@ function updateEmpList() {
         getTotal(days, "production").toLocaleString("en-IN"),
         tr,
         "product",
-        0,
-        `(${getTotal(days, "qnt").toLocaleString("en-IN")})`
+        null,
+        Object.entries(getTotal(days, "qnt")).join("; ").replaceAll(",", " ")
       );
-      createTd(getTotal(days, "paid").toLocaleString("en-IN"), tr);
       createTd(
+        getTotal(days, "paid").toLocaleString("en-IN"),
+        tr,
+        "payment",
+        null,
         (getTotal(days, "production") - getTotal(days, "paid")).toLocaleString(
           "en-IN"
-        ),
-        tr
+        )
       );
       empList.appendChild(tr);
     }
@@ -1219,8 +1218,7 @@ function getDaysInBetween(from, to) {
   return Math.abs((new Date(from) - new Date(to)) / 1000 / 60 / 60 / 24);
 }
 function getTotal(days, what) {
-  let total = 0;
-  const test = () => {};
+  let total = null;
   days.forEach((day) => {
     if (dateFilter("", day[0])) {
       if (what === "production") {
@@ -1228,8 +1226,13 @@ function getTotal(days, what) {
           total += task.qnt > 0 ? task.qnt * priceCheck(task.group) : 0;
         });
       } else if (what === "qnt") {
+        if (total === null) total = {};
         day[1].tasks.forEach((task) => {
-          total += task.qnt > 0 ? task.qnt : 0;
+          if (total && total[task.group]) {
+            total[task.group] += task.qnt;
+          } else {
+            total[task.group] = task.qnt;
+          }
         });
       } else {
         total += day[1].paid;
@@ -2090,6 +2093,16 @@ function updateDashboard() {
     i + 1 === Object.keys(lastWeekLot).length && (totalLots += "\nLots");
   });
   weekLot.querySelector("h3").textContent = totalInLot.toLocaleString();
+  weekLot
+    .querySelector("h3")
+    .setAttribute("data-diff", totalInLot - thisWeekProductionTotal);
+  if (totalInLot - thisWeekProductionTotal > 0) {
+    weekLot.querySelector("h3").classList.add("green");
+  } else if (totalInLot - thisWeekProductionTotal < 0) {
+    weekLot.querySelector("h3").classList.add("red");
+  } else {
+    weekLot.querySelector("h3").classList.add("none");
+  }
   weekLot.querySelector("p").textContent = totalLots;
 
   yearProduction.querySelector("h3").textContent = (

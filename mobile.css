@@ -79,6 +79,9 @@ form {
   padding-bottom: 1rem;
   margin-bottom: 1rem;
 }
+.thisWeek .lot h3::after {
+  left: -1rem;
+}
 .dashboard h3 {
   font-size: 1.5rem;
 }
