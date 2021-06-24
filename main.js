@@ -1990,7 +1990,7 @@ function updateDashboard() {
           } else if (item.group === "L") {
             lastWeekLot.l += item.qnt;
           } else if (item.group === "1") {
-            lastWeek.one += item.qnt;
+            lastWeekLot.one += item.qnt;
           } else if (item.group === "F") {
             lastWeekLot.f += item.qnt;
           }
