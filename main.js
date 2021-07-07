@@ -1200,7 +1200,7 @@ function priceCheck(group) {
       return 30;
       break;
     case "L":
-      return 37;
+      return 38;
       break;
     case "F":
       return 45;
