@@ -1197,13 +1197,13 @@ function priceCheck(group) {
       return 20;
       break;
     case "S":
-      return 24;
+      return 30;
       break;
     case "L":
-      return 36;
+      return 37;
       break;
     case "F":
-      return 43;
+      return 45;
       break;
     case "iS":
       return 2.5;
