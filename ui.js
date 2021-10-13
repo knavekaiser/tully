@@ -418,14 +418,14 @@ function handleImgUplaod(uploadImg, uploadImgBtn) {
   }
 }
 
-// window.addEventListener("DOMContentLoaded", (e) => {
-//   welcomeScreen.remove();
-//   // production = JSON.parse(localStorage.getItem("production"));
-//   employees = JSON.parse(localStorage.getItem("employees"));
-//   updateEmpList();
-//   updateProduction();
-//   updateDashboard();
-//   updateCost();
-//   // $(".production_li").click();
-//   // btnSidebar.click();
-// });
+window.addEventListener("DOMContentLoaded", (e) => {
+  welcomeScreen.remove();
+  // production = JSON.parse(localStorage.getItem("production"));
+  employees = JSON.parse(localStorage.getItem("employees"));
+  updateEmpList();
+  updateProduction();
+  updateDashboard();
+  updateCost();
+  // $(".production_li").click();
+  // btnSidebar.click();
+});
